@@ -11,13 +11,20 @@ agregado molecular, por medio de una exploración estocástica de su superficie 
 En la carpeta ASCECV3, se encuentra el fuente del programa ascec escrito en fortran77. 
 
 ASCECV3
+
    |----papers  (articulos en que se uso)
+
    |----p_ascec (En esta se encuentra los diferentes archivos fuentes)
+
    |----examples
          |---adf     (ejemplo usando el adf)
+
          |---dalton  (ejemplo usando el dalton)
+
          |---g03
+
          |---gamess
+         
          |---nwchem
 
 Para compilar los archivos fuentes, basta con ejecutar el script c_ascec.sh dentro de p_ascec, esto
