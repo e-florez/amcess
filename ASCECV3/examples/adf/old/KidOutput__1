@@ -1,0 +1,203 @@
+(INPUT FILE)
+
+ TITLE Annealing ASCEC
+
+CHARGE {2,0}
+
+ ATOMS
+ Hg    0.0000000000000000       0.00000000000000000       0.00000000000000000
+ H     0.0000000000000000       0.75300999999999996      -0.47598600000000002
+ O     0.0000000000000000        0.0000000000000000       0.11899700000000001
+ H     0.0000000000000000      -0.75300999999999996      -0.47598600000000002
+ H     0.0000000000000000       0.75300999999999996      -0.47598600000000002
+ O     0.0000000000000000        0.0000000000000000       0.11899700000000001
+ H     0.0000000000000000      -0.75300999999999996      -0.47598600000000002
+ Xx    -3.5000000000000000       -3.5000000000000000       -3.5000000000000000
+ Xx     3.5000000000000000       -3.5000000000000000       -3.5000000000000000
+ Xx     3.5000000000000000        3.5000000000000000       -3.5000000000000000
+ Xx     3.5000000000000000        3.5000000000000000        3.5000000000000000
+ Xx    -3.5000000000000000        3.5000000000000000       -3.5000000000000000
+ Xx    -3.5000000000000000        3.5000000000000000        3.5000000000000000
+ Xx    -3.5000000000000000       -3.5000000000000000        3.5000000000000000
+ Xx     3.5000000000000000       -3.5000000000000000        3.5000000000000000
+ END
+
+
+ symmetry auto
+
+ RELATIVISTIC Scalar ZORA
+
+ XC
+ GGA PBE
+ END
+
+ SCF
+ CONVERGE 1e-6 1e-6
+ ITERATION 200
+ END
+
+ INTEGRATION 6.0
+
+Fragments
+H t21.H
+O t21.O
+Hg t21.Hg
+End
+end input
+
+ *******************************************************************************
+ *                                                                             *
+ *  -------------------------------------                                      *
+ *   Amsterdam Density Functional  (ADF)         2013.01   April 2, 2013       *
+ *  -------------------------------------                                      *
+ *                                               Build 201304112215            *
+ *                                                                             *
+ *                                                                             *
+ *                              =================                              *
+ *                              |               |                              *
+ *                              |     A D F     |                              *
+ *                              |               |                              *
+ *                              =================                              *
+ *                                                                             *
+ *                                                                             *
+ *   Online information and documentation:  http://www.scm.com                 *
+ *   E-mail:  support@scm.com   info@scm.com                                   *
+ *                                                                             *
+ *   Scientific publications using ADF results must be properly referenced     *
+ *   See the User Manuals (or the web site) for recommended citations          *
+ *   The terms and conditions of the End User License Agreement apply to       *
+ *   the use of ADF, http://www.scm.com/Sales/LicAgreement.html                *
+ *                                                                             *
+ ********************  x86_64_linux_intel / platform_mpi  **********************
+ 
+ Licensed to: Prof. Cacier Hadad / University of Antioquia / Medellin / COLOMBIA
+ SCM User ID: u15319
+  
+ ADF 2013.01  RunTime: Jan01-2013 00:00:07  Nodes: 1  Procs: 2
+
+ Temporary files are created in /tmp/kid_1.fpHqgZ
+
+ Annealing ASCEC
+
+
+
+ ===========================
+ A T T A C H E D   F I L E S
+ ===========================
+  
+
+
+
+ ===============================
+ M O D E L   P A R A M E T E R S
+ ===============================
+  
+ DENSITY FUNCTIONAL POTENTIAL (scf)
+    LDA:                               PW92                                    == Not Default ==
+    Gradient Corrections:              PBEc PBEx                               == Not Default ==
+
+ SPIN  (restricted / unrestr.)
+    Molecule:                          Restricted                               
+    Fragments:                         Restricted                               
+
+ OTHER ASPECTS
+    Relativistic Corrections:          scalar (ZORA,SAPA)                      == Not Default ==
+
+    Nuclear Charge Density Model:      Point Charge Nuclei                                                                                                                                                                                     
+    Core Treatment:                    Frozen Orbital(s)                        
+
+    Hyperfine or Zeeman Interaction:   ---                                      
+
+ WARNING two atoms, as supplied on input, are too close.
+ Their input coordinates are:
+     3  0.000000000000E+00  0.142298266938E+01 -0.899483179329E+00
+     2  0.000000000000E+00  0.142298266938E+01 -0.899483179329E+00
+
+     4  0.000000000000E+00 -0.142298266938E+01 -0.899483179329E+00
+     6  0.000000000000E+00 -0.142298266938E+01 -0.899483179329E+00
+
+     5  0.000000000000E+00  0.000000000000E+00  0.224871739695E+00
+     7  0.000000000000E+00  0.000000000000E+00  0.224871739695E+00
+
+
+ It is possible that the coordinates are changed later by reading, for example, 
+ from a restart file.
+
+ ERROR two atoms and/or point charges are too close
+ Their input coordinates are:
+     4  0.000000000000E+00  0.142298266938E+01 -0.899483179329E+00
+     2  0.000000000000E+00  0.142298266938E+01 -0.899483179329E+00
+
+ *******************************************************************************
+
+ ADF EXIT called
+ (almost) coinciding atoms or point-charges
+
+ *******************************************************************************
+ *******************************************************************************
+
+                             A D F   E X I T
+ 
+ ============
+ Timer stack:
+ ------------
+  1357009206.52  ADF                                                             
+  1357009207.58  Geomet                                                          
+  1357009207.59  gframe                                                          
+ ============
+
+ (almost) coinciding atoms or point-charges
+
+
+ Current Execution Stack has  5 elements
+ Last to be Executed : ADF
+
+ Stack of Active SubPrograms:
+ ----------------------------
+ GFRAMEPREPAR                  
+ GFRAME                        
+ GEOSYM                        
+ GEOMET                        
+ ADF                           
+
+
+
+ =================
+ Timing Statistics
+ =================
+  
+ Total Used :                     CPU=        0.42      System=        0.01     Elapsed=        0.44
+
+ Calls  Section                     ( Mean, Percentage )
+ ---------------------------------------------------------------------------------------------------
+     2  ><      ................      0.00    0.00             0.00    0.05             0.00    0.00
+     1  INIT    ................      0.41   95.67             0.00    5.27             0.41   92.99
+     1  EXIT PROCEDURE .........      0.02    4.33             0.01   94.69             0.03    7.00
+
+
+ Currently Open Files (EXIT00)
+ ====================
+
+ Unit    Access Format  Status   Type       Ident (file)
+ -------------------------------------------------------
+   1      SEQ    FORM   TRANSP  NORMAL      LOGFILE
+                                          ( logfile )
+
+
+ Buffered I/O statistics
+ =======================
+ Memory available:                     67108864
+ Number of records fitting in memory:     16131
+ Input :  52.3% of                          195  *4k bytes
+ Output:   6.6% of                           91  *4k bytes
+ Records from serial files evicted:           0
+                    others evicted:           0
+ Hash table lookups:        826 with          0 conflicts (  0.00%)
+
+ ***************************************************************************************************
+ (LOGFILE)
+ <Jan01-2013> <00:00:07>  ADF 2013.01  RunTime: Jan01-2013 00:00:07  Nodes: 1  Procs: 2
+ <Jan01-2013> <00:00:07>  Annealing ASCEC
+ <Jan01-2013> <00:00:07>  RunType   : SINGLE POINT
+ <Jan01-2013> <00:00:07>  ERROR DETECTED: (almost) coinciding atoms or point-charges
+ <Jan01-2013> <00:00:07>  END

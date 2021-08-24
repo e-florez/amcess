@@ -1,0 +1,112 @@
+
+             ASCEC V. 03.     
+
+Autores: Jhon Fredy Perez
+         Andy Danian Zapata Escobar
+         Albeiro Restrepo
+
+Institucion: Universidad de Antioquia.
+Grupo: Quimica-Fisica Teorica.
+Pagina: quimica.udea.edu.co/~qfteorica/
+
+Este programa se puede usar para realizar
+un muestreo estocastico de las posibles
+conformaciones del sistema atomico o 
+molecular de estudio, en base a una
+modificacion del criterio de metropolis
+(mayor informacion, en la carpeta de
+papers y examples). Comando ejecucion,
+ascecv03 < abc.in > abc.out.
+
+Nota: No poner como extension inp, porque
+esta extension es asignado a los archivos
+del gamess. Una plantilla del archivo abc.in
+la puede encontrar en examples.
+
+
+GAMESS
+
+El ASCEC tiene implementados los formatos
+del gamess de los metodos hf, dft, mp2 (el
+gamess solo tiene implementado mp2) y
+semi-empiricos, en capa cerrada y abierta,
+ademas, de los formatos de las bases sto,
+pople, duning corre. cons. y algunos 
+pseudopotenciales (SBKJL valence
+{alias=sbkjl} y Hay/Wadt Valence {alias=hw})
+
+
+NWCHEM
+
+El ASCEC tiene implementados los formatos 
+del nwchem de los metodos hf, dft mp2 y mpn,
+para n mayores a 2, en capa cerrada y
+abierta, ademas, de los formatos de las 
+bases sto, pople, dunings corre. cons.,
+pseudopotenciales (Hay-Wadt MB (n+1) ECP,
+LANL2DZ ECP, SBKJC VDZ ECP, CRENBL ECP,
+Stuttgart RLC ECP, entre otras. El ASCEC 
+tambien tiene implementado el formato del 
+nwchem para usar un tipo base por clase
+atomo.
+
+
+GAUSSIAN Y MSINDO1.1.opt
+
+Ademas el ASCEC esta programado para
+ejecutarse con el gaussian y el MSINDO
+
+
+ ***********************************************
+ Annealing Simulado Con Energia Cuantica **ASCEC**
+ ASCEC-V02: February-2010
+
+ Elemental composition of the system:
+ O             2
+ H             4
+ Ther are a total of           6  nuclei
+ Cube's length =   7.0000000000000000       A
+
+ Number of molecules:           2
+ Molecular composition
+ w1                  H O H 
+ w2                  H O H 
+
+ Maximum displacement of each mass center =   1.0000000000000000       A
+ Maximum rotation angle =   1.0000000000000000       radians
+ Geometrical quenching route. To =   50.000000000000000       %dism =   10.000000000000000       nT =          10
+
+ Energy calculated with gamess         
+ Hamiltonian: hf      
+ Basis set: 
+ O   sto-3g              
+ H   sto-3g              
+ Charge =           0  Multiplicity =           1
+ Processors:            8
+ Seed =0909142015
+ 
+ No wavefunction convergency for initial configuration
+
+ History: (T(K),E(u.a.),n-eval)
+
+   50.             -149.091272       1
+   45.             -149.923095       1
+   40.             -149.930056       2
+   36.             -149.930230       2
+     32.80        10               steps
+     29.52        10               steps
+     26.57        10               steps
+     23.91        10               steps
+   22.             -149.930278       1
+     19.37        10               steps
+
+ ** Normal annealing termination **
+ Energy was evaluated          58  times
+ Energy evolution in tvse_0909142015.dat
+ Configurations accepted by Max.-Boltz. statistics           0
+ Accepted configurations in result_0909142015.xyz
+ Lowest energy configuration in rless_0909142015.out
+ Lowest energy =  -149.93027755470001       u.a.
+ 
+ *************************************************
+

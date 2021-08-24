@@ -1,6 +1,32 @@
 # ascec
 
+El ascec es un programa de annealing simulado con modificación de criterío de Metropolis,
+por Energía Cuántica o Energía Electrónica, la cual se puede calcular, usando una metodología
+No--Relativista (DALTON, Gaussian, NWChem, GAMMES, ...), Cuasi--Relativista (ADF, ...) 
+o Realtivista (DIRAC, ...)
 
+El proposito de esta herramienta computacional es el encontrar estructuras candidatas de algun
+agregado molecular, por medio de una exploración estocástica de su superficie de energía potencial
+
+En la carpeta ASCECV3, se encuentra el fuente del programa ascec escrito en fortran77. 
+
+ASCECV3
+   |----papers  (articulos en que se uso)
+   |----p_ascec (En esta se encuentra los diferentes archivos fuentes)
+   |----examples
+         |---adf     (ejemplo usando el adf)
+         |---dalton  (ejemplo usando el dalton)
+         |---g03
+         |---gamess
+         |---nwchem
+
+Para compilar los archivos fuentes, basta con ejecutar el script c_ascec.sh dentro de p_ascec, esto
+crea un ejecutable que se mueve afuera de este carpeta con el nombre de ascec-v03
+
+Para ejecutarla ascec-v03, se podría usar alguno de los archivos de extensión .in dentro de las carpetas
+dentro de examples. Tener en cuenta que para poder usar el ASCEC, se debe tener instalado y articulado el
+programa con el que se va calcular la energía cuátnica, lo cual se hace por medio del archivo fuente 
+function_E.f
 
 ## Getting started
 

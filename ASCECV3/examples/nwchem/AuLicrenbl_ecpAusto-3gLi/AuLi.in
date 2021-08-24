@@ -1,0 +1,21 @@
+1    10 		!0: Randomly generate n configurations; 1: Do the annealing
+3    nwchem 		!1:g03, 2:MSINDO1.1.opt 3:nwchem 4:gamess
+20.			!Cube's length
+2			!Quenching route 1: linear, 2: geometrical
+100.   2.   50   	!Linear To/dT/nT
+50.   10.  5    	!Geometrical  To/%dism/nT
+5			!MaxCycle
+8                       !Number processors
+hf  0           	!Hamiltonian/Type H. (hf=hf/pm3=sm/b3lyp=dft/mp2=mp) 
+2			!Number of elements
+79	 1 lanl2dz_ecp  3 !Number of element/Number of nuclei/Basis/Type Basis (sto=0/ 
+3        1 sto-3g 0     !pople=1/cc(cc-pvdz)=2/sp(sbkjc)=3. The basis only different for element witn nwchem)
+0	 1		!Charge / Spin multiplicity
+
+1			!Number of molecules (1,2,...)
+
+ab1                                         2 !label/Number elements
+79  Au       0.000 0.000  0.000
+3   Li        0.000 0.000  1.65
+
+1.0	1.	!Max. displacement (A); Max. rotation angle (radians)

@@ -1,0 +1,45 @@
+echo 
+
+start s1 
+
+scratch_dir /home/scratch/nwchem/danian 
+
+memory stack 500 mb heap 100 mb global 1000 mb
+
+title " Configuration:    5  Energy(u.a.)=     -0.08522066" 
+charge 0 
+
+geometry units angstroms print xyz autosym
+ H      0.816516   -0.820040    0.619464
+ O      0.387026   -1.626600    0.912770
+ H      1.107893   -2.258627    0.956604
+ H     -0.112985   -0.247524   -2.752647
+ O     -0.954184   -0.154641   -2.300114
+ H     -1.123840   -1.037252   -1.963599
+ H     -0.091638    2.492609    1.333884
+ O      0.319902    1.635655    1.202384
+ H      1.103811    1.842353    0.688777
+ H      2.735779   -1.721683   -0.734056
+ O      1.923522   -2.200329   -0.913403
+ H      1.306146   -1.506782   -1.156032
+ H     -1.091324    0.732981   -1.607077
+ O     -0.986568    0.227593   -0.797979
+ H     -1.171327   -0.673006   -1.073321
+end
+
+basis
+ O  library lanl2dz_ecp
+ H  library sto-3g
+end 
+
+ecp
+ O  library lanl2dz_ecp
+end 
+
+scf
+ SINGLET
+end
+
+task scf optimize
+task scf freq
+

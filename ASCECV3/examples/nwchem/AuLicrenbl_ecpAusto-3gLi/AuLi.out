@@ -1,0 +1,137 @@
+
+             ASCEC V. 03.     
+
+Autores: Jhon Fredy Perez
+         Andy Danian Zapata Escobar
+         Albeiro Restrepo
+
+Institucion: Universidad de Antioquia.
+Grupo: Quimica-Fisica Teorica.
+Pagina: quimica.udea.edu.co/~qfteorica/
+
+Este programa se puede usar para realizar
+un muestreo estocastico de las posibles
+conformaciones del sistema atomico o 
+molecular de estudio, en base a una
+modificacion del criterio de metropolis
+(mayor informacion, en la carpeta de
+papers y examples). Comando ejecucion,
+ascecv03 < abc.in > abc.out.
+
+Nota: No poner como extension inp, porque
+esta extension es asignado a los archivos
+del gamess. Una plantilla del archivo abc.in
+la puede encontrar en examples.
+
+
+GAMESS
+
+El ASCEC tiene implementados los formatos
+del gamess de los metodos hf, dft, mp2 (el
+gamess solo tiene implementado mp2) y
+semi-empiricos, en capa cerrada y abierta,
+ademas, de los formatos de las bases sto,
+pople, duning corre. cons. y algunos 
+pseudopotenciales (SBKJL valence
+{alias=sbkjl} y Hay/Wadt Valence {alias=hw})
+
+
+NWCHEM
+
+El ASCEC tiene implementados los formatos 
+del nwchem de los metodos hf, dft mp2 y mpn,
+para n mayores a 2, en capa cerrada y
+abierta, ademas, de los formatos de las 
+bases sto, pople, dunings corre. cons.,
+pseudopotenciales (Hay-Wadt MB (n+1) ECP,
+LANL2DZ ECP, SBKJC VDZ ECP, CRENBL ECP,
+Stuttgart RLC ECP, entre otras. El ASCEC 
+tambien tiene implementado el formato del 
+nwchem para usar un tipo base por clase
+atomo.
+
+
+GAUSSIAN Y MSINDO1.1.opt
+
+Ademas el ASCEC esta programado para
+ejecutarse con el gaussian y el MSINDO
+
+
+ ***********************************************
+ Annealing Simulado Con Energia Cuantica **ASCEC**
+ ASCEC-V02: February-2010
+
+ Elemental composition of the system:
+ Au            1
+ Li            1
+ Ther are a total of           2  nuclei
+ Cube's length =   20.000000000000000       A
+
+ Number of molecules:           1
+ Molecular composition
+ ab1                 AuLi
+
+ Maximum displacement of each mass center =   1.0000000000000000       A
+ Maximum rotation angle =   1.0000000000000000       radians
+ Geometrical quenching route. To =   50.000000000000000       %dism =   10.000000000000000       nT =           5
+
+ Energy calculated with nwchem         
+ Hamiltonian: hf      
+ Basis set: 
+ Au  lanl2dz_ecp         
+ Li  sto-3g              
+ Charge =           0  Multiplicity =           1
+ Processors:            8
+ Seed =1518202015
+ 
+ Energy of initial configuration =  -141.79797256004599       u.a.
+
+ History: (T(K),E(u.a.),n-eval)
+
+ Max.-Boltz.   9.9445907888319803E-013  0.99999910920898061     
+ Max.-Boltz.   2.5387152898728540E-012  0.99999772593637593     
+ Max.-Boltz.   1.9112312407660649E-012  0.99999828800705592     
+ Max.-Boltz.   1.6713500109645791E-012  0.99999850288145553     
+     50.00         5               steps
+   45.             -141.797973       1
+ Max.-Boltz.   3.3147526941631884E-012  0.99999633432106494     
+ Max.-Boltz.   3.6106949325922561E-012  0.99999600704866676     
+ Max.-Boltz.   1.0056546452955846E-011  0.99998887882853638     
+ Max.-Boltz.   1.0297259448370597E-012  0.99999886125758919     
+ Max.-Boltz.   3.7589155815188539E-012  0.99999584313656154     
+ Max.-Boltz.   2.7927365366647876E-012  0.99999691160113802     
+ Max.-Boltz.   1.0105953335932011E-011  0.99998882419155444     
+ Max.-Boltz.   9.1609011400150452E-012  0.99998986928531874     
+ Max.-Boltz.   1.0112940167868035E-011  0.99998881646511273     
+     40.50        10               steps
+ Max.-Boltz.   9.9224658210407588E-012  0.99998780789926622     
+ Max.-Boltz.   8.1102146993532525E-012  0.99999003466814962     
+ Max.-Boltz.   3.2017989111990203E-012  0.99999606581501610     
+ Max.-Boltz.   1.9817649726745674E-012  0.99999756492020342     
+ Max.-Boltz.   9.0552668952682315E-012  0.99998887345273135     
+ Max.-Boltz.   5.9238353627837901E-013  0.99999927211226747     
+ Max.-Boltz.   6.8194806757503759E-012  0.99999162063590297     
+ Max.-Boltz.   2.0240186705726920E-012  0.99999751300133344     
+ Max.-Boltz.   9.8592516273339052E-012  0.99998788557241347     
+     36.45        10               steps
+ Max.-Boltz.   1.0120093352945392E-011  0.99998618341900980     
+ Max.-Boltz.   1.0056546452955846E-011  0.99998627017659525     
+ Max.-Boltz.   1.0254007631719200E-011  0.99998600059218579     
+ Max.-Boltz.   3.6812286645169168E-012  0.99999497413553695     
+ Max.-Boltz.   1.0211753933820380E-011  0.99998605827915521     
+ Max.-Boltz.   2.8843971175384319E-012  0.99999606202217328     
+ Max.-Boltz.   2.0381586875858445E-012  0.99999721736361935     
+ Max.-Boltz.   9.8732252912059453E-012  0.99998652045637315     
+ Max.-Boltz.   8.7589919505532743E-012  0.99998804166820410     
+     32.80        10               steps
+
+ ** Normal annealing termination **
+ Energy was evaluated          37  times
+ Energy evolution in tvse_1518202015.dat
+ Configurations accepted by Max.-Boltz. statistics          31
+ Accepted configurations in result_1518202015.xyz
+ Lowest energy configuration in rless_1518202015.out
+ Lowest energy =  -141.79797256122700       u.a.
+ 
+ *************************************************
+
