@@ -1,0 +1,17 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# environment
+venv/
+.idea/
+
+# PBD files
+obsolete/
+**/*.mmtf
+# for testing
+!**/5awl.mmtf
+!**/coordinates_5awl.txt
+!**/3cln.mmtf
+!**/3mge.mmtf
