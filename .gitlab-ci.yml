@@ -1,21 +1,27 @@
 image: "python:3.9"
+
 before_script:
   - python --version
   - pip install -r requirements.txt
+
 stages:
-  - Static Analysis
   - Test
-run_python:
-  stage: Static Analysis
-  script:
-  - pwd
-  - ls -l
-  - python main.py 
+  - Deploy
+
+
 unit_test:
   stage: Test
+  # only:
+  #   - master
   script:
-  - pwd
-  - ls -l
-  - export PYTHONPATH="$PYTHONPATH:."
-  - python -c "import sys;print(sys.path)"
-  - pytest
+    - pwd
+    - ls -l
+    - python tests/main.py
+
+
+run_python:
+  stage: Deploy
+  script:
+    - pwd
+    - ls -l
+    - python src/main.py 
