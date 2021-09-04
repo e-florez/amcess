@@ -63,16 +63,16 @@ def ascec_criterion(x,e,T,it):
         T = store_T.T
 
     if it > 1:
-        DE = e #- ascec_acceptance.E
+        DE = e - ascec_acceptance.E
         if DE < 0.2 and DE > -0.0000000001:
             print("DE < 0",DE,x[:])
             ascec_acceptance(ascec_acceptance.B,e)
-        #else:
-        #    TKb = T*constants.k #Boltzmann constant [J/K]
-        #    exp = np.exp(-DE/TKb)
-        #    if DE < exp:
-        #        print("DE < Boltzmann Poblation ",DE,x[:])
-        #        ascec_acceptance(ascec_acceptance.B,e)
+        else:
+            TKb = T*constants.k #Boltzmann constant [J/K]
+            exp = np.exp(-DE/TKb)
+            if DE < exp:
+                print("DE < Boltzmann Poblation ",DE,x[:])
+                ascec_acceptance(ascec_acceptance.B,e)
     elif it == 1:
         ascec_acceptance(ascec_acceptance.B,e)
 
