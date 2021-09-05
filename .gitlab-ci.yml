@@ -40,8 +40,7 @@ pages:
   - ls -l
   - pip install sphinx_rtd_theme
   - pip install myst-parser
-  - sphinx-build -b html . public
-  - mv public/ ../
+  - sphinx-build -b html . ../public
   - cd ../
   artifacts:
     paths:
