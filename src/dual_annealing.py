@@ -18,63 +18,80 @@ def store_T(T):
     """
     store_T.T = T or store_T.T
     return store_T.T
-
-def ascec_acceptance(B,E=None):
+class ascec(object):
     """
-    Store the boolean B. When B is True is used the ASCEC criterio
-    in the acceptance
-
-    Parameters
-    ----------
-        B : Boolean
-            True activate ASCEC criterio
-
-    Returns
-    -------
-        B : Boolean
+    stores or starts varaibles about ascec
     """
-    ascec_acceptance.B = B or ascec_acceptance.B
-    if E is not None:
-        ascec_acceptance.E = E or ascec_acceptance.E
-        return ascec_acceptance.B, ascec_acceptance.E
-    return ascec_acceptance.B
+    def __init__(self,ascec,*args):
+        """
+        Store the boolean B. When B is True is used the ASCEC criterio
+        in the acceptance
 
-def ascec_criterion(x,e,T,it):
-    """[summary]
-    Evaluate ASCEC criterion for acceptance
+        Parameters
+        ----------
+            B : Boolean
+                True activate ASCEC criterio
 
-    Parameters
-    ----------
-    x : array, float
-        Value of each coordinate in the 1D array
-    e : float
-        Value of the cost function
-    T : float
-        Annealing temperature
-    args :
-        Any additional fixed parameters needed to completely specify
-        the objective function.
+        Returns
+        -------
+            B : Boolean
+        """
+        self.ascec = ascec
 
-    """
+    def ascec_energy(self,E=None):
+        """
+        Store the Energy of structure accept
 
-    if T is not None:
-        store_T(T)
-    elif T is None:
-        T = store_T.T
+        Parameters
+        ----------
+            E : Float
+                Energy of structure accept
 
-    if it > 1:
-        DE = e - ascec_acceptance.E
-        if DE < 0.2 and DE > -0.0000000001:
-            print("DE < 0",DE,x[:])
-            ascec_acceptance(ascec_acceptance.B,e)
-        else:
-            TKb = T*constants.k #Boltzmann constant [J/K]
-            exp = np.exp(-DE/TKb)
-            if DE < exp:
-                print("DE < Boltzmann Poblation ",DE,x[:])
-                ascec_acceptance(ascec_acceptance.B,e)
-    elif it == 1:
-        ascec_acceptance(ascec_acceptance.B,e)
+        Returns
+        -------
+            E : Float
+                Energy of structure accept
+        """
+        if E is not None:
+            self.E = E or self.E
+            return self.E
+
+    def ascec_criterion(self,x,e,T,it):
+        """[summary]
+        Evaluate ASCEC criterion for acceptance
+
+        Parameters
+        ----------
+        x : array, float
+            Value of each coordinate in the 1D array
+        e : float
+            Value of the cost function
+        T : float
+            Annealing temperature
+        args :
+            Any additional fixed parameters needed to completely specify
+            the objective function.
+
+        """
+
+        if T is not None:
+            store_T(T)
+        elif T is None:
+            T = store_T.T
+
+        if it > 1:
+            DE = self.E - e
+            if DE < 0.0000000001:
+                print("DE < 0",DE)
+                ascec_wrapper.ascec_energy(e)
+            else:
+                TKb = T*constants.k #Boltzmann constant [J/K]
+                exp = np.exp(-DE*constants.h/TKb)
+                if DE < exp:
+                    print("DE < Boltzmann Poblation ",DE)
+                    ascec_wrapper.ascec_energy(e)
+        elif it == 1:
+            ascec_wrapper.ascec_energy(e)
 
 def Rastrigin(x,T=None,*args):
     """
@@ -105,9 +122,9 @@ def Rastrigin(x,T=None,*args):
     Reference:
         [1] Rastrigin, L. A. "Systems of extremal control." Mir, Moscow (1974).
     """
-    if ascec_acceptance.B is True:
+    if ascec_wrapper.ascec is True:
         e = np.sum(x*x - 10*np.cos(2*np.pi*x)) + 10*np.size(x)
-        ascec_criterion(x,e,T,args[0])
+        ascec_wrapper.ascec_criterion(x,e,T,args[0])
         return e
     return np.sum(x*x - 10*np.cos(2*np.pi*x)) + 10*np.size(x)
 
@@ -149,23 +166,22 @@ def Himmelblau(x, T=None, *args):
     elif T is None:
         T = store_T.T
 
-    if ascec_acceptance.B is True:
+    if ascec_wrapper.ascec is True:
         e=(x[0]**2 + x[1] - 11)**2 + (x[0] + x[1]**2 -7)**2
         if args[0] > 1:
-            DE = e - ascec_acceptance.E
+            DE = ascec_wrapper.E - e
             if DE < 0.2 and DE > -0.0000000001:
                 print("DE < 0",DE,x[:])
-                ascec_acceptance(ascec_acceptance.B,e)
+                ascec_wrapper.ascec_energy(e)
         elif args[0] == 1:
-            ascec_acceptance(ascec_acceptance.B,e)
+            ascec_wrapper.ascec_energy(e)
         return e
 #!function is not good to analyze ascec criterio, because it's very uniform
     return (x[0]**2 + x[1] - 11)**2 + (x[0] + x[1]**2 -7)**2
 
 def solve_dual_annealing(function, bounds, seed=None, NT=1000, T0=5230.0,
                         dT=2e-5, mxcycle=10000000.0, local_search_options={},
-                        no_local_search=False, ascec=False, visit_regions=2.62,
-                        accept=-5.0):
+                        no_local_search=False, visit_regions=2.62, accept=-5.0):
     """Find the global minimum of a function using Dual Annealing [1].
 
         Example:
@@ -264,7 +280,6 @@ def solve_dual_annealing(function, bounds, seed=None, NT=1000, T0=5230.0,
 
     #* Store initial temperature
     store_T(T0)
-    ascec_acceptance(ascec)
 
     result = dual_annealing(
         function,
@@ -284,6 +299,11 @@ def solve_dual_annealing(function, bounds, seed=None, NT=1000, T0=5230.0,
 bounds = [(-5.0,5.0),(-5.0,5.0)]
 #bounds = [(-5.12,5.12)]
 seed = 333
-search_config = solve_dual_annealing(Himmelblau, bounds, ascec=True, no_local_search=True,visit_regions=5.)
+ascec_activation = True
+if ascec_activation is True:
+    ascec_wrapper = ascec(ascec_activation)
+
+search_config = solve_dual_annealing(Himmelblau, bounds,
+                no_local_search=True,visit_regions=2.9)
 
 print(search_config)
