@@ -15,7 +15,7 @@ unit_test:
   only:
     - branches
   except:
-    - master
+    - main
   script:
     - pwd
     - ls -l
@@ -42,4 +42,4 @@ pages:
     paths:
     - public
   only:
-  - master
+  - main
