@@ -1,6 +1,5 @@
 import pytest
-import numpy as np
-from context import src
+from .context import src
 from src.dual_annealing import solve_dual_annealing
 
 
