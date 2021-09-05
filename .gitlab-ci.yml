@@ -7,6 +7,7 @@ before_script:
 stages:
   - Test
   - Deploy
+  - Pages
 
 
 unit_test:
@@ -28,10 +29,10 @@ run_python:
     - ls -l
     - python src/main.py 
 
+
 pages:
   stage: Deploy
   script:
-  - mv docs/build/html/ public/
   - pip install -U sphinx
   - pip install sphinx_rtd_theme
   - pip install myst-parser
