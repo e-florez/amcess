@@ -36,11 +36,14 @@ pages:
   script:
   - pwd
   - ls -l
+  - find . -name "*public*"
   - pip install -U sphinx
   - pip install sphinx_rtd_theme
   - pip install myst-parser
   - cd docs/
+  - ls -l
   - sphinx-build -b html . public
+  - cp -r _build/html/ ../public/
   - cd ../
   artifacts:
     paths:
