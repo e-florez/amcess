@@ -8,8 +8,7 @@ before_script:
 
 stages:
   - Test
-  - Code deploy
-  - Pages deploy
+  - Deploy
 
 
 unit_test:
@@ -25,7 +24,7 @@ unit_test:
 
 
 run_python:
-  stage: Code deploy
+  stage: Deploy
   script:
     - pwd
     - ls -l
@@ -33,7 +32,7 @@ run_python:
 
 
 pages:
-  stage: Page deploy
+  stage: Deploy
   script:
   - pwd
   - ls -l
