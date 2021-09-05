@@ -21,6 +21,9 @@ unit_test:
     - pwd
     - ls -l
     - python tests/main.py
+    - cd docs/
+    - sphinx-build -b html . public
+    - cd ../
 
 
 run_python:
@@ -36,14 +39,13 @@ pages:
   script:
   - pwd
   - ls -l
-  - find . -name "*public*"
   - pip install -U sphinx
   - pip install sphinx_rtd_theme
   - pip install myst-parser
   - cd docs/
-  - ls -l
+  - ls -l 
   - sphinx-build -b html . public
-  - cp -r _build/html/ ../public/
+  - mv public/ ../
   - cd ../
   artifacts:
     paths:
