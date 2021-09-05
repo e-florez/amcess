@@ -19,8 +19,6 @@ unit_test:
     - pwd
     - ls -l
     - python tests/main.py
-    - pip install -U sphinx
-    - sphinx-build -b html . public
 
 
 run_python:
