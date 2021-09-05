@@ -21,11 +21,6 @@ unit_test:
     - pwd
     - ls -l
     - python tests/main.py
-    - cd docs/
-    - pip install sphinx_rtd_theme
-    - pip install myst-parser
-    - sphinx-build -b html . public
-    - cd ../
 
 
 run_python:
@@ -42,7 +37,9 @@ pages:
   - pwd
   - ls -l
   - cd docs/
-  - ls -l 
+  - ls -l
+  - pip install sphinx_rtd_theme
+  - pip install myst-parser
   - sphinx-build -b html . public
   - mv public/ ../
   - cd ../
