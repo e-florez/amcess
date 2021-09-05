@@ -11,12 +11,16 @@ stages:
 
 unit_test:
   stage: Test
-  # only:
-  #   - master
+  only:
+    - branches
+  except:
+    - master
   script:
     - pwd
     - ls -l
     - python tests/main.py
+    - pip install -U sphinx
+    - sphinx-build -b html . public
 
 
 run_python:
@@ -25,3 +29,18 @@ run_python:
     - pwd
     - ls -l
     - python src/main.py 
+
+pages:
+  stage: Deploy
+  script:
+  - mv docs/build/html/ public/
+  - pip install -U sphinx
+  - pip install sphinx_rtd_theme
+  - pip install myst-parser
+  - sphinx-build -d _build/doctrees . _build/html
+  - mv _build/html public
+  artifacts:
+    paths:
+    - public
+  only:
+  - master
