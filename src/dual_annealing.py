@@ -6,8 +6,7 @@ def solve_dual_annealing(function, bounds):
     """Find the global minimum of a function using Dual Annealing [1].
 
         Example:
-            lambda x: x ** 2
-            lambda x: (x[0] ** 2 + x[1] - 11) ** 2
+            ``lambda x: (x[0] ** 2 + x[1] - 11) ** 2``
 
     Parameters
     ----------
@@ -28,16 +27,17 @@ def solve_dual_annealing(function, bounds):
         solution, and message which describes the cause of the termination.
         See OptimizeResult for a description of other attributes.
 
+    Raises
+    ------
     Exception
-    ---------
-
+        if no ``function`` or ``bounds`` are set for passed in as parameters
 
     Note
     ----
         References [1]: Tsallis C. Possible generalization of Boltzmann-Gibbs
         statistics. Journal of Statistical Physics, 52, 479-487 (1998).
 
-        Check `scipy.optimize.dual_annealing` official documentation
+        Check ``scipy.optimize.dual_annealing`` official documentation
     """
 
     if not bounds:

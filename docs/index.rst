@@ -1,0 +1,20 @@
+.. AMCESS documentation master file, created by
+   sphinx-quickstart on Sun Sep  5 16:04:10 2021.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Atomic and Molecular Cluster Energy Surface Sampler
+===================================================
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+   modules
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
