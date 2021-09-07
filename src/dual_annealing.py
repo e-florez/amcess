@@ -20,7 +20,7 @@ def store_T(T):
     return store_T.T
 class ascec(object):
     """
-    stores or starts varaibles about ascec
+    stores or starts variables about ascec
     """
     def __init__(self,ascec,*args):
         """
@@ -40,17 +40,17 @@ class ascec(object):
 
     def ascec_energy(self,E=None):
         """
-        Store the Energy of structure accept
+        Store the Energy of accept structure
 
         Parameters
         ----------
             E : Float
-                Energy of structure accept
+                Energy of accept structure
 
         Returns
         -------
             E : Float
-                Energy of structure accept
+                Energy of accept structure
         """
         if E is not None:
             self.E = E or self.E
@@ -71,7 +71,6 @@ class ascec(object):
         args :
             Any additional fixed parameters needed to completely specify
             the objective function.
-
         """
 
         if T is not None:
@@ -202,38 +201,38 @@ def solve_dual_annealing(function, bounds, seed=None, NT=1000, T0=5230.0,
     seed : {None, int, numpy.random.Generator,
 
         numpy.random.RandomState}, optional
-    If seed is None (or np.random), the numpy.random.RandomState singleton is used.
-    If seed is an int, a new RandomState instance is used, seeded with seed. If seed
-    is already a Generator or RandomState instance then that instance is used.
-    Specify seed for repeatable minimizations. The random numbers generated with this
-    seed only affect the visiting distribution function and new coordinates generation.
+        If seed is None (or np.random), the numpy.random.RandomState singleton is used.
+        If seed is an int, a new RandomState instance is used, seeded with seed. If seed
+        is already a Generator or RandomState instance then that instance is used.
+        Specify seed for repeatable minimizations. The random numbers generated with this
+        seed only affect the visiting distribution function and new coordinates generation.
 
     NT : int, optional
-    The maximum number of global search iterations. Default value is 1000.
+        The maximum number of global search iterations. Default value is 1000.
 
     T0 : float, optional
-    The initial temperature, use higher values to facilitates a wider search of the
-    energy landscape, allowing dual_annealing to escape local minima that it is
-    trapped in. Default value is 5230. Range is (0.01, 5.e4].
+        The initial temperature, use higher values to facilitates a wider search of the
+        energy landscape, allowing dual_annealing to escape local minima that it is
+        trapped in. Default value is 5230. Range is (0.01, 5.e4].
 
     dT : float, optional
-    During the annealing process, temperature is decreasing, when it reaches
-    initial_temp * restart_temp_ratio, the reannealing process is triggered. Default
-    value of the ratio is 2e-5. Range is (0, 1).
+        During the annealing process, temperature is decreasing, when it reaches
+        initial_temp * restart_temp_ratio, the reannealing process is triggered. Default
+        value of the ratio is 2e-5. Range is (0, 1).
 
     mxcyle : int, optional
-    Soft limit for the number of objective function calls. If the algorithm is in the
-    middle of a local search, this number will be exceeded, the algorithm will stop just
-    after the local search is done. Default value is 1e7.
+        Soft limit for the number of objective function calls. If the algorithm is in the
+        middle of a local search, this number will be exceeded, the algorithm will stop just
+        after the local search is done. Default value is 1e7.
 
     no_local_search : bool, optional
-    If no_local_search is set to True, a traditional Generalized Simulated Annealing
-    will be performed with no local search strategy applied.
+        If no_local_search is set to True, a traditional Generalized Simulated Annealing
+        will be performed with no local search strategy applied.
 
     local_search_options : dict, optional
-    Extra keyword arguments to be passed to the local minimizer (minimize). Some
-    important options could be: method for the minimizer method to use and args for
-    objective function additional arguments.
+        Extra keyword arguments to be passed to the local minimizer (minimize). Some
+        important options could be: method for the minimizer method to use and args for
+        objective function additional arguments.
 
 #* Funcionan los siguientes local_search_options
 #   BFGS o L-BFGS-B o CG o TNC o SLSQP (no usa Hess)
@@ -243,14 +242,14 @@ def solve_dual_annealing(function, bounds, seed=None, NT=1000, T0=5230.0,
 #!  we require the Hessian to be estimated using one of the quasi-Newton strategies.
 
     visit_regions : float, optional
-    Parameter for visiting distribution. Default value is 2.62. Higher values give
-    the visiting distribution a heavier tail, this makes the algorithm jump to a more
-    distant region. The value range is (1, 3].
+        Parameter for visiting distribution. Default value is 2.62. Higher values give
+        the visiting distribution a heavier tail, this makes the algorithm jump to a more
+        distant region. The value range is (1, 3].
 
     accept : float, optional
-    Parameter for acceptance distribution. It is used to control the probability of
-    acceptance. The lower the acceptance parameter, the smaller the probability of
-    acceptance. Default value is -5.0 with a range (-1e4, -5].
+        Parameter for acceptance distribution. It is used to control the probability of
+        acceptance. The lower the acceptance parameter, the smaller the probability of
+        acceptance. Default value is -5.0 with a range (-1e4, -5].
 
     Returns
     -------
@@ -296,6 +295,7 @@ def solve_dual_annealing(function, bounds, seed=None, NT=1000, T0=5230.0,
     )
 
     return result
+
 bounds = [(-5.0,5.0),(-5.0,5.0)]
 #bounds = [(-5.12,5.12)]
 seed = 333
