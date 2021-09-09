@@ -3,20 +3,25 @@ from scipy.optimize import dual_annealing
 
 
 def solve_dual_annealing(function, bounds):
-    """Find the global minimum of a function using Dual Annealing [1].
+    """
+    Find the global minimum of a function using Dual Annealing [1].
 
-        Example:
-            ``lambda x: (x[0] ** 2 + x[1] - 11) ** 2``
+    Example
+    -------
+    >>> print(solve_dual_annealing(
+                function=lambda x: (x[0] ** 2 + x[1] - 11) ** 2,
+                bounds=[(-5, 5), (-5, 5)],
+                )
+            )
+    [0.0 -0.2]
 
     Parameters
     ----------
     function : callable
-        The objective function to be minimized. Must be in the form f(x, *args),
-        where x is the argument in the form of a 1-D array and args is a tuple
-        of any additional fixed parameters needed to completely specify the function
+        The objective function to be minimized.
 
-    bounds : sequence, shape (n, 2)
-        Bounds for variables. (min, max) pairs for each element in x, defining bounds
+    bounds : sequence, shape (n, 2) -> n: target function dimension
+        A (min, max) pairs for each element in x, defining bounds
         for the objective function parameter.
 
     Returns
@@ -30,21 +35,23 @@ def solve_dual_annealing(function, bounds):
     Raises
     ------
     Exception
-        if no ``function`` or ``bounds`` are set for passed in as parameters
+        if not ``function`` are set for passed in as parameters
 
-    Note
-    ----
-        References [1]: Tsallis C. Possible generalization of Boltzmann-Gibbs
-        statistics. Journal of Statistical Physics, 52, 479-487 (1998).
+    Notes
+    -----
+    **References [1]:** Tsallis C. Possible generalization of Boltzmann-Gibbs
+    statistics. Journal of Statistical Physics, 52, 479-487 (1998).
 
-        Check ``scipy.optimize.dual_annealing`` official documentation
+    Check ``scipy.optimize.dual_annealing`` official documentation
     """
 
-    if not bounds:
-        raise Exception(f"\n\n *** ERROR: No 'bounds' founds\n")
-
-    if not isinstance(function, types.FunctionType):
-        raise Exception(f"\n\n *** ERROR: No 'function' found\n")
+    try:
+        assert isinstance(
+            function, types.FunctionType
+        ), f"\n\n *** ERROR: function: '{function}' has not FunctionType\n"
+    except AssertionError as error:
+        print(error)
+        return
 
     result = dual_annealing(
         function,
@@ -54,3 +61,10 @@ def solve_dual_annealing(function, bounds):
     )
 
     return result.x
+
+
+fun = lambda x: (x[0] ** 2 + x[1] - 11) ** 2 + (x[0] + x[1] ** 2 - 7) ** 2
+bounds = [(-5, 5), (-5, 5)]
+
+
+# a = solve_dual_annealing(fun, bounds)

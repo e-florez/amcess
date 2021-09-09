@@ -12,6 +12,14 @@ src.dual\_annealing module
     :undoc-members:
     :show-inheritance:
 
+src.example\_numpy module
+-------------------------
+
+.. automodule:: src.example_numpy
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 src.main module
 ---------------
 

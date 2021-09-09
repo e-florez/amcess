@@ -1,3 +1,8 @@
 #cheching version >>> python -c "import numpy; print(numpy.__version__)"
 scipy==1.7.1
 pytest==6.2.5
+
+#to buil the documentations (apt-get install sphinx)
+sphinx=4.1.2
+sphinx_rtd_theme=0.5.1
+myst-parser=0.15.2
