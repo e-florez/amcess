@@ -63,8 +63,8 @@ def solve_dual_annealing(function, bounds):
     return result.x
 
 
-fun = lambda x: (x[0] ** 2 + x[1] - 11) ** 2 + (x[0] + x[1] ** 2 - 7) ** 2
-bounds = [(-5, 5), (-5, 5)]
+# fun = lambda x: (x[0] ** 2 + x[1] - 11) ** 2 + (x[0] + x[1] ** 2 - 7) ** 2
+# bounds = [(-5, 5), (-5, 5)]
 
 
 # a = solve_dual_annealing(fun, bounds)
