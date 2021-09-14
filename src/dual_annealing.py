@@ -1,7 +1,8 @@
 import types
-from scipy.optimize import dual_annealing
+from scipy.optimize import dual_annealing #1.7.1
 from scipy import constants
-import numpy as np # 1.19.1
+import numpy as np # 1.21.2
+#pytest 6.2.5
 
 def store_T(T):
     """
