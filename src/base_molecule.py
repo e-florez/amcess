@@ -1,28 +1,25 @@
 import context
 from data.atomic_data import atomic_mass
 
-
 import numpy as np
+from scipy.spatial.transform import Rotation
 
 
 class Molecule:
     def __init__(self, mol) -> None:
-        self.__coordinates = mol["coordinates"]
-        self.__total_atoms = len(self.__coordinates)
-        self.__charge = mol["charge"]
-        self.__multiplicity = mol["multiplicity"]
-        # self.__atomic_symbol =
-        # self.__coordinates =
-        # self.__atomic_masses =
-        # self.__total_mass =
+        self._molecule = mol["coordinates"]
+        self._coordinates = tuple([c[1:] for c in self._molecule])
+        self._total_atoms = len(self._molecule)
+        self._charge = mol["charge"]
+        self._multiplicity = mol["multiplicity"]
 
     @property
     def total_atoms(self):
-        return self.__total_atoms
+        return self._total_atoms
 
     @property
     def charge(self):
-        return self.__charge
+        return self._charge
 
     @charge.setter
     def charge(self, charge):
@@ -44,11 +41,11 @@ class Molecule:
             print(f"\n *** ERROR: Atomic/Molecular charge must be an integer \n")
             raise error
 
-        self.__charge = charge
+        self._charge = charge
 
     @property
     def multiplicity(self):
-        return self.__multiplicity
+        return self._multiplicity
 
     @charge.setter
     def multiplicity(self, multiplicity):
@@ -61,15 +58,23 @@ class Molecule:
             )
             raise error
 
-        self.__multiplicity = multiplicity
+        self._multiplicity = multiplicity
 
     @property
     def atoms_symbol(self):
-        return tuple([atom[0] for atom in self.__coordinates])
+        return tuple([atom[0] for atom in self._molecule])
 
     @property
     def coordinates(self):
-        return [c[1:] for c in self.__coordinates]
+        return self._coordinates
+
+    @coordinates.setter
+    def coordinates(self, new_coordinates):
+        try:
+            pass
+        except:
+            pass
+        self._coordinates = new_coordinates
 
     @property
     def atomic_masses(self):
@@ -82,90 +87,45 @@ class Molecule:
     @property
     def center_of_mass(self):
         """Jacobi coordinates"""
-        cm = np.dot(np.asarray(self.atomic_masses), np.asarray(self.coordinates))
-        return tuple(cm / self.total_mass)
+        self.cm = np.dot(np.asarray(self.atomic_masses), np.asarray(self.coordinates))
+        return tuple(self.cm / self.total_mass)
 
+    @property
     def principal_axis(self):
-        pass
-        # principal = list()
-        # for atom in self.coordinates:
+        return tuple(np.asarray(self.coordinates) - np.asarray(self.center_of_mass))
 
+    def rotate(self, x=0, y=0, z=0):
+        self._rotate_around_x = x
+        self._rotate_around_y = y
+        self._rotate_around_z = z
 
-dummy = {
-    "coordinates": [
-        ("Xa", -1, 1, 0),
-        ("Xb", 0, 0, 0),
-        ("Xc", 1, 1, 0),
-    ],
-    "charge": 0,
-    "multiplicity": 3,
-}
+        self._rotation_matrix = Rotation.from_euler(
+            "xyz",
+            [self._rotate_around_x, self._rotate_around_y, self._rotate_around_z],
+            degrees=True,
+        ).as_matrix()
 
-hydrogen2 = {  # bond distance = 74 pm
-    "coordinates": [
-        ("H", 1, 1, 0),
-        ("H", 1.74, 1, 0),
-    ],
-    "charge": 0,
-    "multiplicity": 1,
-}
+        self._rotate = np.dot(np.asarray(self.principal_axis), self._rotation_matrix)
+        return np.asarray(self._rotate) + np.asarray(self.center_of_mass)
 
-water = {
-    "coordinates": [
-        ("H", 0.000000, 0.000000, 0.000000),
-        ("H", 0.758602, 0.000000, 0.504284),
-        ("H", 0.758602, 0.000000, -0.504284),
-    ],
-    "charge": 0,
-    "multiplicity": 1,
-}
+    def translate(self, x=0, y=0, z=0):
+        self._translate_around_x = x
+        self._translate_around_y = y
+        self._translate_around_z = z
+        self._translation_point = [
+            self._translate_around_x,
+            self._translate_around_y,
+            self._translate_around_z,
+        ]
+        return np.asarray(self.coordinates) + np.asarray(self._translation_point)
 
-lithium = {
-    "coordinates": [
-        ("li", 0, 0, 0),
-    ],
-    "charge": 1,
-    "multiplicity": +1,
-}
-
-print("-" * 50)
-
-
-w = Molecule(water)
-li = Molecule(lithium)
-du = Molecule(dummy)
-h2 = Molecule(hydrogen2)
-
-w.multiplicity = 13
-
-w.charge
-
-w.charge = "10"
-
-w.atoms_symbol
-
-# w.center_of_mass
-# li.center_of_mass
-# du.center_of_mass
-# h2.center_of_mass
-
-
-# # w_coord = w.coordinates
-# w_coord = np.asarray(w.coordinates)
-# # w_masses = w.atomic_masses
-# w_masses = np.asarray(w.atomic_masses)
-# w_total_mass = w.total_mass
-
-# # np.array(self.atomic_masses) * np.array(self.coordinates) / self.total_mass
-
-# cm = tuple(np.dot(w_masses, w_coord) / w_total_mass)
-
-
-b = w.coordinates[0]
-b = w.coordinates[2]
-
-
-a = np.array(w.coordinates)
-
-print("*" * 50)
-print("END")
+    @property
+    def write_molecule(self):
+        self._molecule_list = list()
+        for atom in range(self._total_atoms):
+            self._molecule_list.append(
+                tuple(
+                    [self.atoms_symbol[atom]] + [str(c) for c in self.coordinates[atom]]
+                )
+            )
+        return self._molecule_list
