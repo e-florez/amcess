@@ -17,24 +17,6 @@ from scipy import constants
 import numpy as np  # 1.21.2
 # pytest 6.2.5
 
-
-def store_T(T):
-    """
-    Store annealing temperature because when is used the local_search is
-    not return temperature by dual_annealing
-
-    Args:
-        T : float
-            Annealing temperature
-
-    Returns:
-        T : float
-            Store temperature
-    """
-    store_T.T = T or store_T.T
-    return store_T.T
-
-
 class ascec(object):
     """
     stores or starts variables about ascec
@@ -55,25 +37,7 @@ class ascec(object):
         """
         self.ascec = ascec
 
-    def ascec_energy(self, E=None):
-        """
-        Store the Energy of accept structure
-
-        Parameters
-        ----------
-            E : Float
-                Energy of accept structure
-
-        Returns
-        -------
-            E : Float
-                Energy of accept structure
-        """
-        if E is not None:
-            self.E = E or self.E
-            return self.E
-
-    def ascec_criterion(self, x, e, T, it):
+    def ascec_criterion(self, e_before, e_now, t):
         """[summary]
         Evaluate ASCEC criterion for acceptance
 
@@ -83,31 +47,21 @@ class ascec(object):
             Value of each coordinate in the 1D array
         e : float
             Value of the cost function
-        T : float
+        t : float
             Annealing temperature
         args :
             Any additional fixed parameters needed to completely specify
             the objective function.
         """
 
-        if T is not None:
-            store_T(T)
-        elif T is None:
-            T = store_T.T
-
-        if it > 1:
-            DE = self.E - e
-            if DE < 0.0000000001:
-                print("DE < 0", DE)
-                ascec_wrapper.ascec_energy(e)
-            else:
-                TKb = T*constants.k  # Boltzmann constant [J/K]
-                exp = np.exp(-DE*constants.h/TKb)
-                if DE < exp:
-                    print("DE < Boltzmann Poblation ", DE)
-                    ascec_wrapper.ascec_energy(e)
-        elif it == 1:
-            ascec_wrapper.ascec_energy(e)
+        DE = e_before - e_now
+        if DE < 0.0000000001:
+            print("DE < 0", DE)
+        else:
+            TKb = t*constants.k  # Boltzmann constant [J/K]
+            exp = np.exp(-DE*constants.h/TKb)
+            if DE < exp:
+                print("DE < Boltzmann Poblation ", DE)
 
 
 def Rastrigin(x, T=None, *args):
@@ -139,10 +93,6 @@ def Rastrigin(x, T=None, *args):
     Reference:
         [1] Rastrigin, L. A. "Systems of extremal control." Mir, Moscow (1974).
     """
-    if ascec_wrapper.ascec is True:
-        e = np.sum(x*x - 10*np.cos(2*np.pi*x)) + 10*np.size(x)
-        ascec_wrapper.ascec_criterion(x, e, T, args[0])
-        return e
     return np.sum(x*x - 10*np.cos(2*np.pi*x)) + 10*np.size(x)
 
 
@@ -179,21 +129,6 @@ def Himmelblau(x, T=None, *args):
         [1] Himmelblau, D. (1972). Applied Nonlinear Programming. McGraw-Hill.
         ISBN 0-07-028921-2.
     """
-    if T is not None:
-        store_T(T)
-    elif T is None:
-        T = store_T.T
-
-    if ascec_wrapper.ascec is True:
-        e = (x[0]**2 + x[1] - 11)**2 + (x[0] + x[1]**2 - 7)**2
-        if args[0] > 1:
-            DE = ascec_wrapper.E - e
-            if DE < 0.2 and DE > -0.0000000001:
-                print("DE < 0", DE, x[:])
-                ascec_wrapper.ascec_energy(e)
-        elif args[0] == 1:
-            ascec_wrapper.ascec_energy(e)
-        return e
 #! function is not good to analyze ascec criterio, because it's very uniform
     return (x[0]**2 + x[1] - 11)**2 + (x[0] + x[1]**2 - 7)**2
 
@@ -212,7 +147,8 @@ def solve_dual_annealing(func, bounds, seed=None, NT=1000, T0=5230.0,
 
 
     This funtions is a copy tthe function dual_annealing to have more control
-    about variables
+    about variables #!(Acá debería ir algo sobre la licencia, porqué se copío
+    #! las lineas de la función dual_annealing)
 
     Parameters
     ----------
@@ -328,9 +264,6 @@ def solve_dual_annealing(func, bounds, seed=None, NT=1000, T0=5230.0,
     if not isinstance(func, types.FunctionType):
         raise Exception(f"\n\n *** ERROR: No 'function' found \n")
 
-    #*  Store initial temperature
-    store_T(T0)
-
     if x0 is not None and not len(x0) == len(bounds):
         raise ValueError('Bounds size does not match x0')
 
@@ -400,6 +333,13 @@ def solve_dual_annealing(func, bounds, seed=None, NT=1000, T0=5230.0,
             val = strategy_chain.run(i, temperature)
             print("val, Temperature : ", energy_state.ebest,
                   energy_state.current_energy, temperature)
+
+            # ASCEC
+            if ascec_wrapper.ascec is True:
+                e_before = energy_state.ebest
+                e_now = energy_state.current_energy
+                ascec_wrapper.ascec_criterion(e_before, e_now, temperature)
+
             if val is not None:
                 message.append(val)
                 need_to_stop = True
