@@ -129,7 +129,7 @@ def Himmelblau(x, T=None, *args):
         [1] Himmelblau, D. (1972). Applied Nonlinear Programming. McGraw-Hill.
         ISBN 0-07-028921-2.
     """
-#! function is not good to analyze ascec criterio, because it's very uniform
+# !function is not good to analyze ascec criterio, because it's very uniform
     return (x[0]**2 + x[1] - 11)**2 + (x[0] + x[1]**2 - 7)**2
 
 
@@ -258,11 +258,11 @@ def solve_dual_annealing(func, bounds, seed=None, NT=1000, T0=5230.0,
         Check `scipy.optimize.dual_annealing` official documentation
     """
 
-#    if not bounds:
-#        raise Exception(f"\n\n *** ERROR: No 'bounds' founds\n")
+    if not bounds:
+        raise Exception("\n\n *** ERROR: No 'bounds' founds\n")
 
     if not isinstance(func, types.FunctionType):
-        raise Exception(f"\n\n *** ERROR: No 'function' found \n")
+        raise Exception("\n\n *** ERROR: No 'function' found \n")
 
     if x0 is not None and not len(x0) == len(bounds):
         raise ValueError('Bounds size does not match x0')
@@ -294,7 +294,7 @@ def solve_dual_annealing(func, bounds, seed=None, NT=1000, T0=5230.0,
     rand_state = check_random_state(seed)
     # Initialization of the energy state
     energy_state = EnergyState(lower, upper, callback)
-    #Save attibutes as: energy_state.ebest, energy_state.current_energy, ...
+    # Save attibutes as: energy_state.ebest, energy_state.current_energy, ...
     energy_state.reset(func_wrapper, rand_state, x0)
     # Minimum value of annealing temperature reached to perform
     # re-annealing
