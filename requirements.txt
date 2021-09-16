@@ -1,4 +1,8 @@
 #cheching version >>> python -c "import numpy; print(numpy.__version__)"
-numpy==1.19.1 #cuando pase 3.9 pip3.9 me instalo 1.21.2
 scipy==1.7.1
 pytest==6.2.5
+
+#to buil the documentations (apt-get install sphinx)
+sphinx==4.1.2
+sphinx_rtd_theme==0.5.1
+myst-parser==0.15.2

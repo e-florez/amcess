@@ -1,8 +1,10 @@
 image: "python:3.9"
 
+
 before_script:
   - python --version
   - pip install -r requirements.txt
+
 
 stages:
   - Test
@@ -11,8 +13,10 @@ stages:
 
 unit_test:
   stage: Test
-  # only:
-  #   - master
+  only:
+    - branches
+  except:
+    - main
   script:
     - pwd
     - ls -l
@@ -25,3 +29,19 @@ run_python:
     - pwd
     - ls -l
     - python src/main.py 
+
+
+pages:
+  stage: Deploy
+  script:
+  - pwd
+  - ls -l
+  - cd docs/
+  - ls -l
+  - pip install sphinx_rtd_theme
+  - pip install myst-parser
+  - sphinx-build -b html . ../public
+  - cd ../
+  artifacts:
+    paths:
+    - public

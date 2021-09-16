@@ -1,5 +1,6 @@
 import types
-
+# ipdb para debugger python
+# import ipdb; ipdb.set_trace()
 # Object into _dual_annealing.py
 from scipy.optimize._dual_annealing import ObjectiveFunWrapper
 from scipy.optimize._dual_annealing import LocalSearchWrapper
@@ -15,126 +16,14 @@ from scipy._lib._util import check_random_state
 from scipy import constants
 
 import numpy as np  # 1.21.2
+from math_cost_function import *
+from ascec_criterion import *
+from heisenberg import *
+
 # pytest 6.2.5
 
-class ascec(object):
-    """
-    stores or starts variables about ascec
-    """
-    def __init__(self, ascec, *args):
-        """
-        Store the boolean B. When B is True is used the ASCEC criterio
-        in the acceptance
-
-        Parameters
-        ----------
-            B : Boolean
-                True activate ASCEC criterio
-
-        Returns
-        -------
-            B : Boolean
-        """
-        self.ascec = ascec
-
-    def ascec_criterion(self, e_before, e_now, t):
-        """[summary]
-        Evaluate ASCEC criterion for acceptance
-
-        Parameters
-        ----------
-        x : array, float
-            Value of each coordinate in the 1D array
-        e : float
-            Value of the cost function
-        t : float
-            Annealing temperature
-        args :
-            Any additional fixed parameters needed to completely specify
-            the objective function.
-        """
-
-        DE = e_before - e_now
-        if DE < 0.0000000001:
-            print("DE < 0", DE)
-        else:
-            TKb = t*constants.k  # Boltzmann constant [J/K]
-            exp = np.exp(-DE*constants.h/TKb)
-            if DE < exp:
-                print("DE < Boltzmann Poblation ", DE)
-
-
-def Rastrigin(x, T=None, *args):
-    """
-    Rastrigin function
-
-    f(x) = An + Sum_i^n [x_i*x_i - Acos(2pix_i)]
-    A = 10 y x e [-5.12,5.12]
-
-    bounds
-    -5.12,5.12
-
-    Parameters
-    ----------
-        x : array, float
-            Value of each coordinate in the 1D array
-        T : float
-            Annealing temperature
-        args :
-            Any additional fixed parameters needed to completely specify
-            the objective function.
-
-    Returns
-    -------
-        Value of cost function in x
-
-    Note
-    ----
-    Reference:
-        [1] Rastrigin, L. A. "Systems of extremal control." Mir, Moscow (1974).
-    """
-    return np.sum(x*x - 10*np.cos(2*np.pi*x)) + 10*np.size(x)
-
-
-def Himmelblau(x, T=None, *args):
-    """
-    Himmelblau function
-
-    bounds
-    -5.0, 5.0
-
-    Roots
-    Himmelbau(3.0,2.0)=0.0,
-    Himmelbau( − 2.805118 , 3.131312 )   = 0.0
-    Himmelbau( − 3.779310 , − 3.283186 ) = 0.0
-    Himmelbau( 3.584428 , − 1.848126 )   = 0.0
-
-    Parameters
-    ----------
-        x : array, float
-            Value of each coordinate in the 1D array
-        T : float
-            Annealing temperature
-        args :
-            Any additional fixed parameters needed to completely specify
-            the objective function.
-
-    Returns
-    -------
-        Value of cost function in x
-
-    Note
-    ----
-    Reference:
-        [1] Himmelblau, D. (1972). Applied Nonlinear Programming. McGraw-Hill.
-        ISBN 0-07-028921-2.
-    """
-# !function is not good to analyze ascec criterio, because it's very uniform
-    return (x[0]**2 + x[1] - 11)**2 + (x[0] + x[1]**2 - 7)**2
-
-
-def solve_dual_annealing(func, bounds, seed=None, NT=1000, T0=5230.0,
-                         dT=2e-5, mxcycle=10000000.0,
+def solve_dual_annealing(func, bounds, ascec_activation=False, seed=None,
+                         NT=1000, T0=5230.0, dT=2e-5, mxcycle=10000000.0,
                          local_search_options={},
                          no_local_search=False, visit_regions=2.62,
                          accept=-5.0,
@@ -284,9 +173,10 @@ def solve_dual_annealing(func, bounds, seed=None, NT=1000, T0=5230.0,
     # Checking that bounds are the same length
     if not len(lower) == len(upper):
         raise ValueError('Bounds do not have the same dimensions')
-
     # Wrapper for the objective function
     func_wrapper = ObjectiveFunWrapper(func, mxcycle, *args)
+    # Wrapper ascec
+    ascec_wrapper = ascec(ascec_activation)
     # Wrapper fot the minimizer
     minimizer_wrapper = LocalSearchWrapper(
         bounds, func_wrapper, **local_search_options)
@@ -366,14 +256,14 @@ def solve_dual_annealing(func, bounds, seed=None, NT=1000, T0=5230.0,
     return optimize_res
 
 
-bounds = [(-5.0, 5.0), (-5.0, 5.0)]
+#bounds = [(-5.0, 5.0), (-5.0, 5.0)]
 # bounds = [(-5.12, 5.12)]
-seed = 333
-ascec_activation = True
-if ascec_activation is True:
-    ascec_wrapper = ascec(ascec_activation)
+#seed = 333
+#ascec_activation = True
+#if ascec_activation is True:
+#    ascec_wrapper = ascec(ascec_activation)
 
-search_config = solve_dual_annealing(Himmelblau, bounds, NT=3,
-                                     no_local_search=False, visit_regions=2.9)
+#search_config = solve_dual_annealing(Himmelblau, bounds, NT=3,
+#                                     no_local_search=False, visit_regions=2.9)
 
-print(search_config)
+#print(search_config)
