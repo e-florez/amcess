@@ -22,7 +22,7 @@ from heisenberg import *
 
 # pytest 6.2.5
 
-def solve_dual_annealing(func, bounds, ascec_activation=False, seed=None,
+def solve_dual_annealing(func, bounds, ascec_activation=True, seed=None,
                          NT=1000, T0=5230.0, dT=2e-5, mxcycle=10000000.0,
                          local_search_options={},
                          no_local_search=False, visit_regions=2.62,
@@ -176,7 +176,7 @@ def solve_dual_annealing(func, bounds, ascec_activation=False, seed=None,
     # Wrapper for the objective function
     func_wrapper = ObjectiveFunWrapper(func, mxcycle, *args)
     # Wrapper ascec
-    ascec_wrapper = ascec(ascec_activation)
+    ascec_wrapper = Ascec(ascec_activation)
     # Wrapper fot the minimizer
     minimizer_wrapper = LocalSearchWrapper(
         bounds, func_wrapper, **local_search_options)

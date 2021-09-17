@@ -2,7 +2,7 @@ import numpy as np
 from scipy import constants
 
 
-class ascec(object):
+class Ascec(object):
     """
     stores or starts variables about ascec
     """
