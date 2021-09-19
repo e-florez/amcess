@@ -2,7 +2,7 @@ def atomic_mass(symbol):
     """
     Atomic Mass for any element in the Periodic Table. Taken from `PubChem (NIH)`_
 
-    Returns ONE if it is not defined
+    .. warning:: Returns ZERO if it is not defined
 
     Examples
     --------
@@ -10,6 +10,8 @@ def atomic_mass(symbol):
     15.999
     >>> print(atomic_mass("ni"))
     58.693
+    >>> print(atomic_mass("XYZ"))
+    0
 
     Parameters
     ----------
@@ -152,8 +154,8 @@ def atomic_mass(symbol):
         alpha_symbol = "".join([s for s in str(symbol) if s.isalpha()])
         value = ATOMIC_MASS[str(alpha_symbol[:2]).title()]
     except (KeyError, TypeError) as error:
-        print(f"\nWarning! symbol '{symbol}' is not in the Periodic Table\n")
-        value = 1
+        # print(f"\nWarning! symbol '{symbol}' is not in the Periodic Table\n")
+        value = 0
 
     return value
 
