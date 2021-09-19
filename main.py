@@ -447,10 +447,10 @@ def system_metal_complex():
 def run():
     system_h2()
     system_hf()
-    system_nano_boy()
-    system_w_li()
-    system_w_li_cluster()
-    system_metal_complex()
+    # system_nano_boy()
+    # system_w_li()
+    # system_w_li_cluster()
+    # system_metal_complex()
 
 
 if __name__ == "__main__":
