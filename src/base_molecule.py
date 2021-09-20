@@ -7,20 +7,28 @@ from copy import deepcopy
 
 class Cluster:
     """
-    The return type must be duplicated in the docstring to comply
-    with the NumPy docstring style.
+    Create an  Atomic/Molecular cluster
 
-    Parameters
-    ----------
-    param1
-        The first parameter.
-    param2
-        The second parameter.
+        Format
+        ------
+        The formatting of the INPUT coordinates is as follows:
 
-    Returns
-    -------
-    bool
-        True if successful, False otherwise.
+            1. Dictionary type:
+                {"coordinates": [
+                    (<element> <X> <Y> <Z>),
+                    (<element> <X> <Y> <Z>),
+                    (<element> <X> <Y> <Z>),
+                    ]
+                }
+
+            2. List type:
+                [
+                    (<element> <X> <Y> <Z>),
+                    (<element> <X> <Y> <Z>),
+                    (<element> <X> <Y> <Z>),
+                ]
+
+            3. Cluster type (Cluster Object)
 
     """
 
@@ -31,7 +39,29 @@ class Cluster:
         self._total_fragments = len(args)
 
         for i, fragment in enumerate(args):
-            self._cluster[i] = fragment["coordinates"]
+            if type(fragment) == list:
+                self._cluster[i] = fragment
+            elif type(fragment) == dict:
+                try:
+                    self._cluster[i] = fragment["coordinates"]
+                except KeyError as error:
+                    print(
+                        f"\n*** ERROR *** \n"
+                        + f" key must be 'coordinates' (casesensitive!) \n"
+                        + f" but you have: \n\n"
+                        + "\n".join(list(fragment.keys()))
+                        + f"\n\n"
+                    )
+                    raise error
+            elif type(fragment) == Cluster:
+                self._cluster[i] = fragment.coordinates
+            else:
+                raise (
+                    f"\n *** ERROR ***"
+                    + f" only list or dict-type object must be used to "
+                    + f" to create a new Object. Check class help"
+                )
+
             self._total_atoms += len(self._cluster[i])
 
         # checking format
@@ -146,12 +176,7 @@ class Cluster:
 
     @property
     def total_mass(self) -> float:
-        """Sum atomic masses
-
-        Returns
-        -------
-        float
-        """
+        """Sum atomic masses"""
         return sum(self.atomic_masses)
 
     def _check_fragment(self, fragment: int):
