@@ -28,7 +28,7 @@ run_python:
   script:
     - pwd
     - ls -l
-    - python src/main.py 
+    - python main.py 
 
 
 pages:
