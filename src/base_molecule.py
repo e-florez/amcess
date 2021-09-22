@@ -1,34 +1,19 @@
-from data.atomic_data import atomic_mass
+from copy import deepcopy
 
 import numpy as np
 from scipy.spatial.transform import Rotation
-from copy import deepcopy
+
+from data.atomic_data import atomic_mass
 
 
 class Cluster:
     """
-    Create an  Atomic/Molecular cluster
+    Create an Atomic/Molecular cluster. The formatting of the INPUT coordinates
+    is as follows (any):
 
-        Format
-        ------
-        The formatting of the INPUT coordinates is as follows:
-
-            1. Dictionary type:
-                {"coordinates": [
-                    (<element> <X> <Y> <Z>),
-                    (<element> <X> <Y> <Z>),
-                    (<element> <X> <Y> <Z>),
-                    ]
-                }
-
-            2. List type:
-                [
-                    (<element> <X> <Y> <Z>),
-                    (<element> <X> <Y> <Z>),
-                    (<element> <X> <Y> <Z>),
-                ]
-
-            3. Cluster type (Cluster Object)
+    1. Dictionary type: {"coordinates": [(<element> <X> <Y> <Z>), ...]}
+    2. List type: [(<element> <X> <Y> <Z>), ...]
+    3. Cluster type (Cluster Object)
 
     """
 
