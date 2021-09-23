@@ -1,4 +1,5 @@
 import pytest
+
 from .context import src
 from src.dual_annealing import solve_dual_annealing
 
@@ -33,7 +34,3 @@ def test_solve_dual_annealing(cost_function, bounds, expected_minima):
     global_minima = cost_function(points)
 
     assert ((global_minima - expected_minima) < 1.0e-6).all()
-
-
-if __name__ == "__main__":
-    pytest.main(["tests"])

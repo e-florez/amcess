@@ -20,7 +20,7 @@ unit_test:
   script:
     - pwd
     - ls -l
-    - python tests/main.py
+    - pytest -v tests/
 
 
 run_python:

@@ -19,6 +19,7 @@ obsolete/
 **/*.mmtf
 
 # for testing
+**/.coverage
 !**/5awl.mmtf
 !**/coordinates_5awl.txt
 !**/3cln.mmtf

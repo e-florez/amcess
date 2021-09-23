@@ -1,4 +1,5 @@
 import pytest
+
 from .context import src
 from src.base_molecule import Cluster
 
@@ -39,7 +40,3 @@ def test_cluster_total_atoms(input_coordinates, expected_total_atoms):
     total_atoms = mol.total_atoms
 
     assert abs(total_atoms - expected_total_atoms) < 1.0e-10
-
-
-if __name__ == "__main__":
-    pytest.main(["tests"])
