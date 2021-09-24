@@ -29,7 +29,7 @@ class Molecule:
             elif type(fragment) == dict:
                 try:
                     self._cluster[i] = fragment["atoms"]
-                except KeyError as error:
+                except KeyError as err:
                     print(
                         f"\n*** ERROR *** \n"
                         + f" key must be 'atoms' (casesensitive!) \n"
@@ -37,7 +37,7 @@ class Molecule:
                         + "\n".join(list(fragment.keys()))
                         + f"\n\n"
                     )
-                    raise error
+                    raise err
             elif type(fragment) == Molecule:
                 self._cluster[i] = fragment.coordinates
             else:
@@ -117,9 +117,9 @@ class Molecule:
             try:
                 assert len(str(_atoms[0]).replace(" ", ""))
                 assert len([float(c) for c in _atoms[1:]]) == 3
-            except (ValueError, AssertionError) as error:
+            except (ValueError, AssertionError) as err:
                 print(_error_message)
-                raise error
+                raise err
 
         return True
 
