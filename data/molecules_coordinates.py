@@ -1,15 +1,15 @@
 water = {
-    "coordinates": [
+    "atoms": [
         ("O", 0, 0, 0),
-        ("H", 0.7907, 0.6122, 0),
-        ("H", -0.7907, 0.6122, 0),
+        ("H", 0.58708, 0.75754, 0),
+        ("H", -0.58708, 0.75754, 0),
     ],
     "charge": 0,
     "multiplicity": 1,
 }
 
 li = {
-    "coordinates": [
+    "atoms": [
         ("Li", 0.000000, 0.000000, 0.000000),
     ],
     "charge": +1,
@@ -17,7 +17,7 @@ li = {
 }
 
 hydrogen_fluoride = {  # bond distance = 91.7 pm
-    "coordinates": [
+    "atoms": [
         ("H", 1, 1, 0),
         ("F", 1.917, 1, 0),
     ],
@@ -26,7 +26,7 @@ hydrogen_fluoride = {  # bond distance = 91.7 pm
 }
 
 hydrogen2 = {  # bond distance = 74 pm
-    "coordinates": [
+    "atoms": [
         ("H", 1, 1, 0),
         ("H", 1.74, 1, 0),
     ],
@@ -36,7 +36,7 @@ hydrogen2 = {  # bond distance = 74 pm
 
 # https://en.wikipedia.org/wiki/NanoPutian  #https://pubchem.ncbi.nlm.nih.gov/compound/11353257
 nano_boy = {
-    "coordinates": [
+    "atoms": [
         ("O", 6.2830, -1.0594, 1.2666),
         ("O", 6.2147, -1.9680, -0.9004),
         ("C", 5.8522, -0.8426, -0.0860),
@@ -127,7 +127,7 @@ nano_boy = {
 
 # https://application.wiley-vch.de/contents/jc_2111/2005/f400317_s.pdf
 metal_complex = {
-    "coordinates": [
+    "atoms": [
         ("C", 0.00000000000000, 0.00000000000000, 0.00000000000000),
         ("Au", 0.05875201901495, -0.14932576666632, 2.16750800424437),
         ("Au", 0.01369981827497, 2.17610945991743, 0.08580960583104),

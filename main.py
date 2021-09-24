@@ -88,10 +88,16 @@ def system_w_li_cluster():
 
     random_gen = random.default_rng(1234)
 
+    probability = [
+        1 / (w.total_fragments - 1) if p else 0 for p in range(w.total_fragments)
+    ]
+
     for _ in range(total_steps):
         # molecule [0, w.total_fragments]
         mol = random_gen.choice(
-            w.total_fragments, p=[0, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6]
+            w.total_fragments,
+            p=probability,
+            # p=[0, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6],
         )
 
         # angle between [0, 360)
@@ -138,7 +144,7 @@ def run():
     # system_hf()
     # system_nano_boy()
     # system_w_li()
-    # system_w_li_cluster()
+    system_w_li_cluster()
     # system_metal_complex()
 
     # test

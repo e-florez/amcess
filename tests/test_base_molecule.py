@@ -7,9 +7,9 @@ from src.base_molecule import Cluster
 @pytest.mark.parametrize(
     "input_coordinates, expected_total_mass",
     [
-        ({"coordinates": [("H", 0, 0, 0), ("F", 0.917, 0, 0)]}, 20.0),
-        ({"coordinates": [("H", 0, 0, 0), ("H", 0.74, 0, 0)]}, 2.0),
-        # ({"coordinates": []}, 18.02),
+        ({"atoms": [("H", 0, 0, 0), ("F", 0.917, 0, 0)]}, 20.0),
+        ({"atoms": [("H", 0, 0, 0), ("H", 0.74, 0, 0)]}, 2.0),
+        # ({"atoms": []}, 18.02),
     ],
 )
 def test_cluster_total_mass(input_coordinates, expected_total_mass):
@@ -27,9 +27,9 @@ def test_cluster_total_mass(input_coordinates, expected_total_mass):
 @pytest.mark.parametrize(
     "input_coordinates, expected_total_atoms",
     [
-        ({"coordinates": [("H", 0, 0, 0), ("F", 0.917, 0, 0)]}, 2),
-        ({"coordinates": [("H", 0, 0, 0), ("H", 0.74, 0, 0)]}, 2),
-        # ({"coordinates": []}, 3),
+        ({"atoms": [("H", 0, 0, 0), ("F", 0.917, 0, 0)]}, 2),
+        ({"atoms": [("H", 0, 0, 0), ("H", 0.74, 0, 0)]}, 2),
+        # ({"atoms": []}, 3),
     ],
 )
 def test_cluster_total_atoms(input_coordinates, expected_total_atoms):
