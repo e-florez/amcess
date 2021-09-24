@@ -24,7 +24,8 @@ before_script:
   
   # for testing purposes
   - virtualenv env_testing
-  - pip install -r requirements.txt -r requirements_dev.txt  
+  - pip install -r requirements.txt
+  # - pip install -r requirements.txt -r requirements_dev.txt  
   
   # for the module
   - virtualenv env
