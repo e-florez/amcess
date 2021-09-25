@@ -37,7 +37,6 @@ def system_h2():
     h2 = Cluster(hydrogen2)
 
     for i in range(20):
-        ang = 45 * (i + 1)
         print(h2)
         h2 = h2.rotate(0, x=0, y=0, z=45).translate(0, x=0.4, y=0, z=0)
 
@@ -45,10 +44,15 @@ def system_h2():
 def system_nano_boy():
     nb = Cluster(li, nano_boy)
 
-    for i in range(20):
-        angle = 90 * (-1) ** i
-        print(nb)
-        nb = nb.translate(1, x=0, y=0, z=0.5).rotate(1, x=angle, y=0, z=0)
+    with open("nano_boy.xyz", "w") as file_xyz:
+        #     file_xyz.write(str(nb))
+
+        for i in range(2):
+            angle = 90 * (-1) ** i
+            print(nb)
+            nb = nb.translate(1, x=0, y=0, z=0.5).rotate(1, x=angle, y=0, z=0)
+
+            # file_xyz.write(str(nb))
 
 
 def system_w_li():
@@ -124,23 +128,31 @@ def test():
     li2 = Cluster(li).translate(0, 50, 0, 0)
 
     b = {
-        "coordinates": [
-            ("Li", 0.000000, 0.000000, 0.000000),
+        "atoms": [
+            ("Xe", 0.000000, 0.000000, 0.000000),
         ],
         "charge": +1,
         "multiplicity": 1,
     }
 
-    w_li2 = Cluster(w, li2, b)
+    # w_li2 = Cluster(w, li2, b)
+
+    # with open("abc.xyz", "w") as file_xyz:
+    #     file_xyz.write(str(w))
 
     print(w)
-    print(li2)
-    print(w_li2)
+    print("str" + "-" * 10)
+    print(str(w))
+    # str(w)
+    # print("repr" + "-" * 10)
+    # print(repr(w))
+    # # print(li2)
+    # # print(w_li2)
 
 
 def run():
     pass
-    system_h2()
+    # system_h2()
     # system_hf()
     # system_nano_boy()
     # system_w_li()
@@ -148,7 +160,7 @@ def run():
     # system_metal_complex()
 
     # test
-    # test()
+    test()
 
 
 if __name__ == "__main__":

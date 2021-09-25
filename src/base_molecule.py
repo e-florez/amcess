@@ -124,26 +124,29 @@ class Molecule:
         return True
 
     def __str__(self) -> str:
-        """Printing Molecule coordinates"""
-        _write_coordinates_xyz = list()
-        _write_coordinates_xyz.append(f"\t" + str(self.total_atoms))
-        _write_coordinates_xyz.append(
-            f" -- system of {self.total_fragments} fragments (atoms/molecules) "
-            + f"and {self._total_atoms} total individual atoms --"
+        """Printing Molecule coordinates using XYZ format"""
+        _comments = (
+            f"--system of {self.total_fragments} molecules "
+            f"and {self._total_atoms} total individual atoms--"
         )
+        _write_coordinates_xyz = f"""\t{self._total_atoms}\n{_comments:<s}\n"""
         for _atoms in self.coordinates:
-            _atoms = list(_atoms)
-            _format = ""
-            for i, _ in enumerate(_atoms):
-                try:
-                    _atoms[i] = float(_atoms[i])
-                    _format += "{:> .8f}\t"
-                except ValueError:
-                    _atoms[i] = str(_atoms[i])
-                    _format += "{:<6}\t"
+            _write_coordinates_xyz += f"""{_atoms[0]:<s}"""
+            _write_coordinates_xyz += f"""\t{_atoms[1]:> .8f}"""
+            _write_coordinates_xyz += f"""\t{_atoms[2]:> .8f}"""
+            _write_coordinates_xyz += f"""\t{_atoms[3]:> .8f}\n"""
 
-            _write_coordinates_xyz.append(_format.format(*_atoms))
-        return "\n".join([str(c) for c in _write_coordinates_xyz])
+        # ANSI escape codes: move cursor up one line
+        # _write_coordinates_xyz += f"""\033[A"""
+
+        return _write_coordinates_xyz
+
+    @property
+    def xyz(self) -> str:
+        return self.__str__()
+
+    def __repr__(self) -> str:
+        return self.__str__()
 
     @property
     def cartesian_coordinates(self):
