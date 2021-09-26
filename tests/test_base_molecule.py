@@ -1,6 +1,5 @@
 import pytest
 
-from .context import src
 from src.base_molecule import Cluster
 
 
