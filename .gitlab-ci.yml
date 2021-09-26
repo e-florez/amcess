@@ -25,8 +25,8 @@ before_script:
   # for testing purposes
   - virtualenv env_testing
   - source env_testing/bin/activate
-  - pip install -r requirements.txt
-  # - pip install -r requirements.txt -r requirements_dev.txt 
+  # - pip install -r requirements.txt
+  - pip install -r requirements.txt -r requirements_dev.txt 
   - deactivate 
   
   # for the module
