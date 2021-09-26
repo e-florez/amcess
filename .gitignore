@@ -75,6 +75,7 @@ pytestdebug.log
 .idea/
 .env
 .venv
+*venv
 env/
 venv/
 ENV/
