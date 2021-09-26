@@ -21,7 +21,17 @@ VScode Extensions:
     • Better Comments (Aaron Bond)
     
     • Material Icon Theme (Philipp Kief)
+    
+    • One Dark Pro (binaryify)
 
+    • Error Lens (Alexander)
+    
+    • TODO Highlight (Wayou Liu)
+    
+    • Live Share (Microsoft)
+    
+    • Live Share Audio (Microsoft)
+    
 Setting ‘black’ as code formatter:
 
     1. pip install black

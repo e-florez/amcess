@@ -38,7 +38,7 @@ module_level_variable1 : int
 
 
 .. _NumPy docstring standard:
-   https://numpydoc.readthedocs.io/en/latest/format.html#docstring-standard
+    https://numpydoc.readthedocs.io/en/latest/format.html#docstring-standard
 
 """
 
@@ -158,7 +158,7 @@ def module_level_function(param1, param2=None, *args, **kwargs):
 
     """
     if param1 == param2:
-        raise ValueError('param1 may not be equal to param2')
+        raise ValueError("param1 may not be equal to param2")
     return True
 
 

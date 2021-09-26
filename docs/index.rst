@@ -1,10 +1,10 @@
-.. Atomic and Molecular Cluster Energy Surface Sampler documentation master file, created by
-   sphinx-quickstart on Fri Sep 10 11:07:01 2021.
+.. AMCESS documentation master file, created by
+   sphinx-quickstart on Sun Sep 19 17:33:54 2021.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Atomic and Molecular Cluster Energy Surface Sampler (AMCESS)
-===============================================================================
+Atomic and Molecular Cluster Energy Surface Sample (SAMCESS)
+============================================================
 
 .. toctree::
    :maxdepth: 2
