@@ -96,27 +96,30 @@ def system_w_li_cluster():
         1 / (w.total_fragments - 1) if p else 0 for p in range(w.total_fragments)
     ]
 
-    for _ in range(total_steps):
-        # molecule [0, w.total_fragments]
-        mol = random_gen.choice(
-            w.total_fragments,
-            p=probability,
-            # p=[0, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6],
-        )
+    with open("w6_li.xyz", "w") as file_xyz:
+        for _ in range(total_steps):
+            # molecule [0, w.total_fragments]
+            mol = random_gen.choice(
+                w.total_fragments,
+                p=probability,
+                # p=[0, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6],
+            )
 
-        # angle between [0, 360)
-        ax = random_gen.uniform() * 360
-        ay = random_gen.uniform() * 360
-        az = random_gen.uniform() * 360
+            # angle between [0, 360)
+            ax = random_gen.uniform() * 360
+            ay = random_gen.uniform() * 360
+            az = random_gen.uniform() * 360
 
-        # max_t: [-2, 2]
-        max_t = 2
-        tx = max_t * (random_gen.uniform() - 0.5)
-        ty = max_t * (random_gen.uniform() - 0.5)
-        tz = max_t * (random_gen.uniform() - 0.5)
+            # max_t: [-2, 2]
+            max_t = 2
+            tx = max_t * (random_gen.uniform() - 0.5)
+            ty = max_t * (random_gen.uniform() - 0.5)
+            tz = max_t * (random_gen.uniform() - 0.5)
 
-        print(w)
-        w = w.translate(mol, x=tx, y=ty, z=tz).rotate(mol, x=ax, y=ay, z=az)
+            # print(w)
+            w = w.translate(mol, x=tx, y=ty, z=tz).rotate(mol, x=ax, y=ay, z=az)
+
+            file_xyz.write(w.xyz)
 
 
 def test():
@@ -156,7 +159,7 @@ def run():
     # system_hf()
     # system_nano_boy()
     # system_w_li()
-    # system_w_li_cluster()
+    system_w_li_cluster()
     # system_metal_complex()
 
     # test
