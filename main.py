@@ -156,10 +156,10 @@ def test():
 def run():
     pass
     # system_h2()
-    # system_hf()
+    system_hf()
     # system_nano_boy()
     # system_w_li()
-    system_w_li_cluster()
+    # system_w_li_cluster()
     # system_metal_complex()
 
     # test
