@@ -14,7 +14,7 @@ cache:
   paths:
     - .cache/pip
     - venv/
-
+    - venv_testing
 
 before_script:
   - python --version
@@ -23,15 +23,15 @@ before_script:
   - pip install sphinx_rtd_theme
   
   # for testing purposes
-  - virtualenv env_testing
-  - source env_testing/bin/activate
+  - virtualenv venv_testing
+  - source venv_testing/bin/activate
   # - pip install -r requirements.txt
   - pip install -r requirements.txt -r requirements_dev.txt 
   - deactivate 
   
   # for the module
-  - virtualenv env
-  - source env/bin/activate
+  - virtualenv venv
+  - source venv/bin/activate
   - pip install -r requirements.txt
   - deactivate
 
@@ -50,7 +50,7 @@ unit_test:
   script:
     - pwd
     - ls -l
-    - source env_testing/bin/activate
+    - source venv_testing/bin/activate
     - pytest -v tests/
     # - pip install tox
     # - tox
@@ -62,7 +62,7 @@ run_python:
   script:
     - pwd
     - ls -l
-    - source env/bin/activate
+    - source venv/bin/activate
     - python main.py 
     - deactivate
 
