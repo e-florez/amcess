@@ -125,6 +125,8 @@ instance/
 .scrapy
 
 # Sphinx documentation
+_build/
+html/
 docs/_build/
 doc/_build/
 

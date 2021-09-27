@@ -3,7 +3,14 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Atomic and Molecular Cluster Energy Surface Sample (SAMCESS)
+.. image:: _static/amcess_logo_bl.png
+   :width: 400px
+   :height: 200px
+   :scale: 80 %
+   :alt: Atomic and Molecular Cluster Energy Surface Sample (AMCESS)
+   :align: center
+
+Atomic and Molecular Cluster Energy Surface Sample (AMCESS)
 ============================================================
 
 .. toctree::
@@ -11,6 +18,8 @@ Atomic and Molecular Cluster Energy Surface Sample (SAMCESS)
    :caption: Contents:
 
    modules
+
+
 
 Indices and tables
 ==================
