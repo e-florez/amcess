@@ -31,20 +31,20 @@ class Molecule:
                     self._cluster[i] = fragment["atoms"]
                 except KeyError as err:
                     print(
-                        f"\n*** ERROR *** \n"
-                        + f" key must be 'atoms' (casesensitive!) \n"
-                        + f" but you have: \n\n"
+                        "\n*** ERROR *** \n"
+                        + " key must be 'atoms' (casesensitive!) \n"
+                        + " but you have: \n\n"
                         + "\n".join(list(fragment.keys()))
-                        + f"\n\n"
+                        + "\n\n"
                     )
                     raise err
             elif type(fragment) == Molecule:
                 self._cluster[i] = fragment.coordinates
             else:
                 raise (
-                    f"\n *** ERROR ***"
-                    + f" only list or dict-type object must be used to "
-                    + f" to create a new Object. Check class help"
+                    "\n *** ERROR ***"
+                    + " only list or dict-type object must be used to "
+                    + " to create a new Object. Check class help"
                 )
 
             self._total_atoms += len(self._cluster[i])
@@ -73,21 +73,21 @@ class Molecule:
     def show_all(self) -> bool:
         # TODO: print everthing, symbols, mass, etc.
 
-        print(f"\n")
-        print(f"total fragments: ", self.total_fragments)
-        print(f"total atoms: ", self.total_atoms)
-        print(f"symbols: ", self.symbols)
-        print(f"atomic masses: ", self.atomic_masses)
-        print(f"total mass: ", self.total_mass)
+        print("\n")
+        print("total fragments: ", self.total_fragments)
+        print("total atoms: ", self.total_atoms)
+        print("symbols: ", self.symbols)
+        print("atomic masses: ", self.atomic_masses)
+        print("total mass: ", self.total_mass)
 
-        print(f"\n")
+        print("\n")
         for i, fragment in enumerate(self._cluster):
             print("-" * 50)
             print(f" fragment number: {i}")
             print("-" * 50)
             individual_fragmen = self.get_fragments(fragment)
             print(individual_fragmen)
-            print(f"-" * 50 + "\n ***")
+            print("-" * 50 + "\n ***")
 
         return True
 
@@ -98,8 +98,9 @@ class Molecule:
         for _line, _atoms in enumerate(self.coordinates):
 
             _error_message = (
-                f"\n *** ERROR ***\n"
-                + f" line: {_line + 2} does not match format (str, float, float, float)\n\n"
+                "\n *** ERROR ***\n"
+                + f" line: {_line + 2} does not match format "
+                + "(str, float, float, float)\n\n"
                 + f" check line: {_line + 2} --> \t{_atoms}\n"
                 + "...\n"
                 # + str(self)
@@ -173,8 +174,9 @@ class Molecule:
             self._cluster[self._fragment]
         except (KeyError, ValueError):
             print(
-                f"\n* Warning! selecting a fragment: {self._fragment} (atom/molecule)"
-                f" NOT found, it must be an integer in {list(self._cluster.keys())}"
+                f"\n* Warning! selecting a fragment: {self._fragment}"
+                + "(atom/molecule) NOT found, it must be an integer in "
+                + f"{list(self._cluster.keys())}"
             )
             return False
         else:
@@ -187,8 +189,9 @@ class Molecule:
             return Molecule({"atoms": self._cluster[self._fragment]})
         else:
             print(
-                f"\n* Warning! selecting a fragment: {self._fragment} (atom/molecule)"
-                f" must be an integer in {list(self._cluster.keys())}"
+                f"\n* Warning! selecting a fragment: {self._fragment} "
+                + "(atom/molecule) must be an integer in "
+                + f"{list(self._cluster.keys())}"
             )
             return deepcopy(self)
 
@@ -218,11 +221,13 @@ class Molecule:
         elif type(new_coordinates) == dict:
             _new_cluster[len(self._cluster)] = new_coordinates
         elif type(new_coordinates) == Molecule:
-            _new_cluster[len(self._cluster)] = {"atoms": new_coordinates.coordinates}
+            _new_cluster[len(self._cluster)] = {
+                "atoms": new_coordinates.coordinates,
+            }
         else:
             print(
-                f"\n* Warning! fragment to add MUST be list-type "
-                f" dict-type with 'coordinates' as a key. Check class help"
+                "\n* Warning! fragment to add MUST be list-type "
+                + " dict-type with 'coordinates' as a key. Check class help"
             )
             return deepcopy(self)
 
@@ -234,7 +239,8 @@ class Molecule:
 
         Notes
         -----
-            total mass for dummy atoms (not in th ePeriodic Table) is equal to ONE (1)
+            total mass for dummy atoms (not in th ePeriodic Table) is equal
+            to ONE (1)
 
         Returns
         -------
@@ -257,9 +263,9 @@ class Molecule:
     @property
     def principal_axis(self) -> tuple:
 
-        self._principal_axis = np.asarray(self.cartesian_coordinates) - np.asarray(
-            self.center_of_mass
-        )
+        self._principal_axis = np.asarray(
+            self.cartesian_coordinates
+        ) - np.asarray(self.center_of_mass)
 
         return tuple(self._principal_axis)
 
@@ -273,9 +279,9 @@ class Molecule:
         _fragment_symbols = _fragment_to_move.symbols
         _fragment_coordinates = _fragment_to_move.cartesian_coordinates
 
-        _translated_coordinates = np.asarray(_fragment_coordinates) + np.asarray(
-            [x, y, z]
-        )
+        _translated_coordinates = np.asarray(
+            _fragment_coordinates
+        ) + np.asarray([x, y, z])
 
         _translated_fragment = list()
         for i, _atom in enumerate(_fragment_symbols):
@@ -283,10 +289,13 @@ class Molecule:
                 tuple([_atom] + _translated_coordinates[i].tolist())
             )
 
-        return self.delete_fragments(self._fragment).add_fragments(_translated_fragment)
+        return self.delete_fragments(self._fragment).add_fragments(
+            _translated_fragment
+        )
 
     def rotate(self, fragment, x=0, y=0, z=0):
-        """Returns a NEW Molecule Object with a ROTATED fragment (around internal center of mass)"""
+        """Returns a NEW Molecule Object with a ROTATED fragment
+        (around internal center of mass)"""
         self._fragment = fragment
         if not self._check_fragment(self._fragment):
             return deepcopy(self)
@@ -314,9 +323,13 @@ class Molecule:
 
         _rotated_fragment = list()
         for i, _atom in enumerate(_fragment_symbols):
-            _rotated_fragment.append(tuple([_atom] + _rotated_coordinates[i].tolist()))
+            _rotated_fragment.append(
+                tuple([_atom] + _rotated_coordinates[i].tolist())
+            )
 
-        return self.delete_fragments(self._fragment).add_fragments(_rotated_fragment)
+        return self.delete_fragments(self._fragment).add_fragments(
+            _rotated_fragment
+        )
 
 
 class Cluster(Molecule):

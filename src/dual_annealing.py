@@ -1,4 +1,5 @@
 import types
+
 from scipy.optimize import dual_annealing
 
 
@@ -27,9 +28,10 @@ def solve_dual_annealing(function, bounds):
     Returns
     -------
     Optimize Result
-        The optimization result represented as a OptimizeResult object. Important
-        attributes are: x the solution array, fun the value of the function at the
-        solution, and message which describes the cause of the termination.
+        The optimization result represented as a OptimizeResult object.
+        Important attributes are: x the solution array, fun the value of the
+        function at the solution, and message which describes the cause of
+        the termination.
         See OptimizeResult for a description of other attributes.
 
     Raises
