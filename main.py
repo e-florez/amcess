@@ -12,25 +12,25 @@ from data.molecules_coordinates import (
 def system_hf():
     hf = Cluster(hydrogen_fluoride)
 
-    print(hf)
-    print(hf.total_atoms)
-    print(hf.total_fragments)
-    print(hf.symbols)
-    print(hf.total_mass)
-    print(hf.center_of_mass)
-    print(hf.principal_axis)
-    print(hf.add_fragments(water))
-    print(hf.delete_fragments(4))
+    # print(hf)
+    # print(hf.total_atoms)
+    # print(hf.total_fragments)
+    # print(hf.symbols)
+    # print(hf.total_mass)
+    # print(hf.center_of_mass)
+    # print(hf.principal_axis)
+    # print(hf.add_fragments(water))
+    # print(hf.delete_fragments(4))
 
-    w = hf.add_fragments(water)
-    print(w.translate(1, x=20, y=10, z=50))
-    print(w.rotate(1, x=0, y=0, z=45))
-    print()
+    # w = hf.add_fragments(water)
+    # print(w.translate(1, x=20, y=10, z=50))
+    # print(w.rotate(1, x=0, y=0, z=45))
+    # print()
 
-    # for i in range(20):
-    #     ang = 45 * (i + 1)
-    #     print(hf)
-    #     hf = hf.rotate(0, x=0, y=0, z=45).translate(0, x=0.3, y=0, z=0)
+    for i in range(20):
+        ang = 45 * (i + 1)
+        print(hf)
+        hf = hf.rotate(0, x=0, y=0, z=45).translate(0, x=0.3, y=0, z=0)
 
 
 def system_h2():
@@ -44,15 +44,10 @@ def system_h2():
 def system_nano_boy():
     nb = Cluster(li, nano_boy)
 
-    with open("nano_boy.xyz", "w") as file_xyz:
-        #     file_xyz.write(str(nb))
-
-        for i in range(2):
-            angle = 90 * (-1) ** i
-            print(nb)
-            nb = nb.translate(1, x=0, y=0, z=0.5).rotate(1, x=angle, y=0, z=0)
-
-            # file_xyz.write(str(nb))
+    for i in range(2):
+        angle = 90 * (-1) ** i
+        print(nb)
+        nb = nb.translate(1, x=0, y=0, z=0.5).rotate(1, x=angle, y=0, z=0)
 
 
 def system_w_li():
@@ -93,7 +88,8 @@ def system_w_li_cluster():
     random_gen = random.default_rng(1234)
 
     probability = [
-        1 / (w.total_fragments - 1) if p else 0 for p in range(w.total_fragments)
+        1 / (w.total_fragments - 1) if p else 0
+        for p in range(w.total_fragments)
     ]
 
     with open("w6_li.xyz", "w") as file_xyz:
@@ -117,7 +113,9 @@ def system_w_li_cluster():
             tz = max_t * (random_gen.uniform() - 0.5)
 
             # print(w)
-            w = w.translate(mol, x=tx, y=ty, z=tz).rotate(mol, x=ax, y=ay, z=az)
+            w = w.translate(mol, x=tx, y=ty, z=tz).rotate(
+                mol, x=ax, y=ay, z=az
+            )
 
             file_xyz.write(w.xyz)
 
@@ -163,7 +161,7 @@ def run():
     # system_metal_complex()
 
     # test
-    test()
+    # test()
 
 
 if __name__ == "__main__":

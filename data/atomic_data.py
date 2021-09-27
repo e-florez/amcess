@@ -1,6 +1,7 @@
 def atomic_mass(symbol):
     """
-    Atomic Mass for any element in the Periodic Table. Taken from `PubChem (NIH)`_
+    Atomic Mass for any element in the Periodic Table.
+    Taken from `PubChem (NIH)`_
 
     .. warning:: Returns ZERO if it is not defined
 
@@ -153,7 +154,7 @@ def atomic_mass(symbol):
     try:
         alpha_symbol = "".join([s for s in str(symbol) if s.isalpha()])
         value = ATOMIC_MASS[str(alpha_symbol[:2]).title()]
-    except (KeyError, TypeError) as error:
+    except (KeyError, TypeError):
         # print(f"\nWarning! symbol '{symbol}' is not in the Periodic Table\n")
         value = 0
 
@@ -162,7 +163,8 @@ def atomic_mass(symbol):
 
 def from_atomic_number_to_symbols(value):
     """
-    Returns the symbol for an atomic number (Z) in the periodic table (0 <= Z <= 118)
+    Returns the symbol for an atomic number (Z) in the periodic table
+    (0 <= Z <= 118)
 
     Examples
     --------
@@ -307,8 +309,8 @@ def from_atomic_number_to_symbols(value):
 
     try:
         symbol = ATOMS_Z_SYM[int(value)]
-    except (KeyError, ValueError) as error:
-        print(f"\nWarning! value is not an 'int' in (0, 118]\n")
+    except (KeyError, ValueError):
+        print("\nWarning! value is not an 'int' in (0, 118]\n")
         symbol = value
 
     return symbol
@@ -455,8 +457,8 @@ def from_symbols_to_atomic_number(symbol):
 
     try:
         value = ATOMS_SYM_Z[str(symbol).title()]
-    except (KeyError, TypeError) as error:
-        print(f"\nWarning! symbol is not in according to the periodic table\n")
+    except (KeyError, TypeError):
+        print("\nWarning! symbol is not in according to the periodic table\n")
         value = symbol
 
     return value
