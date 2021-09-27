@@ -1,4 +1,4 @@
-image: "python:3.9"
+image: "python:3.8"
 
 # Change pip's cache directory to be inside the project directory since we can
 # only cache local items.
@@ -41,7 +41,7 @@ stages:
   - Deploy
 
 
-unit_test:
+unit_test_tox:
   stage: Test
   only:
     - branches
@@ -64,6 +64,14 @@ run_python:
     - source venv/bin/activate
     - python main.py 
     - deactivate
+
+  # script:
+  #   - python setup.py bdist_wheel  # Generate package
+  #   - pip install dist/*           # Install package
+  # artifacts:
+  #   paths:
+  #     - dist/*.whl
+
 
 
 pages:
