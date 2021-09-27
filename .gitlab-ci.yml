@@ -51,9 +51,8 @@ unit_test:
     - pwd
     - ls -l
     - source venv_testing/bin/activate
-    - pytest -v tests/
-    # - pip install tox
-    # - tox
+    # - pytest -v tests/
+    - tox
     - deactivate
 
 
