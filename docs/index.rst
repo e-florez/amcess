@@ -6,7 +6,7 @@
 .. image:: _static/amcess_logo_bl.png
    :width: 400px
    :height: 200px
-   :scale: 100 %
+   :scale: 80 %
    :alt: Atomic and Molecular Cluster Energy Surface Sample (AMCESS)
    :align: center
 

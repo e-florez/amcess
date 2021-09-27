@@ -1,13 +1,20 @@
+
+<!-- <p align="center">
+  <a href=https://www.python.org/downloads/release/python-390/>
+  <img src=https://img.shields.io/badge/python-3.9-blue.svg alt="Python3.9"></a>
+</p> -->
+
+
 [![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-390/)
+![Gitlab pipeline status](https://img.shields.io/gitlab/pipeline/ADanianZE/ascec/main?style=plastic)
+[![pipeline status](https://gitlab.com/ADanianZE/ascec/badges/main/pipeline.svg)](https://gitlab.com/ADanianZE/ascec/-/commits/main)
+![Gitlab code coverage](https://img.shields.io/gitlab/coverage/ADanianZE/ascec/main?style=plastic)
+[![coverage report](https://gitlab.com/ADanianZE/ascec/badges/main/coverage.svg)](https://gitlab.com/ADanianZE/ascec/-/commits/main)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gl/ADanianZE%2Fascec/HEAD?filepath=workflow%2F01_importing_atoms_and_molecules.ipynb)
-![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/ADanianZE/ascec)
+![GitLab tag (latest by date)](https://img.shields.io/gitlab/v/tag/ADanianZE/ascec?style=plastic)
 [![mypy: checked](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![pipeline status](https://gitlab.com/ADanianZE/ascec/badges/main/pipeline.svg)](https://gitlab.com/ADanianZE/ascec/-/commits/main)
-![Gitlab code coverage](https://img.shields.io/gitlab/coverage/ADanianZE/ascec/main)
-[![coverage report](https://gitlab.com/ADanianZE/ascec/badges/main/coverage.svg)](https://gitlab.com/ADanianZE/ascec/-/commits/main)
-
-
+![Pod License](https://img.shields.io/badge/license-MIT-blue.svg)
 
 # Atomi and Molecular Cluster Energy Surface Sampler (AMCESS)
 
@@ -15,7 +22,7 @@
 
 
 ### Technical Documentation
-All the mathematical derivations behind this project can be accessed [here](https://adanianze.gitlab.io/ascec).
+Technical documents behind this project can be accessed [here](https://adanianze.gitlab.io/ascec).
 
 
 ### Requirements
