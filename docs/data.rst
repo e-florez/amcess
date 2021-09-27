@@ -8,23 +8,22 @@ data.atomic\_data module
 ------------------------
 
 .. automodule:: data.atomic_data
-    :members:
-    :undoc-members:
-    :show-inheritance:
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
-data.main module
-----------------
+data.molecules\_coordinates module
+----------------------------------
 
-.. automodule:: data.main
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+.. automodule:: data.molecules_coordinates
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Module contents
 ---------------
 
 .. automodule:: data
-    :members:
-    :undoc-members:
-    :show-inheritance:
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -84,8 +84,8 @@ html_theme = "sphinx_rtd_theme"
 
 html_logo = "_static/amcess_logo.png"
 html_theme_options = {
-    'logo_only': True,
-    'display_version': False,
+    "logo_only": True,
+    "display_version": False,
 }
 
 # Theme options are theme-specific and customize the look and feel of a theme
@@ -137,7 +137,13 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, "AMCESS.tex", "AMCESS Documentation", "Edison Florez", "manual"),
+    (
+        master_doc,
+        "AMCESS.tex",
+        "AMCESS Documentation",
+        "Edison Florez",
+        "manual",
+    ),
 ]
 
 
