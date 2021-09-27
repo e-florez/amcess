@@ -39,9 +39,9 @@ def solve_dual_annealing(function, bounds):
     Exception
         if not ``function`` are set for passed in as parameters
 
-    Notes
-    -----
-    **References [1]:** Tsallis C. Possible generalization of Boltzmann-Gibbs
+    References
+    ----------
+    .. _[1]: Tsallis C. Possible generalization of Boltzmann-Gibbs
     statistics. Journal of Statistical Physics, 52, 479-487 (1998).
 
     Check ``scipy.optimize.dual_annealing`` official documentation
