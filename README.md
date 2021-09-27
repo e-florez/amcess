@@ -1,10 +1,85 @@
+[![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-390/)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gl/ADanianZE%2Fascec/HEAD?filepath=workflow%2F01_importing_atoms_and_molecules.ipynb)
+![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/ADanianZE/ascec)
 [![mypy: checked](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![pipeline status](https://gitlab.com/ADanianZE/ascec/badges/main/pipeline.svg)](https://gitlab.com/ADanianZE/ascec/-/commits/main)
+![Gitlab code coverage](https://img.shields.io/gitlab/coverage/ADanianZE/ascec/main)
 [![coverage report](https://gitlab.com/ADanianZE/ascec/badges/main/coverage.svg)](https://gitlab.com/ADanianZE/ascec/-/commits/main)
 
 
-# ascec
+
+# Atomi and Molecular Cluster Energy Surface Sampler (AMCESS)
+
+
+
+
+### Technical Documentation
+All the mathematical derivations behind this project can be accessed [here](https://adanianze.gitlab.io/ascec).
+
+
+### Requirements
+
+First you should install the required python packages contained in the file `requirements.txt`. For developer, you should install `requirements_dev.txt`.
+
+### Installation
+AMCESS is writyten for **Python 3.9**
+
+1. Install virtual environment:
+
+    ```python -m venv venv```
+
+2. Activate virtual environment:
+
+    ```source venv/bin/activate```
+
+3. Install dependencies:
+
+    ```pip install -r requirements.txt```
+
+      3.1. For developer:
+             ```pip install -r requirements_dev.txt```
+
+      3.2 Run all test:
+            ``tox``
+
+
+4. Run AMCESS:
+
+    ```python main.py```
+
+### Usage
+
+A detail workflow is provide into `workflow` directory. It has a list of Jupyter notebook with detail examples about AMCESS tools and capabilities.
+
+Workflow:
+1. Getting starting with atoms and molecules properties. 
+      - Notebook ([binder](https://mybinder.org/v2/gl/ADanianZE%2Fascec/HEAD?filepath=workflow%2F01_importing_atoms_and_molecules.ipynb)): `01_importing_atoms_and_molecules.ipynb` 
+
+
+
+
+### Contributing
+
+...
+
+### Licence
+
+...
+
+### Authors and Acknowledgment
+Main author: Alejandra Mendez, Juan Jose Aucar, Daniel Bajac, César Ibargüen, Andy Zapata, Edison Florez (_edisonffh@mail.com_)
+
+### Project Status
+
+Under development
+
+
+
+
+---
+
+## ascec (OLD version in FORTRAN77)
 
 El ascec es un programa de annealing simulado con modificación de criterío de Metropolis,
 por Energía Cuántica o Energía Electrónica, la cual se puede calcular, usando una metodología
