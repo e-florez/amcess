@@ -1,3 +1,4 @@
+from src.base_molecule import Cluster
 import types
 # ipdb para debugger python
 # import ipdb; ipdb.set_trace()
@@ -19,10 +20,14 @@ import numpy as np  # 1.21.2
 from math_cost_function import *
 from ascec_criterion import *
 from heisenberg import *
-
+#from base_molecule import Cluster
+from move_fragments import *
 # pytest 6.2.5
 
-def solve_dual_annealing(func, bounds, ascec_activation=True, seed=None,
+def solve_dual_annealing(func, bounds, ascec_activation=True,
+                         there_is_molecule = None,
+                         system_object = None,
+                         seed=None,
                          NT=1000, T0=5230.0, dT=2e-5, mxcycle=10000000.0,
                          local_search_options={},
                          no_local_search=False, visit_regions=2.62,
@@ -189,9 +194,21 @@ def solve_dual_annealing(func, bounds, ascec_activation=True, seed=None,
     # Minimum value of annealing temperature reached to perform
     # re-annealing
     temperature_restart = T0 * dT
-    # VisitingDistribution instance
-    visit_dist = VisitingDistribution(lower, upper, visit_regions, rand_state)
-    # Strategy chain instance
+
+    if there_is_molecule == 0:
+        # VisitingDistribution instance (Class used to generate new coordinates)
+        #! VisitingDistribution is based Cauchy-Lorentz distribution, se podría
+        #! usar para cluster de átomo, ya que con moléculas las puede destruir,
+        #! porqué no diferencia entre átomos y molécula.
+        #! Si usara el cm como sln, tampoco se podría debido a que también
+        #! necesitaría los ejes principales, cada vez que se edite el cm
+        #? Una posible sln sería usar la clase Molecule
+        visit_dist = VisitingDistribution(lower, upper, visit_regions, rand_state)
+    else:
+        #visit_dist = Cluster(args)
+        visit_dist = MoveFragments(system_object, lower, upper, visit_regions, rand_state)
+
+    # Strategy chain instance (Markov Chain, call: VisitingDistribution)
     strategy_chain = StrategyChain(accept, visit_dist, func_wrapper,
                                    minimizer_wrapper, rand_state,
                                    energy_state)
@@ -220,9 +237,10 @@ def solve_dual_annealing(func, bounds, ascec_activation=True, seed=None,
                 energy_state.reset(func_wrapper, rand_state)
                 break
             # starting strategy chain
-            val = strategy_chain.run(i, temperature)
-            print("val, Temperature : ", energy_state.ebest,
-                  energy_state.current_energy, temperature)
+            val = strategy_chain.run(i, temperature) #acá se llama a visit_dist.visiting
+            exit()
+            #print("val, Temperature : ", energy_state.ebest,
+            #      energy_state.current_energy, temperature)
 
             # ASCEC
             if ascec_wrapper.ascec is True:
@@ -253,6 +271,7 @@ def solve_dual_annealing(func, bounds, ascec_activation=True, seed=None,
     optimize_res.njev = func_wrapper.ngev
     optimize_res.nhev = func_wrapper.nhev
     optimize_res.message = message
+    print("NT ",NT)
     return optimize_res
 
 
