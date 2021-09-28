@@ -62,10 +62,8 @@ A detail workflow is provide into `workflow` directory. It has a list of Jupyter
 Workflow:
 1. Getting starting with atoms and molecules properties. 
       - Notebook ([binder](https://mybinder.org/v2/gl/ADanianZE%2Fascec/main?filepath=workflow%2F01_importing_atoms_and_molecules.ipynb)): `01_importing_atoms_and_molecules.ipynb` 
-
 2. Translating and rotating atoms and molecules. 
       - Notebook ([binder](https://mybinder.org/v2/gl/ADanianZE%2Fascec/main?filepath=workflow%2F02_move_rotate_molecules.ipynb)): `02_move_rotate_molecules.ipynb` 
-
 3. Moving Molecules randomly from a Cluster. 
       - Notebook ([binder](https://mybinder.org/v2/gl/ADanianZE%2Fascec/main?filepath=workflow%2F03_move_rotate_cluster.ipynb)): `03_move_rotate_cluster.ipynb` 
 
