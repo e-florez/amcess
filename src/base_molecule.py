@@ -91,6 +91,7 @@ class Cluster:
 
         return True
 
+
     @property
     def _check_coordinates(self) -> bool:
         """Checking XYZ format (str, float, float, float)"""
@@ -188,6 +189,7 @@ class Cluster:
                 f" must be an integer in {list(self._cluster.keys())}"
             )
             return deepcopy(self)
+
 
     def delete_fragments(self, fragment: int):
         """Returns a NEW Cluster Object"""
@@ -345,4 +347,5 @@ class Cluster:
         for i, _atom in enumerate(_fragment_symbols):
             _rotated_fragment.append(tuple([_atom] + _rotated_coordinates[i].tolist()))
 
-        return self.delete_fragments(self._fragment).add_fragments(_rotated_fragment)
+        return _rotated_fragment
+        #return self.delete_fragments(self._fragment).add_fragments(_rotated_fragment)

@@ -27,7 +27,7 @@ class SearchConfig:
             self._no_local_search = False
             self._args = (self._basis, self._system_object, 0) #0 asociar al llamado
             self._local_search_options = {}
-            self._x0 = [1, 1, 0, 2.74, 1, 1] #punto inicio de la busqueda
+            self._x0 = [0.00000000e+00,  0.00000000e+00, -9.46852623e-06, 1., 1., 0.99999053]
             self._callback = None
             self._ascec_activation = False
             self._seed = None
@@ -61,6 +61,7 @@ class SearchConfig:
                                                 self._accept,
                                                 self._x0, self._args,
                                                 self._callback)
+
 
 #        if self._se... :
 #            ... = abc(x,y,z, ...)
