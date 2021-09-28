@@ -1,0 +1,12 @@
+# Byte-compiled / optimized / DLL files
+
+# environment
+
+# temporary files
+old/
+salida 
+examples
+
+# PBD files
+
+# for testing

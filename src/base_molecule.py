@@ -239,8 +239,12 @@ class Molecule:
 
         Notes
         -----
+<<<<<<< HEAD
             total mass for dummy atoms (not in th ePeriodic Table) is equal
             to ONE (1)
+=======
+            total mass for dummy atoms (not in th ePeriodic Table) is equal to ONE (1)
+>>>>>>> faa54c9321b4bb0e3088ea003d9bf808bc384258
 
         Returns
         -------
