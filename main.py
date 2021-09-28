@@ -99,6 +99,8 @@ def system_w_li_cluster():
                 w.total_fragments,
                 p=probability,
                 # p=[0, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6, 1 / 6],
+                # p=[0, 0, 0, 0, 0, 0, 1],
+                # p=[0, 0.1, 0.3, 0.5, 0, 0, 0.1],
             )
 
             # angle between [0, 360)
@@ -153,8 +155,8 @@ def test():
 
 def run():
     pass
-    # system_h2()
-    system_hf()
+    system_h2()
+    # system_hf()
     # system_nano_boy()
     # system_w_li()
     # system_w_li_cluster()
