@@ -156,7 +156,7 @@ def solve_dual_annealing(func, bounds, ascec_activation=True,
         raise Exception("\n\n *** ERROR: No 'bounds' founds\n")
 
     if not isinstance(func, types.FunctionType):
-        raise Exception("\n\n *** ERROR: No 'function' found \n")
+        raise Exception("\n\n *** ERROR: No 'function' found \n", func)
 
     if x0 is not None and not len(x0) == len(bounds):
         raise ValueError('Bounds size does not match x0')
@@ -238,7 +238,6 @@ def solve_dual_annealing(func, bounds, ascec_activation=True,
                 break
             # starting strategy chain
             val = strategy_chain.run(i, temperature) #acá se llama a visit_dist.visiting
-            exit()
             #print("val, Temperature : ", energy_state.ebest,
             #      energy_state.current_energy, temperature)
 

@@ -6,11 +6,14 @@ class SearchConfig:
         self._bounds = search_setting["bounds"]
         self._search_methodology = search_setting["search_methodology"]
         self._basis = search_setting["basis"]
-        self._there_is_molecules = ["type of fragments"] #0: todos átomos, 1: hay moléculas
-        self._search_name = ["search_methodology_name"]
+        self._there_is_molecules = search_setting["type of fragments"] #0: todos átomos, 1: hay moléculas
         #cost function
-        self._func = heisenberg
-        #
+        self._program_calculate_cost_function = search_setting["program_cost_function"]
+
+        self._func = self.program_cost_function(self._program_calculate_cost_function)
+        self._search_name = self.search_name(self._search_methodology)
+
+        #por trabajar
         self._ascec_activation = False
         self._seed = None
         self._NT = None
@@ -28,11 +31,17 @@ class SearchConfig:
     def bounds(self):
         return self._bounds
 
-    def search_name(self):
+    def search_name(self, search_name):
         if self._search_methodology == 0:
-            self._search_name = "dual_annealing from Scipy"
+            return "dual_annealing from Scipy"
         if self._search_methodology == 1:
-            self._search_name = "Bayesiana"
+            return "Bayesiana"
+
+    def program_cost_function(self, _program_calculate_cost_function):
+        if _program_calculate_cost_function == 0 or _program_calculate_cost_function == None:
+            return hamiltonian_pyscf
+#        if _program_calculate_cost_function == 1:
+#            return hamiltonian_horton
 
     def run(self, **kwargs):
         if self._search_methodology == 0:
@@ -41,3 +50,7 @@ class SearchConfig:
                                                 self._there_is_molecules,
                                                 self._system_object,
                                                 **kwargs)
+#        if self._se... :
+#            ... = abc(x,y,z, ...)
+#        if self._.....:
+#           ... = bayesiana(x,y,z, ....)

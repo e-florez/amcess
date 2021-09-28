@@ -1,4 +1,5 @@
 from pyscf import gto, scf
+import numpy as np
 #from search_configuration import SearchConfig
 
 
@@ -58,11 +59,28 @@ def build_input_pyscf(mass_center, atomic_symb_principal_axes):
     #print(mol)
     return mol
 
-def heisenberg(mases_centers, *args):
+def hamiltonian_pyscf(x, *args):
     #input_pyscf = build_input_pyscf(mases_centers, args)
     #mol = gto.M(atom = input_pyscf, basis = 'sto-3g',)
-    #mol = gto.M(atom = 'H 0.0 0 1; H 0 0 0', basis = 'sto-3g',)
-    #e = scf.HF(mol)
+    mol = gto.M(atom = [['H', x[0], x[1], x[2]],
+                        ['O', x[3], x[4], x[5]],
+                       ['H', x[6], x[7], x[8]]], basis = 'sto-3g',)
+    DX = x[0]-x[3]
+    DX *= DX
+    DY = x[1]-x[4]
+    DY *= DY
+    DZ = x[2]-x[5]
+    DZ *= DZ
+
+    D1X = x[6]-x[3]
+    D1X *= D1X
+    D1Y = x[7]-x[4]
+    D1Y *= D1Y
+    D1Z = x[8]-x[5]
+    D1Z *= D1Z
+
+    e = scf.HF(mol).kernel()
+    print("distance ",np.sqrt(DX+DY+DZ), e, np.sqrt(D1X+D1Y+D1Z))
     #exit()
-    #return e.kernel()
-    return 0.0
+    return e
+    #return 0.0
