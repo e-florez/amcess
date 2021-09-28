@@ -16,7 +16,9 @@ sphinx==4.1.2
 sphinx_rtd_theme==0.5.1
 myst-parser==0.15.2
 
+# testing jupyter notebooks
+nbmake==0.8
 
 # -------------------------------------------------------------------------------
-# pytest -v tests/ --cov tests/ --cov-fail-under 90 --cov-report term-missing
+# pytest -v tests/ --cov=tests/ --cov=src/ --cov=data/ --cov=workflow/ --cov-fail-under 90 --cov-report term-missing --nbmake workflow/
 # -------------------------------------------------------------------------------
