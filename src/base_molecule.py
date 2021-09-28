@@ -253,6 +253,36 @@ class Cluster:
 
         return self._center_of_mass
 
+######Andy centro de masa del fragmento i
+    @property
+    def center_of_mass_fragment(self, fragment) -> tuple:
+        """[summary]
+
+        Notes
+        -----
+            total mass for dummy atoms (not in th ePeriodic Table) is equal to ONE (1)
+
+        Returns
+        -------
+        tuple : (float, float, float)
+            [description]
+        """
+
+        self._fragment = fragment
+        if not self._check_fragment(self._fragment):
+            return deepcopy(self)
+
+        _fragment_to_rotate: Cluster = self.get_fragments(self._fragment)
+        _fragment_symbols = _fragment_to_rotate.symbols
+
+        # avoid any rotatation attemp for a single atom system
+        if not (len(_fragment_symbols) > 1):
+            return deepcopy(self)
+
+        _fragment_center_of_mass = _fragment_to_rotate.center_of_mass
+
+        return _fragment_center_of_mass
+
     @property
     def principal_axis(self) -> tuple:
 

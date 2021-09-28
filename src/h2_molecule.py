@@ -9,7 +9,6 @@ from search_configuration import SearchConfig
 hydrogen2 = {  # bond distance = 74 pm
     "coordinates": [
         ("H", 1, 1, 0),
-        ("O", 0,0,0),
         ("H", 2.74, 1, 1),
     ],
     "charge": 0,
@@ -18,27 +17,23 @@ hydrogen2 = {  # bond distance = 74 pm
 
 h2 = Cluster(hydrogen2)
 
-x0 = [1, 1, 0, 0, 0, 0, 2.74, 1, 1]
-print(x0)
 #Configuración de busqueda
-a = 2.5
+a = 2.0
 ################################################
 # Configuración de la busqueda
 ###############################################
 search_setting  = {
-    "bounds": [(-a, a),(-a, a),(-a, a),(-a, a),(-a, a),(-a, a),(-a, a),(-a, a),(-a, a)],
+    "bounds": [(-a, a),(-a, a),(-a, a),(-a, a),(-a, a),(-a, a)],
     "basis": 'sto-3g', #pyscf
-    "search_methodology": 0,
+    "search_methodology": 1,
     "type of fragments": 0,
-    "program_cost_function": 0, #0: pyscf, 1: ps4, 2: horton, 3: gaussian, ...
+    "program_cost_function": 1, #1: pyscf, 2: ps4, 3: horton, 4: gaussian,
     }
 search_config = SearchConfig(h2, search_setting)
-print(search_config._search_name)
-
+#search_config._x0 = [1, 1, 0, 2.74, 1, 1]
 #Empieza la busqueda
+search_config.run()
 
-search_config.run(no_local_search=False,
-                  x0 = x0)
 print(search_config._search)
 exit()
 
