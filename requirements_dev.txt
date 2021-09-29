@@ -4,6 +4,7 @@ pytest==6.2.5
 pytest-cov==2.12.1
 coverage==5.5
 
+
 black==21.8b0
 flake8==3.9.2
 flake8-black==0.2.3
@@ -18,6 +19,7 @@ myst-parser==0.15.2
 
 # testing jupyter notebooks
 nbmake==0.8
+
 
 # -------------------------------------------------------------------------------
 # pytest -v tests/ --cov=tests/ --cov=src/ --cov=data/ --cov=workflow/ --cov-fail-under 90 --cov-report term-missing --nbmake workflow/
