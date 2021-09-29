@@ -34,7 +34,8 @@ hydrogen2 = {  # bond distance = 74 pm
     "multiplicity": 1,
 }
 
-# https://en.wikipedia.org/wiki/NanoPutian  #https://pubchem.ncbi.nlm.nih.gov/compound/11353257
+# https://en.wikipedia.org/wiki/NanoPutian
+# https://pubchem.ncbi.nlm.nih.gov/compound/11353257
 nano_boy = {
     "atoms": [
         ("O", 6.2830, -1.0594, 1.2666),

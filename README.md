@@ -1,10 +1,94 @@
+
+<!-- <p align="center">
+  <a href=https://www.python.org/downloads/release/python-390/>
+  <img src=https://img.shields.io/badge/python-3.9-blue.svg alt="Python3.9"></a>
+</p> -->
+
+
+[![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-390/)
+![Gitlab pipeline status](https://img.shields.io/gitlab/pipeline/ADanianZE/ascec/main?style=plastic)
+[![pipeline status](https://gitlab.com/ADanianZE/ascec/badges/main/pipeline.svg)](https://gitlab.com/ADanianZE/ascec/-/commits/main)
+![Gitlab code coverage](https://img.shields.io/gitlab/coverage/ADanianZE/ascec/main?style=plastic)
+[![coverage report](https://gitlab.com/ADanianZE/ascec/badges/main/coverage.svg)](https://gitlab.com/ADanianZE/ascec/-/commits/main)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gl/ADanianZE%2Fascec/main?filepath=workflow%2F01_importing_atoms_and_molecules.ipynb)
+![GitLab tag (latest by date)](https://img.shields.io/gitlab/v/tag/ADanianZE/ascec?style=plastic)
 [![mypy: checked](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![pipeline status](https://gitlab.com/ADanianZE/ascec/badges/main/pipeline.svg)](https://gitlab.com/ADanianZE/ascec/-/commits/main)
-[![coverage report](https://gitlab.com/ADanianZE/ascec/badges/main/coverage.svg)](https://gitlab.com/ADanianZE/ascec/-/commits/main)
+![Pod License](https://img.shields.io/badge/license-MIT-blue.svg)
+
+# Atomi and Molecular Cluster Energy Surface Sampler (AMCESS)
 
 
-# ascec
+
+
+### Technical Documentation
+Technical documents behind this project can be accessed [here](https://adanianze.gitlab.io/ascec).
+
+
+### Requirements
+
+First you should install the required python packages contained in the file `requirements.txt`. For developer, you should install `requirements_dev.txt`.
+
+### Installation
+AMCESS is writyten for **Python 3.9**
+
+1. Install virtual environment:
+
+    ```python -m venv venv```
+
+2. Activate virtual environment:
+
+    ```source venv/bin/activate```
+
+3. Install dependencies:
+
+    ```pip install -r requirements.txt```
+
+      3.1. For developer:
+             ```pip install -r requirements_dev.txt```
+
+      3.2 Run all test:
+            ``tox``
+
+
+4. Run AMCESS:
+
+    ```python main.py```
+
+### Usage
+
+A detail workflow is provide into `workflow` directory. It has a list of Jupyter notebook with detail examples about AMCESS tools and capabilities.
+
+Workflow:
+1. Getting starting with atoms and molecules properties. 
+      - Notebook ([binder](https://mybinder.org/v2/gl/ADanianZE%2Fascec/main?filepath=workflow%2F01_importing_atoms_and_molecules.ipynb)): `01_importing_atoms_and_molecules.ipynb` 
+2. Translating and rotating atoms and molecules. 
+      - Notebook ([binder](https://mybinder.org/v2/gl/ADanianZE%2Fascec/main?filepath=workflow%2F02_move_rotate_molecules.ipynb)): `02_move_rotate_molecules.ipynb` 
+3. Moving Molecules randomly from a Cluster. 
+      - Notebook ([binder](https://mybinder.org/v2/gl/ADanianZE%2Fascec/main?filepath=workflow%2F03_move_rotate_cluster.ipynb)): `03_move_rotate_cluster.ipynb` 
+
+
+### Contributing
+
+...
+
+### Licence
+
+...
+
+### Authors and Acknowledgment
+Main author: Alejandra Mendez, Juan Jose Aucar, Daniel Bajac, César Ibargüen, Andy Zapata, Edison Florez (_edisonffh@mail.com_)
+
+### Project Status
+
+Under development
+
+
+
+
+---
+
+## ascec (OLD version in FORTRAN77)
 
 El ascec es un programa de annealing simulado con modificación de criterío de Metropolis,
 por Energía Cuántica o Energía Electrónica, la cual se puede calcular, usando una metodología

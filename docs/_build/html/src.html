@@ -43,7 +43,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="tests package" href="tests.html" />
-    <link rel="prev" title="main module" href="main.html" /> 
+    <link rel="prev" title="setup module" href="setup.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -91,12 +91,13 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">amcess</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="conf.html">conf module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data.html">data package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html">setup module</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">src package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-src.base_molecule">src.base_molecule module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#src-context-module">src.context module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-src.dual_annealing">src.dual_annealing module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-src.example_docs_numpy">src.example_docs_numpy module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#example">Example</a></li>
@@ -189,61 +190,43 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="src.base_molecule.Cluster">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">src.base_molecule.</span></span><span class="sig-name descname"><span class="pre">Cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.base_molecule.Cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#src.base_molecule.Molecule" title="src.base_molecule.Molecule"><code class="xref py py-class docutils literal notranslate"><span class="pre">src.base_molecule.Molecule</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.base_molecule.Molecule">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">src.base_molecule.</span></span><span class="sig-name descname"><span class="pre">Molecule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.base_molecule.Molecule" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Create an  Atomic/Molecular cluster</p>
-<blockquote>
-<div><p>The formatting of the INPUT coordinates is as follows:</p>
-<blockquote>
-<div><ol class="arabic">
-<li><dl>
-<dt>Dictionary type:</dt><dd><dl class="simple">
-<dt>{“coordinates”: [</dt><dd><p>(&lt;element&gt; &lt;X&gt; &lt;Y&gt; &lt;Z&gt;),
-(&lt;element&gt; &lt;X&gt; &lt;Y&gt; &lt;Z&gt;),
-(&lt;element&gt; &lt;X&gt; &lt;Y&gt; &lt;Z&gt;),
-]</p>
-</dd>
-</dl>
-<p>}</p>
-</dd>
-</dl>
-</li>
-<li><dl>
-<dt>List type:</dt><dd><dl class="simple">
-<dt>[</dt><dd><p>(&lt;element&gt; &lt;X&gt; &lt;Y&gt; &lt;Z&gt;),
-(&lt;element&gt; &lt;X&gt; &lt;Y&gt; &lt;Z&gt;),
-(&lt;element&gt; &lt;X&gt; &lt;Y&gt; &lt;Z&gt;),</p>
-</dd>
-</dl>
-<p>]</p>
-</dd>
-</dl>
-</li>
-<li><p>Cluster type (Cluster Object)</p></li>
+<p>Create an Atomic/Molecular cluster. The formatting of the INPUT coordinates
+is as follows (any):</p>
+<ol class="arabic simple">
+<li><p>Dictionary type: {“atoms”: [(&lt;element&gt; &lt;X&gt; &lt;Y&gt; &lt;Z&gt;), …]}</p></li>
+<li><p>List type: [(&lt;element&gt; &lt;X&gt; &lt;Y&gt; &lt;Z&gt;), …]</p></li>
+<li><p>Molecule type (Molecule Object)</p></li>
 </ol>
-</div></blockquote>
-</div></blockquote>
 <dl class="py method">
-<dt class="sig sig-object py" id="src.base_molecule.Cluster.add_fragments">
-<span class="sig-name descname"><span class="pre">add_fragments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_coordinates</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.base_molecule.Cluster.add_fragments" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a NEW Cluster Object</p>
+<dt class="sig sig-object py" id="src.base_molecule.Molecule.add_fragments">
+<span class="sig-name descname"><span class="pre">add_fragments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_coordinates</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.base_molecule.Molecule.add_fragments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a NEW Molecule Object</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="src.base_molecule.Cluster.atomic_masses">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">atomic_masses</span></span><a class="headerlink" href="#src.base_molecule.Cluster.atomic_masses" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="src.base_molecule.Molecule.atomic_masses">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">atomic_masses</span></span><a class="headerlink" href="#src.base_molecule.Molecule.atomic_masses" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="src.base_molecule.Cluster.cartesian_coordinates">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">cartesian_coordinates</span></span><a class="headerlink" href="#src.base_molecule.Cluster.cartesian_coordinates" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="src.base_molecule.Molecule.cartesian_coordinates">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">cartesian_coordinates</span></span><a class="headerlink" href="#src.base_molecule.Molecule.cartesian_coordinates" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="src.base_molecule.Cluster.center_of_mass">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">center_of_mass</span></span><em class="property"><span class="pre">:</span> <span class="pre">tuple</span></em><a class="headerlink" href="#src.base_molecule.Cluster.center_of_mass" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="src.base_molecule.Molecule.center_of_mass">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">center_of_mass</span></span><em class="property"><span class="pre">:</span> <span class="pre">tuple</span></em><a class="headerlink" href="#src.base_molecule.Molecule.center_of_mass" title="Permalink to this definition">¶</a></dt>
 <dd><p>[summary]</p>
 <blockquote>
-<div><p>total mass for dummy atoms (not in th ePeriodic Table) is equal to ONE (1)</p>
+<div><p>total mass for dummy atoms (not in th ePeriodic Table) is equal
+to ONE (1)</p>
 </div></blockquote>
 <dl class="simple">
 <dt>tuple<span class="classifier">(float, float, float)</span></dt><dd><p>[description]</p>
@@ -252,77 +235,80 @@
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="src.base_molecule.Cluster.coordinates">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">coordinates</span></span><a class="headerlink" href="#src.base_molecule.Cluster.coordinates" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="src.base_molecule.Molecule.coordinates">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">coordinates</span></span><a class="headerlink" href="#src.base_molecule.Molecule.coordinates" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="src.base_molecule.Cluster.delete_fragments">
-<span class="sig-name descname"><span class="pre">delete_fragments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fragment</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.base_molecule.Cluster.delete_fragments" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a NEW Cluster Object</p>
+<dt class="sig sig-object py" id="src.base_molecule.Molecule.delete_fragments">
+<span class="sig-name descname"><span class="pre">delete_fragments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fragment</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.base_molecule.Molecule.delete_fragments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a NEW Molecule Object</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="src.base_molecule.Cluster.get_fragments">
-<span class="sig-name descname"><span class="pre">get_fragments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fragment</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.base_molecule.Cluster.get_fragments" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="src.base_molecule.Molecule.get_fragments">
+<span class="sig-name descname"><span class="pre">get_fragments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fragment</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.base_molecule.Molecule.get_fragments" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a NEW Object with coordinates of the selected fragment</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="src.base_molecule.Cluster.principal_axis">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">principal_axis</span></span><em class="property"><span class="pre">:</span> <span class="pre">tuple</span></em><a class="headerlink" href="#src.base_molecule.Cluster.principal_axis" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="src.base_molecule.Molecule.principal_axis">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">principal_axis</span></span><em class="property"><span class="pre">:</span> <span class="pre">tuple</span></em><a class="headerlink" href="#src.base_molecule.Molecule.principal_axis" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="src.base_molecule.Cluster.rotate">
-<span class="sig-name descname"><span class="pre">rotate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fragment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.base_molecule.Cluster.rotate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a NEW Cluster Object with a ROTATED fragment (around internal center of mass)</p>
+<dt class="sig sig-object py" id="src.base_molecule.Molecule.rotate">
+<span class="sig-name descname"><span class="pre">rotate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fragment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.base_molecule.Molecule.rotate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a NEW Molecule Object with a ROTATED fragment
+(around internal center of mass)</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="src.base_molecule.Cluster.show_all">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">show_all</span></span><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#src.base_molecule.Cluster.show_all" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="src.base_molecule.Molecule.show_all">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">show_all</span></span><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#src.base_molecule.Molecule.show_all" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="src.base_molecule.Cluster.symbols">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">symbols</span></span><a class="headerlink" href="#src.base_molecule.Cluster.symbols" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="src.base_molecule.Molecule.symbols">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">symbols</span></span><a class="headerlink" href="#src.base_molecule.Molecule.symbols" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="src.base_molecule.Cluster.total_atoms">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">total_atoms</span></span><a class="headerlink" href="#src.base_molecule.Cluster.total_atoms" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="src.base_molecule.Molecule.total_atoms">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">total_atoms</span></span><a class="headerlink" href="#src.base_molecule.Molecule.total_atoms" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="src.base_molecule.Cluster.total_fragments">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">total_fragments</span></span><a class="headerlink" href="#src.base_molecule.Cluster.total_fragments" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="src.base_molecule.Molecule.total_fragments">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">total_fragments</span></span><a class="headerlink" href="#src.base_molecule.Molecule.total_fragments" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="src.base_molecule.Cluster.total_mass">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">total_mass</span></span><em class="property"><span class="pre">:</span> <span class="pre">float</span></em><a class="headerlink" href="#src.base_molecule.Cluster.total_mass" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="src.base_molecule.Molecule.total_mass">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">total_mass</span></span><em class="property"><span class="pre">:</span> <span class="pre">float</span></em><a class="headerlink" href="#src.base_molecule.Molecule.total_mass" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sum atomic masses</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="src.base_molecule.Cluster.translate">
-<span class="sig-name descname"><span class="pre">translate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fragment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.base_molecule.Cluster.translate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a NEW Cluster Object with a TRANSLATED fragment</p>
+<dt class="sig sig-object py" id="src.base_molecule.Molecule.translate">
+<span class="sig-name descname"><span class="pre">translate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fragment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.base_molecule.Molecule.translate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a NEW Molecule Object with a TRANSLATED fragment</p>
 </dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="src.base_molecule.Molecule.xyz">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">xyz</span></span><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><a class="headerlink" href="#src.base_molecule.Molecule.xyz" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
-</section>
-<section id="src-context-module">
-<h2>src.context module<a class="headerlink" href="#src-context-module" title="Permalink to this headline">¶</a></h2>
 </section>
 <section id="module-src.dual_annealing">
 <span id="src-dual-annealing-module"></span><h2>src.dual_annealing module<a class="headerlink" href="#module-src.dual_annealing" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="src.dual_annealing.solve_dual_annealing">
 <span class="sig-prename descclassname"><span class="pre">src.dual_annealing.</span></span><span class="sig-name descname"><span class="pre">solve_dual_annealing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.dual_annealing.solve_dual_annealing" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find the global minimum of a function using Dual Annealing [1].</p>
+<dd><p>Find the global minimum of a function using Dual Annealing <a href="#id6"><span class="problematic" id="id1">[1]_</span></a>.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">solve_dual_annealing</span><span class="p">(</span>
 <span class="go">            function=lambda x: (x[0] ** 2 + x[1] - 11) ** 2,</span>
 <span class="go">            bounds=[(-5, 5), (-5, 5)],</span>
@@ -339,9 +325,10 @@ for the objective function parameter.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt>Optimize Result</dt><dd><p>The optimization result represented as a OptimizeResult object. Important
-attributes are: x the solution array, fun the value of the function at the
-solution, and message which describes the cause of the termination.
+<dt>Optimize Result</dt><dd><p>The optimization result represented as a OptimizeResult object.
+Important attributes are: x the solution array, fun the value of the
+function at the solution, and message which describes the cause of
+the termination.
 See OptimizeResult for a description of other attributes.</p>
 </dd>
 </dl>
@@ -349,8 +336,7 @@ See OptimizeResult for a description of other attributes.</p>
 <dt>Exception</dt><dd><p>if not <code class="docutils literal notranslate"><span class="pre">function</span></code> are set for passed in as parameters</p>
 </dd>
 </dl>
-<p><strong>References [1]:</strong> Tsallis C. Possible generalization of Boltzmann-Gibbs
-statistics. Journal of Statistical Physics, 52, 479-487 (1998).</p>
+<p>statistics. Journal of Statistical Physics, 52, 479-487 (1998).</p>
 <p>Check <code class="docutils literal notranslate"><span class="pre">scipy.optimize.dual_annealing</span></code> official documentation</p>
 </dd></dl>
 
@@ -358,7 +344,7 @@ statistics. Journal of Statistical Physics, 52, 479-487 (1998).</p>
 <section id="module-src.example_docs_numpy">
 <span id="src-example-docs-numpy-module"></span><h2>src.example_docs_numpy module<a class="headerlink" href="#module-src.example_docs_numpy" title="Permalink to this headline">¶</a></h2>
 <p>Example NumPy style docstrings.</p>
-<p>This module demonstrates documentation as specified by the <a href="#id5"><span class="problematic" id="id6">`NumPy
+<p>This module demonstrates documentation as specified by the <a href="#id7"><span class="problematic" id="id8">`NumPy
 Documentation HOWTO`_</span></a>. Docstrings may extend over multiple lines. Sections
 are created with a section header followed by an underline of equal length.</p>
 <section id="example">
@@ -569,9 +555,9 @@ they should be listed as <code class="docutils literal notranslate"><span class=
 </dd>
 <dt>param2<span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>, optional</span></dt><dd><p>The second parameter.</p>
 </dd>
-<dt><a href="#id1"><span class="problematic" id="id2">*</span></a>args</dt><dd><p>Variable length argument list.</p>
+<dt><a href="#id2"><span class="problematic" id="id3">*</span></a>args</dt><dd><p>Variable length argument list.</p>
 </dd>
-<dt><a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs</dt><dd><p>Arbitrary keyword arguments.</p>
+<dt><a href="#id4"><span class="problematic" id="id5">**</span></a>kwargs</dt><dd><p>Arbitrary keyword arguments.</p>
 </dd>
 </dl>
 <dl>
@@ -620,7 +606,7 @@ on the first line, separated by a colon.</p>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="tests.html" class="btn btn-neutral float-right" title="tests package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="main.html" class="btn btn-neutral float-left" title="main module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="setup.html" class="btn btn-neutral float-left" title="setup module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

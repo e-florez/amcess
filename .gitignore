@@ -75,6 +75,7 @@ pytestdebug.log
 .idea/
 .env
 .venv
+*venv
 env/
 venv/
 ENV/
@@ -124,6 +125,9 @@ instance/
 .scrapy
 
 # Sphinx documentation
+*/_build/*
+_build/
+html/
 docs/_build/
 doc/_build/
 
