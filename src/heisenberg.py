@@ -31,14 +31,17 @@ def build_input_pyscf(x, molecule_object, icall):
         [type]: [description]
     """
 
+    x_random = np.zeros((len(x[:])),dtype=float)
     if icall == 0:
         system_object = molecule_object
     else:
         system_object = before_coordinates.system
+        mass_centers = np.zeros((system_object._total_fragments, 3),dtype=float)
+        for i in range(system_object._total_fragments):
+            mass_centers[i] = system_object.get_fragments(i).center_of_mass
+        x_random = x #- mass_centers.reshape((system_object._total_fragments*3))
 
 #En el primer llamado, para cuando x0 = coordinates
-    x_random = np.zeros((len(x[:])),dtype=float)
-    x_random = x
 
     new_geom = dict()
     #print("x_",x_random)
@@ -46,6 +49,7 @@ def build_input_pyscf(x, molecule_object, icall):
         if (len(system_object.get_fragments(i).symbols)) > 1:
         #Rotate and translate
         #! aleja las moléculas de agua
+        #! si le resto el cm a x, ahora casi no se mueven las moleculas
             new_geom[i] = {"atoms": system_object.get_fragments(i).\
                 rotate(0,x_random[i*3],x_random[i*3 + 1],x_random[i*3 + 2]).\
                 translate(0,x_random[i*3],x_random[i*3 + 1],x_random[i*3 + 2])._coordinates}

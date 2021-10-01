@@ -24,24 +24,15 @@ from heisenberg import *
 from move_fragments import *
 # pytest 6.2.5
 
-#def solve_dual_annealing(func, bounds, ascec_activation=True,
-#                         there_is_molecule = None,
-#                         system_object = None,
-#                         seed=None,
-#                         NT=1000, T0=5230.0, dT=2e-5, mxcycle=10000000.0,
-#                         local_search_options={},
-#                         no_local_search=False, visit_regions=2.62,
-#                         accept=-5.0,
-#                         x0=None, args=(), callback=None):
-def solve_dual_annealing(func, bounds, ascec_activation,
-                         there_is_molecule,
-                         system_object,
-                         seed,
-                         NT, T0, dT, mxcycle,
-                         local_search_options,
-                         no_local_search, visit_regions,
-                         accept,
-                         x0, args, callback):
+def solve_dual_annealing(func, bounds, ascec_activation=False,
+                         there_is_molecule = None,
+                         system_object = None,
+                         seed=None,
+                         NT=1000, T0=5230.0, dT=2e-5, mxcycle=10000000.0,
+                         local_search_options={},
+                         no_local_search=False, visit_regions=2.62,
+                         accept=-5.0,
+                         x0=None, args=(), callback=None):
     """Find the global minimum of a function using Dual Annealing [1].
 
         Example:

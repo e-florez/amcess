@@ -49,5 +49,5 @@ search_setting  = {
 
 search_config = SearchConfig(h2o, search_setting)
 
-search_config.run()
+search_config.run(x0 = [0,0,0,0,0,0])
 print(search_config._search)
