@@ -41,15 +41,14 @@ def build_input_pyscf(x, molecule_object, icall):
             mass_centers[i] = system_object.get_fragments(i).center_of_mass
         x_random = x #- mass_centers.reshape((system_object._total_fragments*3))
 
-#En el primer llamado, para cuando x0 = coordinates
-
     new_geom = dict()
-    #print("x_",x_random)
     for i in range(system_object._total_fragments):
         if (len(system_object.get_fragments(i).symbols)) > 1:
         #Rotate and translate
         #! aleja las moléculas de agua
         #! si le resto el cm a x, ahora casi no se mueven las moleculas
+        #? cuando no se alejan tiene difultad para rotar las moleculas de agua
+        #? para favorecer la disposición en que se forma el EH
             new_geom[i] = {"atoms": system_object.get_fragments(i).\
                 rotate(0,x_random[i*3],x_random[i*3 + 1],x_random[i*3 + 2]).\
                 translate(0,x_random[i*3],x_random[i*3 + 1],x_random[i*3 + 2])._coordinates}
@@ -88,9 +87,6 @@ def hamiltonian_pyscf(x, *args):
     input_pyscf, new_object = build_input_pyscf(x, args[1], args[2])
 
     mol = gto.M(atom = input_pyscf, basis = args[0],)
-    #mol = gto.M(atom = [['H', x[0], x[1], x[2]],
-    #                    ['H', x[3], x[4], x[5]],
-    #                   ], basis = args[0],)
 
     print(new_object._total_atoms)
     e = scf.HF(mol).kernel()

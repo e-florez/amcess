@@ -2,18 +2,8 @@ import sys
 import numpy as np
 sys.path.append('../')
 from base_molecule import Cluster
-#from m_dual_annealing import solve_dual_annealing
 from search_configuration import SearchConfig
 
-#Sistema de estudio
-#hydrogen2 = {  # bond distance = 74 pm
-#    "coordinates": [
-#        ("H", 1, 1, 0),
-#        ("H", 1.74, 1, 0),
-#    ],
-#    "charge": 0,
-#    "multiplicity": 1,
-#}
 #################################################
 # Configuración del sistema de trabajo
 #################################################
