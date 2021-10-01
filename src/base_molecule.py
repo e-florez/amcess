@@ -52,46 +52,24 @@ class Molecule:
         # checking format
         self._check_coordinates
 
-    @property
-    def total_fragments(self):
-        return self._total_fragments
+    def __str__(self) -> str:
+        """Printing Molecule coordinates using XYZ format"""
+        _comments = (
+            f"--system of {self.total_fragments} molecules "
+            f"and {self._total_atoms} total individual atoms--"
+        )
+        _write_coordinates_xyz = f"""\t{self._total_atoms}\n{_comments:<s}\n"""
+        for _atoms in self.coordinates:
+            _write_coordinates_xyz += f"""{_atoms[0]:<s}"""
+            _write_coordinates_xyz += f"""\t{_atoms[1]:> .8f}"""
+            _write_coordinates_xyz += f"""\t{_atoms[2]:> .8f}"""
+            _write_coordinates_xyz += f"""\t{_atoms[3]:> .8f}\n"""
 
-    @property
-    def total_atoms(self):
-        return self._total_atoms
+        # ANSI escape codes: move cursor up one line
+        # _write_coordinates_xyz += f"""\033[A"""
 
-    @property
-    def coordinates(self):
-        self._coordinates = list()
-        for fragment in self._cluster:
-            for atom in self._cluster[fragment]:
-                self._coordinates.append(atom)
+        return _write_coordinates_xyz
 
-        return self._coordinates
-
-    @property
-    def show_all(self) -> bool:
-        # TODO: print everthing, symbols, mass, etc.
-
-        print("\n")
-        print("total fragments: ", self.total_fragments)
-        print("total atoms: ", self.total_atoms)
-        print("symbols: ", self.symbols)
-        print("atomic masses: ", self.atomic_masses)
-        print("total mass: ", self.total_mass)
-
-        print("\n")
-        for i, fragment in enumerate(self._cluster):
-            print("-" * 50)
-            print(f" fragment number: {i}")
-            print("-" * 50)
-            individual_fragmen = self.get_fragments(fragment)
-            print(individual_fragmen)
-            print("-" * 50 + "\n ***")
-
-        return True
-
-    @property
     def _check_coordinates(self) -> bool:
         """Checking XYZ format (str, float, float, float)"""
 
@@ -124,50 +102,6 @@ class Molecule:
 
         return True
 
-    def __str__(self) -> str:
-        """Printing Molecule coordinates using XYZ format"""
-        _comments = (
-            f"--system of {self.total_fragments} molecules "
-            f"and {self._total_atoms} total individual atoms--"
-        )
-        _write_coordinates_xyz = f"""\t{self._total_atoms}\n{_comments:<s}\n"""
-        for _atoms in self.coordinates:
-            _write_coordinates_xyz += f"""{_atoms[0]:<s}"""
-            _write_coordinates_xyz += f"""\t{_atoms[1]:> .8f}"""
-            _write_coordinates_xyz += f"""\t{_atoms[2]:> .8f}"""
-            _write_coordinates_xyz += f"""\t{_atoms[3]:> .8f}\n"""
-
-        # ANSI escape codes: move cursor up one line
-        # _write_coordinates_xyz += f"""\033[A"""
-
-        return _write_coordinates_xyz
-
-    @property
-    def xyz(self) -> str:
-        return self.__str__()
-
-    def __repr__(self) -> str:
-        return self.__str__()
-
-    @property
-    def cartesian_coordinates(self):
-        # ! cartesian coordinates and coordinates are different function
-        # ! may cause user confusion to choose and generate logic later
-        return [c[1:] for c in self.coordinates]
-
-    @property
-    def symbols(self):
-        return [c[0] for c in self.coordinates]
-
-    @property
-    def atomic_masses(self):
-        return [atomic_mass(s) for s in self.symbols]
-
-    @property
-    def total_mass(self) -> float:
-        """Sum atomic masses"""
-        return sum(self.atomic_masses)
-
     def _check_fragment(self, fragment: int):
         try:
             self._fragment = int(fragment)
@@ -182,56 +116,15 @@ class Molecule:
         else:
             return True
 
-    def get_fragments(self, fragment):
-        """Returns a NEW Object with coordinates of the selected fragment"""
-        self._fragment = fragment
-        if self._check_fragment(self._fragment):
-            return Molecule({"atoms": self._cluster[self._fragment]})
-        else:
-            print(
-                f"\n* Warning! selecting a fragment: {self._fragment} "
-                + "(atom/molecule) must be an integer in "
-                + f"{list(self._cluster.keys())}"
-            )
-            return deepcopy(self)
+    @property
+    def atomic_masses(self):
+        return [atomic_mass(s) for s in self.symbols]
 
-    def delete_fragments(self, fragment: int):
-        """Returns a NEW Molecule Object"""
-        self._fragment = fragment
-        if not self._check_fragment(self._fragment):
-            return deepcopy(self)
-
-        _new_coordinates = deepcopy(self._cluster)
-        _new_coordinates.pop(self._fragment)
-
-        _new_cluster = dict()
-        for i, fragment in enumerate(_new_coordinates):
-            _new_cluster[i] = {"atoms": _new_coordinates[fragment]}
-
-        return Molecule(*_new_cluster.values())
-
-    def add_fragments(self, new_coordinates):
-        """Returns a NEW Molecule Object"""
-        _new_cluster = dict()
-        for i, fragment in enumerate(self._cluster):
-            _new_cluster[i] = {"atoms": self._cluster[fragment]}
-
-        if type(new_coordinates) == list:
-            _new_cluster[len(self._cluster)] = {"atoms": new_coordinates}
-        elif type(new_coordinates) == dict:
-            _new_cluster[len(self._cluster)] = new_coordinates
-        elif type(new_coordinates) == Molecule:
-            _new_cluster[len(self._cluster)] = {
-                "atoms": new_coordinates.coordinates,
-            }
-        else:
-            print(
-                "\n* Warning! fragment to add MUST be list-type "
-                + " dict-type with 'coordinates' as a key. Check class help"
-            )
-            return deepcopy(self)
-
-        return Molecule(*_new_cluster.values())
+    @property
+    def cartesian_coordinates(self):
+        # ! cartesian coordinates and coordinates are different function
+        # ! may cause user confusion to choose and generate logic later
+        return [c[1:] for c in self.coordinates]
 
     @property
     def center_of_mass(self) -> tuple:
@@ -261,6 +154,15 @@ class Molecule:
         return self._center_of_mass
 
     @property
+    def coordinates(self):
+        self._coordinates = list()
+        for fragment in self._cluster:
+            for atom in self._cluster[fragment]:
+                self._coordinates.append(atom)
+
+        return self._coordinates
+
+    @property
     def principal_axis(self) -> tuple:
 
         self._principal_axis = np.asarray(
@@ -268,6 +170,100 @@ class Molecule:
         ) - np.asarray(self.center_of_mass)
 
         return tuple(self._principal_axis)
+
+    @property
+    def show_all(self) -> bool:
+        # TODO: print everthing, symbols, mass, etc.
+
+        print("\n")
+        print("total fragments: ", self.total_fragments)
+        print("total atoms: ", self.total_atoms)
+        print("symbols: ", self.symbols)
+        print("atomic masses: ", self.atomic_masses)
+        print("total mass: ", self.total_mass)
+
+        print("\n")
+        for i, fragment in enumerate(self._cluster):
+            print("-" * 50)
+            print(f" fragment number: {i}")
+            print("-" * 50)
+            individual_fragmen = self.get_fragments(fragment)
+            print(individual_fragmen)
+            print("-" * 50 + "\n ***")
+
+        return True
+
+    @property
+    def symbols(self):
+        return [c[0] for c in self.coordinates]
+
+    @property
+    def total_atoms(self):
+        return self._total_atoms
+
+    @property
+    def total_fragments(self):
+        return self._total_fragments
+
+    @property
+    def total_mass(self) -> float:
+        """Sum atomic masses"""
+        return sum(self.atomic_masses)
+
+    @property
+    def xyz(self) -> str:
+        return self.__str__()
+
+    def add_fragments(self, new_coordinates):
+        """Returns a NEW Molecule Object"""
+        _new_cluster = dict()
+        for i, fragment in enumerate(self._cluster):
+            _new_cluster[i] = {"atoms": self._cluster[fragment]}
+
+        if type(new_coordinates) == list:
+            _new_cluster[len(self._cluster)] = {"atoms": new_coordinates}
+        elif type(new_coordinates) == dict:
+            _new_cluster[len(self._cluster)] = new_coordinates
+        elif type(new_coordinates) == Molecule:
+            _new_cluster[len(self._cluster)] = {
+                "atoms": new_coordinates.coordinates,
+            }
+        else:
+            print(
+                "\n* Warning! fragment to add MUST be list-type "
+                + " dict-type with 'coordinates' as a key. Check class help"
+            )
+            return deepcopy(self)
+
+        return Molecule(*_new_cluster.values())
+
+    def delete_fragments(self, fragment: int):
+        """Returns a NEW Molecule Object"""
+        self._fragment = fragment
+        if not self._check_fragment(self._fragment):
+            return deepcopy(self)
+
+        _new_coordinates = deepcopy(self._cluster)
+        _new_coordinates.pop(self._fragment)
+
+        _new_cluster = dict()
+        for i, fragment in enumerate(_new_coordinates):
+            _new_cluster[i] = {"atoms": _new_coordinates[fragment]}
+
+        return Molecule(*_new_cluster.values())
+
+    def get_fragments(self, fragment):
+        """Returns a NEW Object with coordinates of the selected fragment"""
+        self._fragment = fragment
+        if self._check_fragment(self._fragment):
+            return Molecule({"atoms": self._cluster[self._fragment]})
+        else:
+            print(
+                f"\n* Warning! selecting a fragment: {self._fragment} "
+                + "(atom/molecule) must be an integer in "
+                + f"{list(self._cluster.keys())}"
+            )
+            return deepcopy(self)
 
     def translate(self, fragment, x=0, y=0, z=0):
         """Returns a NEW Molecule Object with a TRANSLATED fragment"""
