@@ -189,6 +189,7 @@ def solve_dual_annealing(func, bounds, ascec_activation,
         raise ValueError('Bounds do not have the same dimensions')
     # Wrapper for the objective function
     func_wrapper = ObjectiveFunWrapper(func, mxcycle, *args)
+
     # Wrapper ascec
     ascec_wrapper = Ascec(ascec_activation)
     # Wrapper fot the minimizer
@@ -204,6 +205,10 @@ def solve_dual_annealing(func, bounds, ascec_activation,
     # re-annealing
     temperature_restart = T0 * dT
 
+    icall = list(func_wrapper.args) #para poder saber el número de llamado en heisenberg
+    icall[2] = 1
+    func_wrapper.args = tuple(icall)
+
     if there_is_molecule == 0:
         # VisitingDistribution instance (Class used to generate new coordinates)
         #! VisitingDistribution is based Cauchy-Lorentz distribution, se podría
@@ -215,6 +220,8 @@ def solve_dual_annealing(func, bounds, ascec_activation,
         visit_dist = VisitingDistribution(lower, upper, visit_regions, rand_state)
     else:
         #visit_dist = Cluster(args)
+        #!Por ahora no lo hace nada, no lo estoy usando, estoy usando lo anterior articulado
+        #!con base_molecule
         visit_dist = MoveFragments(system_object, lower, upper, visit_regions, rand_state)
 
     # Strategy chain instance (Markov Chain, call: VisitingDistribution)

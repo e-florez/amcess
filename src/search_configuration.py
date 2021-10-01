@@ -27,7 +27,8 @@ class SearchConfig:
             self._no_local_search = False
             self._args = (self._basis, self._system_object, 0) #0 asociar al llamado
             self._local_search_options = {}
-            self._x0 = [0.00000000e+00,  0.00000000e+00, -9.46852623e-06, 1., 1., 0.99999053]
+            self._x0 = [0.00000000e+00,  0.00000000e+00, 0.0000000,\
+                        0.00000000e+00,  0.00000000e+00, 0.00000000]
             self._callback = None
             self._ascec_activation = False
             self._seed = None
@@ -38,16 +39,9 @@ class SearchConfig:
     def program_cost_function(self, _program_calculate_cost_function):
         if _program_calculate_cost_function == 1:
             return hamiltonian_pyscf
-#        if _program_calculate_cost_function == 1:
-#            return hamiltonian_horton
 
     def run(self, **kwargs):
         if self._search_methodology == 1:
-            #self._search = solve_dual_annealing(self._func, self._bounds,
-            #                                    self._ascec_activation,
-            #                                    self._there_is_molecule,
-            #                                    self._system_object,
-            #                                    **kwargs)
             self._search = solve_dual_annealing(self._func, self._bounds,
                                                 self._ascec_activation,
                                                 self._there_is_molecule,
@@ -61,9 +55,3 @@ class SearchConfig:
                                                 self._accept,
                                                 self._x0, self._args,
                                                 self._callback)
-
-
-#        if self._se... :
-#            ... = abc(x,y,z, ...)
-#        if self._.....:
-#           ... = bayesiana(x,y,z, ....)
