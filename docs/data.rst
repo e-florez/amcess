@@ -12,10 +12,10 @@ data.atomic\_data module
    :undoc-members:
    :show-inheritance:
 
-data.main module
-----------------
+data.molecules\_coordinates module
+----------------------------------
 
-.. automodule:: data.main
+.. automodule:: data.molecules_coordinates
    :members:
    :undoc-members:
    :show-inheritance:

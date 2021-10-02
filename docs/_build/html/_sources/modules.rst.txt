@@ -6,5 +6,7 @@ amcess
 
    conf
    data
+   main
+   setup
    src
    tests

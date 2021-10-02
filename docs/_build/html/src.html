@@ -43,7 +43,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="tests package" href="tests.html" />
-    <link rel="prev" title="data package" href="data.html" /> 
+    <link rel="prev" title="setup module" href="setup.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -57,15 +57,15 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> AMCESS
+            <a href="index.html">
           
 
+          
+            
+            <img src="_static/amcess_logo.png" class="logo" alt="Logo"/>
           
           </a>
 
-          
-            
-            
           
 
           
@@ -93,16 +93,18 @@
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">amcess</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="conf.html">conf module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data.html">data package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html">setup module</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">src package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-src.base_molecule">src.base_molecule module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-src.dual_annealing">src.dual_annealing module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-src.example_numpy">src.example_numpy module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-src.example_docs_numpy">src.example_docs_numpy module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#example">Example</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#notes">Notes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#attributes">Attributes</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-src.main">src.main module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-src">Module contents</a></li>
 </ul>
 </li>
@@ -183,12 +185,130 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </section>
+<section id="module-src.base_molecule">
+<span id="src-base-molecule-module"></span><h2>src.base_molecule module<a class="headerlink" href="#module-src.base_molecule" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="src.base_molecule.Cluster">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">src.base_molecule.</span></span><span class="sig-name descname"><span class="pre">Cluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.base_molecule.Cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#src.base_molecule.Molecule" title="src.base_molecule.Molecule"><code class="xref py py-class docutils literal notranslate"><span class="pre">src.base_molecule.Molecule</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.base_molecule.Molecule">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">src.base_molecule.</span></span><span class="sig-name descname"><span class="pre">Molecule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.base_molecule.Molecule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Create an Atomic/Molecular cluster. The formatting of the INPUT coordinates
+is as follows (any):</p>
+<ol class="arabic simple">
+<li><p>Dictionary type: {“atoms”: [(&lt;element&gt; &lt;X&gt; &lt;Y&gt; &lt;Z&gt;), …]}</p></li>
+<li><p>List type: [(&lt;element&gt; &lt;X&gt; &lt;Y&gt; &lt;Z&gt;), …]</p></li>
+<li><p>Molecule type (Molecule Object)</p></li>
+</ol>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.base_molecule.Molecule.add_fragments">
+<span class="sig-name descname"><span class="pre">add_fragments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_coordinates</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.base_molecule.Molecule.add_fragments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a NEW Molecule Object</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="src.base_molecule.Molecule.atomic_masses">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">atomic_masses</span></span><a class="headerlink" href="#src.base_molecule.Molecule.atomic_masses" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="src.base_molecule.Molecule.cartesian_coordinates">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">cartesian_coordinates</span></span><a class="headerlink" href="#src.base_molecule.Molecule.cartesian_coordinates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="src.base_molecule.Molecule.center_of_mass">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">center_of_mass</span></span><em class="property"><span class="pre">:</span> <span class="pre">tuple</span></em><a class="headerlink" href="#src.base_molecule.Molecule.center_of_mass" title="Permalink to this definition">¶</a></dt>
+<dd><p>[summary]</p>
+<blockquote>
+<div><p>total mass for dummy atoms (not in th ePeriodic Table) is equal
+to ONE (1)</p>
+</div></blockquote>
+<dl class="simple">
+<dt>tuple<span class="classifier">(float, float, float)</span></dt><dd><p>[description]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="src.base_molecule.Molecule.coordinates">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">coordinates</span></span><a class="headerlink" href="#src.base_molecule.Molecule.coordinates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.base_molecule.Molecule.delete_fragments">
+<span class="sig-name descname"><span class="pre">delete_fragments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fragment</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.base_molecule.Molecule.delete_fragments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a NEW Molecule Object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.base_molecule.Molecule.get_fragments">
+<span class="sig-name descname"><span class="pre">get_fragments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fragment</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.base_molecule.Molecule.get_fragments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a NEW Object with coordinates of the selected fragment</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="src.base_molecule.Molecule.principal_axis">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">principal_axis</span></span><em class="property"><span class="pre">:</span> <span class="pre">tuple</span></em><a class="headerlink" href="#src.base_molecule.Molecule.principal_axis" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.base_molecule.Molecule.rotate">
+<span class="sig-name descname"><span class="pre">rotate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fragment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.base_molecule.Molecule.rotate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a NEW Molecule Object with a ROTATED fragment
+(around internal center of mass)</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="src.base_molecule.Molecule.show_all">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">show_all</span></span><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#src.base_molecule.Molecule.show_all" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="src.base_molecule.Molecule.symbols">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">symbols</span></span><a class="headerlink" href="#src.base_molecule.Molecule.symbols" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="src.base_molecule.Molecule.total_atoms">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">total_atoms</span></span><a class="headerlink" href="#src.base_molecule.Molecule.total_atoms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="src.base_molecule.Molecule.total_fragments">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">total_fragments</span></span><a class="headerlink" href="#src.base_molecule.Molecule.total_fragments" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="src.base_molecule.Molecule.total_mass">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">total_mass</span></span><em class="property"><span class="pre">:</span> <span class="pre">float</span></em><a class="headerlink" href="#src.base_molecule.Molecule.total_mass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sum atomic masses</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.base_molecule.Molecule.translate">
+<span class="sig-name descname"><span class="pre">translate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fragment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.base_molecule.Molecule.translate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a NEW Molecule Object with a TRANSLATED fragment</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="src.base_molecule.Molecule.xyz">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">xyz</span></span><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><a class="headerlink" href="#src.base_molecule.Molecule.xyz" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
 <section id="module-src.dual_annealing">
 <span id="src-dual-annealing-module"></span><h2>src.dual_annealing module<a class="headerlink" href="#module-src.dual_annealing" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="src.dual_annealing.solve_dual_annealing">
 <span class="sig-prename descclassname"><span class="pre">src.dual_annealing.</span></span><span class="sig-name descname"><span class="pre">solve_dual_annealing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.dual_annealing.solve_dual_annealing" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find the global minimum of a function using Dual Annealing [1].</p>
+<dd><p>Find the global minimum of a function using Dual Annealing <a href="#id6"><span class="problematic" id="id1">[1]_</span></a>.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">solve_dual_annealing</span><span class="p">(</span>
 <span class="go">            function=lambda x: (x[0] ** 2 + x[1] - 11) ** 2,</span>
 <span class="go">            bounds=[(-5, 5), (-5, 5)],</span>
@@ -205,9 +325,10 @@ for the objective function parameter.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt>Optimize Result</dt><dd><p>The optimization result represented as a OptimizeResult object. Important
-attributes are: x the solution array, fun the value of the function at the
-solution, and message which describes the cause of the termination.
+<dt>Optimize Result</dt><dd><p>The optimization result represented as a OptimizeResult object.
+Important attributes are: x the solution array, fun the value of the
+function at the solution, and message which describes the cause of
+the termination.
 See OptimizeResult for a description of other attributes.</p>
 </dd>
 </dl>
@@ -215,16 +336,15 @@ See OptimizeResult for a description of other attributes.</p>
 <dt>Exception</dt><dd><p>if not <code class="docutils literal notranslate"><span class="pre">function</span></code> are set for passed in as parameters</p>
 </dd>
 </dl>
-<p><strong>References [1]:</strong> Tsallis C. Possible generalization of Boltzmann-Gibbs
-statistics. Journal of Statistical Physics, 52, 479-487 (1998).</p>
+<p>statistics. Journal of Statistical Physics, 52, 479-487 (1998).</p>
 <p>Check <code class="docutils literal notranslate"><span class="pre">scipy.optimize.dual_annealing</span></code> official documentation</p>
 </dd></dl>
 
 </section>
-<section id="module-src.example_numpy">
-<span id="src-example-numpy-module"></span><h2>src.example_numpy module<a class="headerlink" href="#module-src.example_numpy" title="Permalink to this headline">¶</a></h2>
+<section id="module-src.example_docs_numpy">
+<span id="src-example-docs-numpy-module"></span><h2>src.example_docs_numpy module<a class="headerlink" href="#module-src.example_docs_numpy" title="Permalink to this headline">¶</a></h2>
 <p>Example NumPy style docstrings.</p>
-<p>This module demonstrates documentation as specified by the <a href="#id5"><span class="problematic" id="id6">`NumPy
+<p>This module demonstrates documentation as specified by the <a href="#id7"><span class="problematic" id="id8">`NumPy
 Documentation HOWTO`_</span></a>. Docstrings may extend over multiple lines. Sections
 are created with a section header followed by an underline of equal length.</p>
 <section id="example">
@@ -260,8 +380,8 @@ with it.</p>
 </dd>
 </dl>
 <dl class="py class">
-<dt class="sig sig-object py" id="src.example_numpy.ExampleClass">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">src.example_numpy.</span></span><span class="sig-name descname"><span class="pre">ExampleClass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.example_numpy.ExampleClass" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="src.example_docs_numpy.ExampleClass">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">src.example_docs_numpy.</span></span><span class="sig-name descname"><span class="pre">ExampleClass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.example_docs_numpy.ExampleClass" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>The summary line for a class docstring should fit on one line.</p>
 <p>If the class has public attributes, they may be documented here
@@ -277,26 +397,26 @@ in the property’s getter method.</p>
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="src.example_numpy.ExampleClass.attr3">
-<span class="sig-name descname"><span class="pre">attr3</span></span><a class="headerlink" href="#src.example_numpy.ExampleClass.attr3" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="src.example_docs_numpy.ExampleClass.attr3">
+<span class="sig-name descname"><span class="pre">attr3</span></span><a class="headerlink" href="#src.example_docs_numpy.ExampleClass.attr3" title="Permalink to this definition">¶</a></dt>
 <dd><p>Doc comment <em>inline</em> with attribute</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="src.example_numpy.ExampleClass.attr4">
-<span class="sig-name descname"><span class="pre">attr4</span></span><a class="headerlink" href="#src.example_numpy.ExampleClass.attr4" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="src.example_docs_numpy.ExampleClass.attr4">
+<span class="sig-name descname"><span class="pre">attr4</span></span><a class="headerlink" href="#src.example_docs_numpy.ExampleClass.attr4" title="Permalink to this definition">¶</a></dt>
 <dd><p>list(str): Doc comment <em>before</em> attribute, with type specified</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="src.example_numpy.ExampleClass.attr5">
-<span class="sig-name descname"><span class="pre">attr5</span></span><a class="headerlink" href="#src.example_numpy.ExampleClass.attr5" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="src.example_docs_numpy.ExampleClass.attr5">
+<span class="sig-name descname"><span class="pre">attr5</span></span><a class="headerlink" href="#src.example_docs_numpy.ExampleClass.attr5" title="Permalink to this definition">¶</a></dt>
 <dd><p>str: Docstring <em>after</em> attribute, with type specified.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="src.example_numpy.ExampleClass.example_method">
-<span class="sig-name descname"><span class="pre">example_method</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.example_numpy.ExampleClass.example_method" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="src.example_docs_numpy.ExampleClass.example_method">
+<span class="sig-name descname"><span class="pre">example_method</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.example_docs_numpy.ExampleClass.example_method" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class methods are similar to regular functions.</p>
 <p>Do not include the <cite>self</cite> parameter in the <code class="docutils literal notranslate"><span class="pre">Parameters</span></code> section.</p>
 <dl class="simple">
@@ -312,14 +432,14 @@ in the property’s getter method.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="src.example_numpy.ExampleClass.readonly_property">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">readonly_property</span></span><a class="headerlink" href="#src.example_numpy.ExampleClass.readonly_property" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="src.example_docs_numpy.ExampleClass.readonly_property">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">readonly_property</span></span><a class="headerlink" href="#src.example_docs_numpy.ExampleClass.readonly_property" title="Permalink to this definition">¶</a></dt>
 <dd><p>str: Properties should be documented in their getter method.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="src.example_numpy.ExampleClass.readwrite_property">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">readwrite_property</span></span><a class="headerlink" href="#src.example_numpy.ExampleClass.readwrite_property" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="src.example_docs_numpy.ExampleClass.readwrite_property">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">readwrite_property</span></span><a class="headerlink" href="#src.example_docs_numpy.ExampleClass.readwrite_property" title="Permalink to this definition">¶</a></dt>
 <dd><p>list(str): Properties with both a getter and setter
 should only be documented in their getter method.</p>
 <p>If the setter method contains notable behavior, it should be
@@ -329,8 +449,8 @@ mentioned here.</p>
 </dd></dl>
 
 <dl class="py exception">
-<dt class="sig sig-object py" id="src.example_numpy.ExampleError">
-<em class="property"><span class="pre">exception</span> </em><span class="sig-prename descclassname"><span class="pre">src.example_numpy.</span></span><span class="sig-name descname"><span class="pre">ExampleError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.example_numpy.ExampleError" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="src.example_docs_numpy.ExampleError">
+<em class="property"><span class="pre">exception</span> </em><span class="sig-prename descclassname"><span class="pre">src.example_docs_numpy.</span></span><span class="sig-name descname"><span class="pre">ExampleError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.example_docs_numpy.ExampleError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
 <p>Exceptions are documented in the same way as classes.</p>
 <p>The __init__ method may be documented in either the class level
@@ -353,8 +473,8 @@ convention to document the __init__ method and be consistent with it.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="src.example_numpy.example_generator">
-<span class="sig-prename descclassname"><span class="pre">src.example_numpy.</span></span><span class="sig-name descname"><span class="pre">example_generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.example_numpy.example_generator" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="src.example_docs_numpy.example_generator">
+<span class="sig-prename descclassname"><span class="pre">src.example_docs_numpy.</span></span><span class="sig-name descname"><span class="pre">example_generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.example_docs_numpy.example_generator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generators have a <code class="docutils literal notranslate"><span class="pre">Yields</span></code> section instead of a <code class="docutils literal notranslate"><span class="pre">Returns</span></code> section.</p>
 <dl class="simple">
 <dt>n<span class="classifier">int</span></dt><dd><p>The upper limit of the range to generate, from 0 to <cite>n</cite> - 1.</p>
@@ -373,8 +493,8 @@ to use the function.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="src.example_numpy.function_with_pep484_type_annotations">
-<span class="sig-prename descclassname"><span class="pre">src.example_numpy.</span></span><span class="sig-name descname"><span class="pre">function_with_pep484_type_annotations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param1</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param2</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#src.example_numpy.function_with_pep484_type_annotations" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="src.example_docs_numpy.function_with_pep484_type_annotations">
+<span class="sig-prename descclassname"><span class="pre">src.example_docs_numpy.</span></span><span class="sig-name descname"><span class="pre">function_with_pep484_type_annotations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param1</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param2</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#src.example_docs_numpy.function_with_pep484_type_annotations" title="Permalink to this definition">¶</a></dt>
 <dd><p>Example function with PEP 484 type annotations.</p>
 <p>The return type must be duplicated in the docstring to comply
 with the NumPy docstring style.</p>
@@ -391,8 +511,8 @@ with the NumPy docstring style.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="src.example_numpy.function_with_types_in_docstring">
-<span class="sig-prename descclassname"><span class="pre">src.example_numpy.</span></span><span class="sig-name descname"><span class="pre">function_with_types_in_docstring</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.example_numpy.function_with_types_in_docstring" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="src.example_docs_numpy.function_with_types_in_docstring">
+<span class="sig-prename descclassname"><span class="pre">src.example_docs_numpy.</span></span><span class="sig-name descname"><span class="pre">function_with_types_in_docstring</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.example_docs_numpy.function_with_types_in_docstring" title="Permalink to this definition">¶</a></dt>
 <dd><p>Example function with types documented in the docstring.</p>
 <p><a class="reference external" href="https://www.python.org/dev/peps/pep-0484/">PEP 484</a> type annotations are supported. If attribute, parameter, and
 return types are annotated according to <a class="reference external" href="https://www.python.org/dev/peps/pep-0484/">PEP 484</a>, they do not need to be
@@ -410,8 +530,8 @@ included in the docstring:</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="src.example_numpy.module_level_function">
-<span class="sig-prename descclassname"><span class="pre">src.example_numpy.</span></span><span class="sig-name descname"><span class="pre">module_level_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.example_numpy.module_level_function" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="src.example_docs_numpy.module_level_function">
+<span class="sig-prename descclassname"><span class="pre">src.example_docs_numpy.</span></span><span class="sig-name descname"><span class="pre">module_level_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.example_docs_numpy.module_level_function" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is an example of a module level function.</p>
 <p>Function parameters should be documented in the <code class="docutils literal notranslate"><span class="pre">Parameters</span></code> section.
 The name of each parameter is required. The type and description of each
@@ -435,9 +555,9 @@ they should be listed as <code class="docutils literal notranslate"><span class=
 </dd>
 <dt>param2<span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code>, optional</span></dt><dd><p>The second parameter.</p>
 </dd>
-<dt><a href="#id1"><span class="problematic" id="id2">*</span></a>args</dt><dd><p>Variable length argument list.</p>
+<dt><a href="#id2"><span class="problematic" id="id3">*</span></a>args</dt><dd><p>Variable length argument list.</p>
 </dd>
-<dt><a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs</dt><dd><p>Arbitrary keyword arguments.</p>
+<dt><a href="#id4"><span class="problematic" id="id5">**</span></a>kwargs</dt><dd><p>Arbitrary keyword arguments.</p>
 </dd>
 </dl>
 <dl>
@@ -465,22 +585,14 @@ that are relevant to the interface.</p>
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py" id="src.example_numpy.module_level_variable2">
-<span class="sig-prename descclassname"><span class="pre">src.example_numpy.</span></span><span class="sig-name descname"><span class="pre">module_level_variable2</span></span><em class="property"> <span class="pre">=</span> <span class="pre">98765</span></em><a class="headerlink" href="#src.example_numpy.module_level_variable2" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="src.example_docs_numpy.module_level_variable2">
+<span class="sig-prename descclassname"><span class="pre">src.example_docs_numpy.</span></span><span class="sig-name descname"><span class="pre">module_level_variable2</span></span><em class="property"> <span class="pre">=</span> <span class="pre">98765</span></em><a class="headerlink" href="#src.example_docs_numpy.module_level_variable2" title="Permalink to this definition">¶</a></dt>
 <dd><p>int: Module level variable documented inline.</p>
 <p>The docstring may span multiple lines. The type may optionally be specified
 on the first line, separated by a colon.</p>
 </dd></dl>
 
 </section>
-</section>
-<section id="module-src.main">
-<span id="src-main-module"></span><h2>src.main module<a class="headerlink" href="#module-src.main" title="Permalink to this headline">¶</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="src.main.run">
-<span class="sig-prename descclassname"><span class="pre">src.main.</span></span><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.main.run" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </section>
 <section id="module-src">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-src" title="Permalink to this headline">¶</a></h2>
@@ -494,7 +606,7 @@ on the first line, separated by a colon.</p>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="tests.html" class="btn btn-neutral float-right" title="tests package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="data.html" class="btn btn-neutral float-left" title="data package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="setup.html" class="btn btn-neutral float-left" title="setup module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

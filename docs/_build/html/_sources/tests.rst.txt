@@ -4,18 +4,10 @@ tests package
 Submodules
 ----------
 
-tests.context module
---------------------
+tests.test\_base\_molecule module
+---------------------------------
 
-.. automodule:: tests.context
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-tests.main module
------------------
-
-.. automodule:: tests.main
+.. automodule:: tests.test_base_molecule
    :members:
    :undoc-members:
    :show-inheritance:

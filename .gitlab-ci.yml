@@ -1,9 +1,39 @@
-image: "python:3.9"
+image: "python:3.8"
 
+# Change pip's cache directory to be inside the project directory since we can
+# only cache local items.
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+# Pip's cache doesn't store the python packages
+# https://pip.pypa.io/en/stable/reference/pip_install/#caching
+#
+# If you want to also cache the installed packages, you have to install
+# them in a virtualenv and cache it as well.
+cache:
+  paths:
+    - .cache/pip
+    - venv/
+    - venv_testing
 
 before_script:
   - python --version
+  - pip install virtualenv
+  - pip install sphinx
+  - pip install sphinx_rtd_theme
+  
+  # for testing purposes
+  - virtualenv venv_testing
+  - source venv_testing/bin/activate
+  # - pip install -r requirements.txt
+  - pip install -r requirements.txt -r requirements_dev.txt 
+  - deactivate 
+  
+  # for the module
+  - virtualenv venv
+  - source venv/bin/activate
   - pip install -r requirements.txt
+  - deactivate
 
 
 stages:
@@ -11,7 +41,7 @@ stages:
   - Deploy
 
 
-unit_test:
+unit_test_tox:
   stage: Test
   only:
     - branches
@@ -20,7 +50,10 @@ unit_test:
   script:
     - pwd
     - ls -l
-    - python tests/main.py
+    - source venv_testing/bin/activate
+    # - pytest -v tests/
+    - tox
+    - deactivate
 
 
 run_python:
@@ -28,7 +61,17 @@ run_python:
   script:
     - pwd
     - ls -l
-    - python src/main.py 
+    - source venv/bin/activate
+    - python main.py 
+    - deactivate
+
+  # script:
+  #   - python setup.py bdist_wheel  # Generate package
+  #   - pip install dist/*           # Install package
+  # artifacts:
+  #   paths:
+  #     - dist/*.whl
+
 
 
 pages:
@@ -38,8 +81,6 @@ pages:
   - ls -l
   - cd docs/
   - ls -l
-  - pip install sphinx_rtd_theme
-  - pip install myst-parser
   - sphinx-build -b html . ../public
   - cd ../
   artifacts:
