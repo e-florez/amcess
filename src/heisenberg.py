@@ -112,8 +112,8 @@ def hamiltonian_pyscf(x, *args):
         basis=args[0],
     )
 
-    args[2].write(str(new_object._total_atoms) + "\n")
     e = scf.HF(mol).kernel()
+    args[2].write(str(new_object._total_atoms) + "\n")
     args[2].write("Energy: " + str(e) + "\n")
     l = 0
     for symbols in new_object.symbols:
