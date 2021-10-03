@@ -1,9 +1,7 @@
-import sys
 import numpy as np
 import pytest
 
 from src.base_molecule import Molecule
-
 
 COORDINATES = {
     "dummy": [("A", 10, 20, 30), ("X0", -0.5, 0, -10)],
@@ -136,20 +134,18 @@ def test_molecule_coordinates(system, expected_coordinates):
 
 
 @pytest.mark.parametrize(
-    "system, expected_cartesian_coordinates",
+    "system, expected_coordinates",
     [
         ("dummy", [(10, 20, 30), (-0.5, 0, -10)]),
     ],
 )
-def test_molecule_cartesian_coordinates(
-    system, expected_cartesian_coordinates
-):
+def test_molecule_cartesian_coordinates(system, expected_coordinates):
     """
     Test for cartesian coordinate, 3D coordinates, (x, y, z)
     """
     cartesian_coordinates = Molecule(COORDINATES[system]).cartesian_coordinates
 
-    assert cartesian_coordinates == expected_cartesian_coordinates
+    assert cartesian_coordinates == expected_coordinates
 
 
 @pytest.mark.parametrize(
