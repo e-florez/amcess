@@ -31,9 +31,9 @@ from move_fragments import *
 def solve_dual_annealing(
     func,
     bounds,
-    ascec_activation=False,
-    there_is_molecule=None,
     system_object=None,
+    there_is_molecule=None,
+    ascec_activation=False,
     seed=None,
     NT=1000,
     T0=5230.0,
@@ -202,7 +202,8 @@ def solve_dual_annealing(
     # Wrapper ascec
     ascec_wrapper = Ascec(ascec_activation)
     # Wrapper fot the minimizer
-    minimizer_wrapper = LocalSearchWrapper(bounds, func_wrapper, **local_search_options)
+    minimizer_wrapper = LocalSearchWrapper(
+        bounds, func_wrapper, **local_search_options)
     # Initialization of random Generator for reproducible runs if seed provided
     rand_state = check_random_state(seed)
     # Initialization of the energy state
@@ -221,7 +222,8 @@ def solve_dual_annealing(
         #! Si usara el cm como sln, tampoco se podría debido a que también
         #! necesitaría los ejes principales, cada vez que se edite el cm
         # ? Una posible sln sería usar la clase Molecule
-        visit_dist = VisitingDistribution(lower, upper, visit_regions, rand_state)
+        visit_dist = VisitingDistribution(
+            lower, upper, visit_regions, rand_state)
     else:
         # visit_dist = Cluster(args)
         #!Por ahora no lo hace nada, no lo estoy usando, estoy usando lo anterior articulado

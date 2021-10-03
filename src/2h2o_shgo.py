@@ -24,13 +24,10 @@ water2 = {
 
 h2o = Cluster(water1, water2)
 
-#Configuración de busqueda
-a = 0.5
 ################################################
 # Configuración de la busqueda
 ###############################################
 search_setting  = {
-    "bounds": [(-a, a),(-a, a),(-a, a),(-a, a),(-a, a),(-a, a)],
     "basis": 'sto-3g',
     "search_methodology": 2,
     "type of fragments": 0,
