@@ -23,7 +23,9 @@ def build_input_pyscf(x, molecule_object, type_search, ncall=[0]):
     Build input to pyscf
 
     Args:
-        x ([type]): [description]
+        x ([array 1D]): possible new positions and angles.
+                    dual_annealing use couchy distribution.
+                    shgo #?
         system_object ([type]): [description]
         icall ([type]): [description]
 
