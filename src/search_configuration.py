@@ -1,8 +1,10 @@
-from m_dual_annealing import *
 from scipy.optimize import shgo
+
+from src.m_dual_annealing import *
 
 
 class SearchConfig:
+
     def __init__(self, system_object, search_setting) -> None:
         self._system_object = system_object
         #self._bounds = search_setting["bounds"]

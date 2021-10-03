@@ -16,14 +16,15 @@ from scipy.special import gammaln
 from scipy._lib._util import check_random_state
 
 from scipy import constants
-
 import numpy as np  # 1.21.2
-from math_cost_function import *
-from ascec_criterion import *
-from heisenberg import *
+
+
+from src.math_cost_function import *
+from src.ascec_criterion import *
+from src.heisenberg import *
 
 # from base_molecule import Cluster
-from move_fragments import *
+from src.move_fragments import *
 
 # pytest 6.2.5
 

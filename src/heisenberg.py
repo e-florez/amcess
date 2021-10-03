@@ -1,7 +1,7 @@
 from pyscf import gto, scf
 import numpy as np
 
-from base_molecule import *
+from src.base_molecule import *
 
 
 def before_coordinates(system):
