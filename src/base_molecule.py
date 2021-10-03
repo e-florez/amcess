@@ -128,17 +128,21 @@ class Molecule:
 
     @property
     def center_of_mass(self) -> tuple:
-        """[summary]
+        """Center of mass for a N-body problem. `Jacobi coordinates`_
+
 
         Notes
         -----
-            total mass for dummy atoms (not in th ePeriodic Table) is equal
+            total mass for dummy atoms (not in the Periodic Table) is equal
             to ONE (1)
 
         Returns
         -------
         tuple : (float, float, float)
-            [description]
+            List of N 3D tuples, where N is equal to the number of atoms
+
+        .. _Jacobi coordinates:
+            https://en.wikipedia.org/wiki/Jacobi_coordinates
         """
 
         _total_mass = 1 if not self.total_mass else self.total_mass
@@ -163,13 +167,13 @@ class Molecule:
         return self._coordinates
 
     @property
-    def principal_axis(self) -> tuple:
+    def principal_axes(self) -> tuple:
 
-        self._principal_axis = np.asarray(
+        self._principal_axes = np.asarray(
             self.cartesian_coordinates
         ) - np.asarray(self.center_of_mass)
 
-        return tuple(self._principal_axis)
+        return tuple(self._principal_axes)
 
     @property
     def show_all(self) -> bool:
@@ -290,7 +294,7 @@ class Molecule:
         )
 
     def rotate(self, fragment, x=0, y=0, z=0):
-        """Returns a NEW Molecule Object with a ROTATED fragment
+        """Returns a NEW Molecule Object with a ROTATED fragment (CLOCKWISE)
         (around internal center of mass)"""
         self._fragment = fragment
         if not self._check_fragment(self._fragment):
@@ -310,10 +314,10 @@ class Molecule:
         ).as_matrix()
 
         _fragment_center_of_mass = _fragment_to_rotate.center_of_mass
-        _fragment_principal_axis = _fragment_to_rotate.principal_axis
+        _fragment_principal_axes = _fragment_to_rotate.principal_axes
 
         _rotated_coordinates = (
-            np.dot(_fragment_principal_axis, _rotation_matrix)
+            np.dot(_fragment_principal_axes, _rotation_matrix)
             + _fragment_center_of_mass
         )
 

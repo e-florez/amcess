@@ -18,7 +18,7 @@ def system_hf():
     # print(hf.symbols)
     # print(hf.total_mass)
     # print(hf.center_of_mass)
-    # print(hf.principal_axis)
+    # print(hf.principal_axes)
     # print(hf.add_fragments(water))
     # print(hf.delete_fragments(4))
 
@@ -155,8 +155,8 @@ def test():
 
 def run():
     pass
-    system_h2()
-    # system_hf()
+    # system_h2()
+    system_hf()
     # system_nano_boy()
     # system_w_li()
     # system_w_li_cluster()
