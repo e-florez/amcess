@@ -1,7 +1,9 @@
 from pyscf import gto, scf
 import numpy as np
 
-from src.base_molecule import *
+from base_molecule import *
+
+import search_configuration as SC
 
 
 def before_coordinates(system):
@@ -38,17 +40,18 @@ def build_input_pyscf(x, molecule_object, type_search, ncall=[0]):
     else:
         system_object = before_coordinates.system
         if type_search == 1:
-            #! dual_annealing combianndo la propuesta de juan para bounds y
+            #! dual_annealing combinado con la propuesta de juan para bounds y
             #! restando el centro de masa al parecer evita que se alejen las
             #! las moleculas
-            mass_centers = np.zeros(
-                (system_object._total_fragments, 3), dtype=float)
+            mass_centers = np.zeros((system_object._total_fragments, 3), dtype=float)
             for i in range(system_object._total_fragments):
                 mass_centers[i] = system_object.get_fragments(i).center_of_mass
-            r_random = x[0:system_object._total_fragments*3] - \
-                mass_centers.reshape((system_object._total_fragments*3))
-            theta_random = x[system_object._total_fragments *
-                             3:system_object._total_fragments*6]
+            r_random = x[0 : system_object._total_fragments * 3] - mass_centers.reshape(
+                (system_object._total_fragments * 3)
+            )
+            theta_random = x[
+                system_object._total_fragments * 3 : system_object._total_fragments * 6
+            ]
             x_random = np.concatenate((r_random, theta_random))
         elif type_search == 2:
             #! SHGO sobrepone las geometrías cuando resto el centor de masa
@@ -60,9 +63,12 @@ def build_input_pyscf(x, molecule_object, type_search, ncall=[0]):
             # Rotate and translate
             new_geom[i] = {
                 "atoms": system_object.get_fragments(i)
-                .rotate(0, x_random[(i + system_object._total_fragments) * 3],
-                        x_random[(i + system_object._total_fragments) * 3 + 1],
-                        x_random[(i + system_object._total_fragments) * 3 + 2])
+                .rotate(
+                    0,
+                    x_random[(i + system_object._total_fragments) * 3],
+                    x_random[(i + system_object._total_fragments) * 3 + 1],
+                    x_random[(i + system_object._total_fragments) * 3 + 2],
+                )
                 .translate(0, x_random[i * 3], x_random[i * 3 + 1], x_random[i * 3 + 2])
                 ._coordinates
             }
@@ -75,6 +81,12 @@ def build_input_pyscf(x, molecule_object, type_search, ncall=[0]):
             }
 
     system_object = Molecule(*new_geom.values())
+
+    # Controla que no este superpuestas las moleculas, para evitar exit con pyscf y SHGO
+    # En el caso que este superpuestas una molecula se translada una longitud aleatoria
+    # y un angulo aleatorio entre 0 a 1 en las 3 direcciones
+    system_object = Molecule(*SC.overlaping(system_object).values())
+
     before_coordinates(system_object)
     ###
     symbols = system_object.symbols
@@ -118,14 +130,16 @@ def hamiltonian_pyscf(x, *args):
     l = 0
     for symbols in new_object.symbols:
         args[2].write(
-            str(symbols) +
-            "  " +
+            str(symbols)
+            + "  "
+            +
             # 1 A = 1.88973 Bohr
-            str(new_object._coordinates[l][1] / 1.88973) +
-            "  " +
-            str(new_object._coordinates[l][2] / 1.88973) +
-            "  " +
-            str(new_object._coordinates[l][3] / 1.88973) + "\n"
+            str(new_object._coordinates[l][1] / 1.88973)
+            + "  "
+            + str(new_object._coordinates[l][2] / 1.88973)
+            + "  "
+            + str(new_object._coordinates[l][3] / 1.88973)
+            + "\n"
         )
         l += 1
     l = 0

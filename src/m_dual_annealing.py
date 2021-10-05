@@ -1,4 +1,4 @@
-from src.base_molecule import Cluster
+from base_molecule import Cluster
 import types
 
 # ipdb para debugger python
@@ -19,12 +19,12 @@ from scipy import constants
 import numpy as np  # 1.21.2
 
 
-from src.math_cost_function import *
-from src.ascec_criterion import *
-from src.heisenberg import *
+# from math_cost_function import *
+from ascec_criterion import *
+from heisenberg import *
 
 # from base_molecule import Cluster
-from src.move_fragments import *
+from move_fragments import *
 
 # pytest 6.2.5
 
@@ -33,7 +33,7 @@ def solve_dual_annealing(
     func,
     bounds,
     system_object=None,
-    there_is_molecule=None,
+    there_is_molecule=0,
     ascec_activation=False,
     seed=None,
     NT=1000,
@@ -203,8 +203,7 @@ def solve_dual_annealing(
     # Wrapper ascec
     ascec_wrapper = Ascec(ascec_activation)
     # Wrapper fot the minimizer
-    minimizer_wrapper = LocalSearchWrapper(
-        bounds, func_wrapper, **local_search_options)
+    minimizer_wrapper = LocalSearchWrapper(bounds, func_wrapper, **local_search_options)
     # Initialization of random Generator for reproducible runs if seed provided
     rand_state = check_random_state(seed)
     # Initialization of the energy state
@@ -223,8 +222,7 @@ def solve_dual_annealing(
         #! Si usara el cm como sln, tampoco se podría debido a que también
         #! necesitaría los ejes principales, cada vez que se edite el cm
         # ? Una posible sln sería usar la clase Molecule
-        visit_dist = VisitingDistribution(
-            lower, upper, visit_regions, rand_state)
+        visit_dist = VisitingDistribution(lower, upper, visit_regions, rand_state)
     else:
         # visit_dist = Cluster(args)
         #!Por ahora no lo hace nada, no lo estoy usando, estoy usando lo anterior articulado

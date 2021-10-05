@@ -3,7 +3,8 @@ from copy import deepcopy
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from data.atomic_data import atomic_mass
+from atomic_data import atomic_mass
+from search_configuration import SearchConfig
 
 
 class Molecule:
@@ -263,9 +264,9 @@ class Molecule:
     @property
     def principal_axis(self) -> tuple:
 
-        self._principal_axis = np.asarray(
-            self.cartesian_coordinates
-        ) - np.asarray(self.center_of_mass)
+        self._principal_axis = np.asarray(self.cartesian_coordinates) - np.asarray(
+            self.center_of_mass
+        )
 
         return tuple(self._principal_axis)
 
@@ -279,9 +280,9 @@ class Molecule:
         _fragment_symbols = _fragment_to_move.symbols
         _fragment_coordinates = _fragment_to_move.cartesian_coordinates
 
-        _translated_coordinates = np.asarray(
-            _fragment_coordinates
-        ) + np.asarray([x, y, z])
+        _translated_coordinates = np.asarray(_fragment_coordinates) + np.asarray(
+            [x, y, z]
+        )
 
         _translated_fragment = list()
         for i, _atom in enumerate(_fragment_symbols):
@@ -289,9 +290,7 @@ class Molecule:
                 tuple([_atom] + _translated_coordinates[i].tolist())
             )
 
-        return self.delete_fragments(self._fragment).add_fragments(
-            _translated_fragment
-        )
+        return self.delete_fragments(self._fragment).add_fragments(_translated_fragment)
 
     def rotate(self, fragment, x=0, y=0, z=0):
         """Returns a NEW Molecule Object with a ROTATED fragment
@@ -323,13 +322,9 @@ class Molecule:
 
         _rotated_fragment = list()
         for i, _atom in enumerate(_fragment_symbols):
-            _rotated_fragment.append(
-                tuple([_atom] + _rotated_coordinates[i].tolist())
-            )
+            _rotated_fragment.append(tuple([_atom] + _rotated_coordinates[i].tolist()))
 
-        return self.delete_fragments(self._fragment).add_fragments(
-            _rotated_fragment
-        )
+        return self.delete_fragments(self._fragment).add_fragments(_rotated_fragment)
 
 
 class Cluster(Molecule):
