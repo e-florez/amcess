@@ -1,30 +1,9 @@
 from copy import deepcopy
 
-import attr
 import numpy as np
 from scipy.spatial.transform import Rotation
 
 from data.atomic_data import atomic_mass
-
-
-@attr.s
-class Atom:
-    """
-    Representation of an individual atom. Format (<element> <X> <Y> <Z>)
-
-    Notes
-    -----
-        Not to be used by itself
-    """
-
-    element = attr.ib()
-    x = attr.ib(repr=True)
-    y = attr.ib(repr=True)
-    z = attr.ib(repr=True)
-
-    @property
-    def atom(self):
-        return (self.element, self.x, self.y, self.z)
 
 
 class Molecule:
@@ -52,7 +31,7 @@ class Molecule:
             self._atoms = list()
             self._charge: int = 0
             self._multiplicity: int = 1
-        elif type(args).__name__ == "Molecule":
+        elif isinstance(args, Molecule):
             self._atoms = args.atoms
             self._charge: int = args.charge
             self._multiplicity: int = args.multiplicity
@@ -69,6 +48,10 @@ class Molecule:
 
     def __add__(self, other):
         return self.add_atoms(other)
+
+    # ! check how to compare two Molecule objects
+    # def __eq__(self, other: object) -> bool:
+    #     return self.atoms == other.atoms
 
     def __mul__(self, value: int):
         return value * self
@@ -121,6 +104,9 @@ class Molecule:
 
         return write_xyz
 
+    def __sub__(self, other):
+        return self.remove_atom(other)
+
     def _atoms_format_check(self, value) -> str:
         "format [(<element> <X> <Y> <Z>), ...]}"
 
@@ -143,13 +129,15 @@ class Molecule:
             raise TypeError(
                 "\n Accepted either List or Dict type"
                 "\n{'atoms': [(<element> <X> <Y> <Z>), ...]}"
+                f"\n {type(value)}"
+                f"\n {value}"
             )
 
         for line, atom in enumerate(atoms):
             try:
                 assert len(str(atom[0]).replace(" ", ""))
                 assert len([float(c) for c in atom[1:]]) == 3
-            except (ValueError, AssertionError):
+            except (ValueError, AssertionError, KeyError):
                 raise ValueError(
                     "\nMust be valid NOT empty element and "
                     "floats for xyz coordinates: (str, float, float, float)"
@@ -267,8 +255,12 @@ class Molecule:
         """Sum atomic masses"""
         return sum(self.atomic_masses)
 
+    @property
+    def xyz(self) -> str:
+        return self.__str__()
+
     def add_atoms(self, other):
-        """adding extra atoms
+        """adding extra atoms can NOT be MOVED or ROTATED
 
         Parameters
         ----------
@@ -286,7 +278,12 @@ class Molecule:
             for anything else
         """
 
-        if type(other).__name__ == "Molecule":
+        # adding as a Cluster to be moved/rotated
+        if isinstance(other, Cluster):
+            return other.add_molecule(self)
+
+        # adding as a Molecule add a FIXED atoms (can't be moved/rotated)
+        if isinstance(other, Molecule):
             new_charge: int = self.charge + other.charge
             new_multiplicity: int = self.multiplicity
             all_atoms: list = self.atoms + other.atoms
@@ -314,11 +311,18 @@ class Molecule:
         )
 
     def get_atom(self, atom: int):
-        new_molecule = deepcopy(self)
-        new_atom = new_molecule.atoms.pop(atom)
+        if atom > self.total_atoms:
+            raise IndexError(
+                f"\nMolecule with {self.total_atoms} total atoms "
+                f"and index [0-{self.total_atoms - 1}]"
+                f"\n atom index must be less than {self.total_atoms}"
+                f"\nCheck! You want to get atom with index {atom}"
+            )
+
+        new_atom: tuple = deepcopy(self).atoms.pop(atom)
         return self.__class__([tuple(new_atom)])
 
-    def get_elements(self, element: str):
+    def get_element(self, element: str):
         "Filtering all the elements by symbol"
         element_index = [
             idx for idx, e in enumerate(self.symbols) if element.title() == e
@@ -344,11 +348,18 @@ class Molecule:
         )
 
     def remove_atom(self, atom: int):
+        if atom > self.total_atoms:
+            raise IndexError(
+                f"\nMolecule with {self.total_atoms} total atoms "
+                f"and index [0-{self.total_atoms - 1}]"
+                f"\n atom index must be less than {self.total_atoms}"
+                f"\nCheck! You want to remove atom with index {atom}"
+            )
         new_molecule = deepcopy(self)
         del new_molecule.atoms[atom]
         return self.__class__(new_molecule)
 
-    def remove_elements(self, element: str):
+    def remove_element(self, element: str):
         "Removing all the elements by symbol"
         element_index = [
             idx for idx, e in enumerate(self.symbols) if element.title() == e
@@ -380,44 +391,266 @@ class Molecule:
 class Cluster(Molecule):
     # def __init__(self, *args, sphere_radius, sphere_center):
     def __init__(self, *args):
-        self._molecules_dict = dict()
-        self._cluster_multiplicity = 1
-        self._cluster_charge = 0
+        self._cluster_dict = dict()
+        self._multiplicity = 1
+        self._charge = 0
 
         for i, mol in enumerate(args):
+            size: int = len(self._cluster_dict)
+            if isinstance(mol, Cluster):
+                for j in mol.cluster_dictionary:
+                    self._cluster_dict[size + j] = mol.cluster_dictionary[j]
+                continue
+            # else:
             try:
                 molecule = Molecule(mol)
             except (TypeError, ValueError):
                 raise TypeError(
-                    "\nOnly type 'Molecule', list or dict could be added"
+                    "\nOnly type 'Molecule', list or dict to initialize"
+                    "\t- Dict-> {'atoms': [(<element> <X> <Y> <Z>), ...]}"
+                    "\t- List-> [(<element> <X> <Y> <Z>), ...]"
                     f"\nyou have {type(mol)}, check: {mol}"
                 )
             else:
-                self._cluster_charge += molecule.charge
-                self._molecules_dict[i] = {
+                self._charge += molecule.charge
+                self._cluster_dict[size] = {
                     "atoms": molecule.atoms,
                     "charge": molecule.charge,
                     "multiplicity": molecule.multiplicity,
                 }
 
-        self._cluster_atoms = [
-            mol["atoms"] for mol in self._molecules_dict.values()
-        ]
+        # initializing parent class
+        self._atoms = [mol["atoms"] for mol in self._cluster_dict.values()]
 
         # Flatten List of Lists Using sum
-        self._cluster_atoms = sum(self._cluster_atoms, [])
+        self._atoms = sum(self._atoms, [])
 
         super().__init__(
             {
-                "atoms": self._cluster_atoms,
-                "charge": self._cluster_charge,
-                "multiplicity": self._cluster_multiplicity,
+                "atoms": self._atoms,
+                "charge": self._charge,
+                "multiplicity": self._multiplicity,
             }
         )
 
+    def __add__(self, other):
+        return self.add_molecule(other)
+
+    def __mul__(self, value: int):
+        return value * self
+
+    def __rmul__(self, value: int):
+        """to replicate a molecule
+        Parameters
+        ----------
+        value : int
+            quantity to replicate Molecue
+        """
+        if value < 1 or not isinstance(value, int):
+            raise ValueError(
+                "\nMultiplier must be and integer larger than zero"
+                f"\ncheck --> {value}"
+            )
+
+        new_cluster = deepcopy(self)
+        for i in range(value - 1):
+            new_cluster = new_cluster.add_molecule(deepcopy(self))
+
+        return new_cluster
+
+    def __str__(self) -> str:
+        cluster_dict: dict = self.cluster_dictionary
+
+        cluster_string: str = (
+            f"Cluster of {self.total_molecules} molecules"
+            f"and {self.total_atoms} total atoms\n"
+        )
+        for key, value in sorted(cluster_dict.items()):
+            atoms = value["atoms"]
+            cluster_string += f"molecule {key} (with {len(atoms)} atoms):\n"
+            cluster_string += f"     -> atoms: {atoms}\n"
+            charge = value["charge"]
+            cluster_string += f"     -> charge: {charge}\n"
+            multiplicity = value["multiplicity"]
+            cluster_string += f"     -> multiplicity: {multiplicity}\n"
+
+        return cluster_string
+
+    @property
+    def cluster_dictionary(self) -> dict:
+        return self._cluster_dict
+
+    @property
+    def molecules(self):
+        return self.cluster_dictionary
+
     @property
     def total_molecules(self) -> int:
-        return len(self._molecules_dict)
+        return len(self._cluster_dict)
+
+    @property
+    def xyz(self) -> str:
+        return super().__str__()
+
+    def add_molecule(self, other):
+        """adding extra molecule can be MOVED or ROTATED
+
+        Parameters
+        ----------
+        other : Molecue, dict, list
+            with the coordinates, charge and multiplicity
+
+        Returns
+        -------
+        Cluster
+            a new Molecular Cluster
+
+        Raises
+        ------
+        TypeError
+            for anything else
+        """
+        new_molecule_dict = {}
+
+        if isinstance(other, Cluster):
+            new_molecule_dict = other.cluster_dictionary
+        elif isinstance(other, Molecule):
+            new_molecule_dict[0] = {
+                "atoms": other.atoms,
+                "charge": other.charge,
+                "multiplicity": other.multiplicity,
+            }
+        elif isinstance(other, dict):
+            new_molecule_dict[0] = {
+                "atoms": other.get("atoms"),
+                "charge": other.get("charge", 0),
+                "multiplicity": other.get("multiplicity", 1),
+            }
+        elif isinstance(other, list):
+            new_molecule_dict[0] = {
+                "atoms": other,
+                "charge": 0,
+                "multiplicity": 1,
+            }
+        else:
+            raise TypeError(
+                "\nOnly type 'Molecule', list or dict could be added"
+                f"\nyou have {type(other)}, check: "
+                f"\n{other}"
+            )
+
+        new_cluster_dict = dict(self.cluster_dictionary)
+
+        for i in range(len(new_molecule_dict)):
+            new_cluster_dict[self.total_atoms + i] = new_molecule_dict[i]
+
+        return self.__class__(*new_cluster_dict.values())
+
+    def get_molecule(self, molecule: int):
+        if molecule > self.total_molecules:
+            raise IndexError(
+                f"\nMolecule with {self.total_molecules} total molecules "
+                f"and index [0-{self.total_molecules - 1}]"
+                f"\nmolecule index must be less than {self.total_molecules}"
+                f"\nCheck! You want to get molecule with index {molecule}"
+            )
+
+        return self.__class__(deepcopy(self).molecules.pop(molecule))
+
+    def remove_molecule(self, molecule: int):
+        if molecule > self.total_molecules:
+            raise IndexError(
+                f"\nMolecule with {self.total_molecules} total molecules "
+                f"and index [0-{self.total_molecules - 1}]"
+                f"\nmolecule index must be less than {self.total_molecules}"
+                f"\nCheck! You want to remove molecule with index {molecule}"
+            )
+        new_cluster = deepcopy(self).molecules
+        del new_cluster[molecule]
+
+        return self.__class__(*new_cluster.values())
+
+    def translate(
+        self, molecule: int, x: float = 0, y: float = 0, z: float = 0
+    ):
+        """Returns a NEW Molecule Object with a TRANSLATED fragment"""
+
+        if molecule > self.total_molecules:
+            raise IndexError(
+                f"\nMolecule with {self.total_molecules} total molecules "
+                f"and index [0-{self.total_molecules - 1}]"
+                f"\nmolecule index must be less than {self.total_molecules}"
+                f"\nCheck! You want to remove molecule with index {molecule}"
+            )
+
+        molecule_to_move: Molecule = self.get_molecule(molecule)
+        molecule_symbols: list = molecule_to_move.symbols
+        molecule_coordinates: list = molecule_to_move.coordinates
+
+        translated_coordinates = np.asarray(molecule_coordinates) + np.asarray(
+            [x, y, z]
+        )
+
+        translated_molecule = list()
+        for i, atom in enumerate(molecule_symbols):
+            translated_molecule.append(
+                tuple([atom] + translated_coordinates[i].tolist())
+            )
+
+        new_molecule: dict = {
+            "atoms": translated_molecule,
+            "charge": molecule_to_move.charge,
+            "multiplicity": molecule_to_move.multiplicity,
+        }
+
+        new_cluster = deepcopy(self).molecules
+        new_cluster[molecule] = new_molecule
+
+        return self.__class__(*new_cluster.values())
+
+    def rotate(self, molecule: int, x: float = 0, y: float = 0, z: float = 0):
+        """
+        Returns a NEW Cluster Object with a ROTATED molecule (CLOCKWISE)
+        around molecule internal center of mass
+        """
+
+        molecule_to_rotate: Molecule = self.get_molecule(molecule)
+        molecule_symbols: list = molecule_to_rotate.symbols
+
+        # avoid any rotatation attemp for a single atom system
+        if not (len(molecule_symbols) > 1):
+            return deepcopy(self)
+
+        molecule_center_of_mass = molecule_to_rotate.center_of_mass
+        molecule_principal_axes = molecule_to_rotate.principal_axes
+
+        rotation_matrix = Rotation.from_euler(
+            "xyz",
+            [x, y, z],
+            degrees=True,
+        ).as_matrix()
+
+        rotated_coordinates = (
+            np.dot(molecule_principal_axes, rotation_matrix)
+            + molecule_center_of_mass
+        )
+
+        rotated_molecule = list()
+        for i, atom in enumerate(molecule_symbols):
+            rotated_molecule.append(
+                tuple([atom] + rotated_coordinates[i].tolist())
+            )
+
+        new_molecule: dict = {
+            "atoms": rotated_molecule,
+            "charge": molecule_to_rotate.charge,
+            "multiplicity": molecule_to_rotate.multiplicity,
+        }
+
+        new_cluster = deepcopy(self).molecules
+        new_cluster[molecule] = new_molecule
+
+        return self.__class__(*new_cluster.values())
 
 
 # ---------------------------------------------------------------------

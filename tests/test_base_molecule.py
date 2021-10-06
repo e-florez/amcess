@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from src.base_molecule import Molecule
+from src.base_molecule import Cluster, Molecule
 
 COORDINATES = {
     "dummy": [("A", 10, 20, 30), ("X0", -0.5, 0, -10)],
@@ -49,39 +49,39 @@ def test_molecule_atomic_symbols(system, expected_symbols):
 
 
 @pytest.mark.parametrize(
-    "system, expected_fragments",
+    "system, expected_molecules",
     [
         ("dummy", 1),
         ("hf", 1),
         ("water", 1),
     ],
 )
-def test_molecule_number_fragments(system, expected_fragments):
+def test_molecule_number_molecules(system, expected_molecules):
     """
     Test for number of individual fragments (atoms/molecules)
     """
-    fragments = Molecule(COORDINATES[system]).total_fragments
+    fragments = Cluster(COORDINATES[system]).total_molecules
 
-    assert (fragments - expected_fragments) == 0
+    assert (fragments - expected_molecules) == 0
 
 
 @pytest.mark.parametrize(
-    "system, expected_fragments",
+    "system, expected_molecules",
     [
         (["water", "water"], 2),
         (["dummy", "hf", "water"], 3),
     ],
 )
-def test_molecule_number_fragments_more(system, expected_fragments):
+def test_molecule_number_molecules_more(system, expected_molecules):
     """
     Test for number of individual fragments (atoms/molecules)
     when more than one
     """
     new_system = [COORDINATES[s] for s in system]
 
-    fragments = Molecule(*new_system).total_fragments
+    fragments = Cluster(*new_system).total_molecules
 
-    assert (fragments - expected_fragments) == 0
+    assert (fragments - expected_molecules) == 0
 
 
 @pytest.mark.parametrize(
@@ -119,18 +119,18 @@ def test_molecule_total_mass(system, expected_mass):
 
 
 @pytest.mark.parametrize(
-    "system, expected_coordinates",
+    "system, expected_atoms",
     [
         ("dummy", [("A", 10, 20, 30), ("X0", -0.5, 0, -10)]),
     ],
 )
-def test_molecule_coordinates(system, expected_coordinates):
+def test_molecule_atoms(system, expected_atoms):
     """
     Test for coordinate in XYZ format
     """
-    coordinates = Molecule(COORDINATES[system]).coordinates
+    coordinates = Molecule(COORDINATES[system]).atoms
 
-    assert coordinates == expected_coordinates
+    assert coordinates == expected_atoms
 
 
 @pytest.mark.parametrize(
@@ -139,11 +139,11 @@ def test_molecule_coordinates(system, expected_coordinates):
         ("dummy", [(10, 20, 30), (-0.5, 0, -10)]),
     ],
 )
-def test_molecule_cartesian_coordinates(system, expected_coordinates):
+def test_molecule_coordinates(system, expected_coordinates):
     """
     Test for cartesian coordinate, 3D coordinates, (x, y, z)
     """
-    cartesian_coordinates = Molecule(COORDINATES[system]).cartesian_coordinates
+    cartesian_coordinates = Molecule(COORDINATES[system]).coordinates
 
     assert cartesian_coordinates == expected_coordinates
 
@@ -162,7 +162,7 @@ def test_molecule_center_of_mass(system, expected_cm):
     """
     cm = Molecule(COORDINATES[system]).center_of_mass
 
-    assert np.linalg.norm(cm - expected_cm) < 0.1
+    assert np.linalg.norm(np.asarray(cm) - expected_cm) < 0.1
 
 
 @pytest.mark.parametrize(
@@ -195,13 +195,13 @@ def test_molecule_add(system):
     """
     Test adding a new molecule/atoms
     """
-    mol = Molecule(COORDINATES[system])
+    mol = Cluster(COORDINATES[system])
 
     # duplicating the system
-    new_system = mol.add_fragments(COORDINATES[system])
+    new_system = mol.add_molecule(COORDINATES[system])
 
     assert new_system.total_atoms == (2 * mol.total_atoms)
-    assert new_system.total_fragments == (2 * mol.total_fragments)
+    assert new_system.total_molecules == (2 * mol.total_molecules)
 
 
 @pytest.mark.parametrize(
@@ -216,16 +216,16 @@ def test_molecule_delete(system):
     """
     Test deleting an existeing molecule/atom
     """
-    mol = Molecule(
+    mol = Cluster(
         COORDINATES[system],
         COORDINATES[system],
         COORDINATES[system],
     )
 
     # deleting the first (index) molecule
-    new_system = mol.delete_fragments(0)
+    new_system = mol.remove_molecule(0)
 
-    assert (new_system.total_fragments + 1) == mol.total_fragments
+    assert (new_system.total_molecules + 1) == mol.total_molecules
 
 
 @pytest.mark.parametrize(
@@ -240,16 +240,16 @@ def test_molecule_get(system):
     """
     Test retriving certain molecule/atom
     """
-    mol = Molecule(
+    mol = Cluster(
         COORDINATES[system],
         COORDINATES[system],
         COORDINATES[system],
     )
 
     # getting the first (index) molecule
-    new_system = mol.get_fragments(0)
+    new_system = mol.get_molecule(0)
 
-    assert new_system.coordinates == COORDINATES[system]
+    assert new_system.atoms == COORDINATES[system]
 
 
 @pytest.mark.parametrize(
@@ -281,14 +281,14 @@ def test_molecule_translate(steps, expected_translation):
 
     tx, ty, tz = steps
 
-    mol = Molecule(dummy)
+    mol = Cluster(dummy)
     mol_translated = mol.translate(0, x=tx, y=ty, z=tz)
 
-    expected_mol = Molecule(expected_translation)
+    expected_mol = Cluster(expected_translation)
 
     assert np.allclose(
-        mol_translated.cartesian_coordinates,
-        expected_mol.cartesian_coordinates,
+        mol_translated.coordinates,
+        expected_mol.coordinates,
         0.01,
     )
 
@@ -326,13 +326,13 @@ def test_molecule_rotate(angles, expected_rotation):
 
     ax, ay, az = angles
 
-    mol = Molecule(dummy)
+    mol = Cluster(dummy)
     mol_rotated = mol.rotate(0, x=ax, y=ay, z=az)
 
-    expected_mol = Molecule(expected_rotation)
+    expected_mol = Cluster(expected_rotation)
 
     assert np.allclose(
-        mol_rotated.cartesian_coordinates,
-        expected_mol.cartesian_coordinates,
+        mol_rotated.coordinates,
+        expected_mol.coordinates,
         0.01,
     )
