@@ -591,7 +591,11 @@ class Cluster(Molecule):
         for i in range(len(new_molecule_dict)):
             new_cluster_dict[self.total_atoms + i] = new_molecule_dict[i]
 
-        return self.__class__(*new_cluster_dict.values())
+        return self.__class__(
+            *new_cluster_dict.values(),
+            sphere_radius=self.sphere_radius,
+            sphere_center=self.sphere_center,
+        )
 
     def get_molecule(self, molecule: int):
         if molecule > self.total_molecules:
@@ -602,7 +606,11 @@ class Cluster(Molecule):
                 f"\nCheck! You want to get molecule with index {molecule}"
             )
 
-        return self.__class__(deepcopy(self).molecules.pop(molecule))
+        return self.__class__(
+            deepcopy(self).molecules.pop(molecule),
+            sphere_radius=self.sphere_radius,
+            sphere_center=self.sphere_center,
+        )
 
     def remove_molecule(self, molecule: int):
         if molecule > self.total_molecules:
@@ -615,7 +623,11 @@ class Cluster(Molecule):
         new_cluster = deepcopy(self).molecules
         del new_cluster[molecule]
 
-        return self.__class__(*new_cluster.values())
+        return self.__class__(
+            *new_cluster.values(),
+            sphere_radius=self.sphere_radius,
+            sphere_center=self.sphere_center,
+        )
 
     def translate(
         self, molecule: int, x: float = 0, y: float = 0, z: float = 0
@@ -639,14 +651,30 @@ class Cluster(Molecule):
         )
 
         # checking if the new coordinates are into the boundary conditions
-        # if it is out of our sphere, we move a on the opposite direction (80%)
+        # if it is out of our sphere, we move a on the opposite direction
+        # 10% until this new move is into our sphere
         distance: float = np.linalg.norm(
             translated_coordinates - np.asarray(self.sphere_center)
         )
-        if (self.sphere_radius) and (distance > self.sphere_radius):
+        if self.sphere_radius and (distance > self.sphere_radius):
             translated_coordinates = np.asarray(
                 molecule_coordinates
-            ) + -0.8 * np.asarray([x, y, z])
+            ) + -0.1 * np.asarray([x, y, z])
+
+        # if self.sphere_radius and (distance > self.sphere_radius):
+        #     translated_coordinates = np.asarray(
+        #         molecule_coordinates
+        #     ) + -0.9 * np.asarray([x, y, z])
+        #     # print(self.sphere_radius, distance)
+        #     while distance > self.sphere_radius:
+        #         translated_coordinates = np.asarray(
+        #             molecule_coordinates
+        #         ) + 0.9 * np.asarray([x, y, z])
+
+        #         distance = np.linalg.norm(
+        #             translated_coordinates - np.asarray(self.sphere_center)
+        #         )
+        #         # print(self.sphere_radius, distance)
 
         translated_molecule = list()
         for i, atom in enumerate(molecule_symbols):
@@ -663,7 +691,11 @@ class Cluster(Molecule):
         new_cluster = deepcopy(self).molecules
         new_cluster[molecule] = new_molecule
 
-        return self.__class__(*new_cluster.values())
+        return self.__class__(
+            *new_cluster.values(),
+            sphere_radius=self.sphere_radius,
+            sphere_center=self.sphere_center,
+        )
 
     def rotate(self, molecule: int, x: float = 0, y: float = 0, z: float = 0):
         """
@@ -707,4 +739,8 @@ class Cluster(Molecule):
         new_cluster = deepcopy(self).molecules
         new_cluster[molecule] = new_molecule
 
-        return self.__class__(*new_cluster.values())
+        return self.__class__(
+            *new_cluster.values(),
+            sphere_radius=self.sphere_radius,
+            sphere_center=self.sphere_center,
+        )

@@ -228,12 +228,12 @@ def test_cluster_class():
     ca = Cluster(water, xe_coord)  # , kf_coord, nacl_coord)
 
     print("-" * 40)
-    print(ca)
-    print(ca.cluster_dictionary)
-    print("-" * 40)
-    print("\natoms: ", ca.atoms)
-    print("\nmolecules: ", ca.total_molecules)
-    print("\ntotal atoms: ", ca.total_atoms)
+    print(ca.xyz)
+    # print(ca.cluster_dictionary)
+    # print("-" * 40)
+    # print("\natoms: ", ca.atoms)
+    # print("\nmolecules: ", ca.total_molecules)
+    # print("\ntotal atoms: ", ca.total_atoms)
     # print("\ncharge: ", ca.charge)
     # print("\nmultiplicity: ", ca.multiplicity)
     # print("\nsymbols: ", ca.symbols)
@@ -244,13 +244,13 @@ def test_cluster_class():
     # print("\npp axes: ", ca.principal_axes)
     # print("\nnumber atoms (index):\n", ca.number_atoms)
 
-    print("-" * 40)
-    print(ca.cluster_dictionary)
-    print(na.cluster_dictionary)
-    print("\nmagic add new obj:\n", ca + na)
-    print("\nmagic add, T mol: ", (ca + na).total_molecules)
-    print("\nmagic add, T atoms: ", (ca + na).total_atoms)
-    print("\nmagic add dic:\n", (ca + na).cluster_dictionary)
+    # print("-" * 40)
+    # print(ca.cluster_dictionary)
+    # print(na.cluster_dictionary)
+    # print("\nmagic add new obj:\n", ca + na)
+    # print("\nmagic add, T mol: ", (ca + na).total_molecules)
+    # print("\nmagic add, T atoms: ", (ca + na).total_atoms)
+    # print("\nmagic add dic:\n", (ca + na).cluster_dictionary)
 
     # print("cluster type: ", type(ca).__name__)
     # print("mol instance mol: ", isinstance(mol, Molecule))
@@ -278,8 +278,6 @@ def test_cluster_class():
     # b = ca.remove_molecule(r)
     # print(b.molecules)
 
-    # m = 0
-    # print(f"", ca.translate(m, x=10, y=20, z=30))
     # print(
     #     f"",
     #     ca.translate(m, x=10, y=20, z=30).translate(m + 3, x=10, y=20, z=30),
