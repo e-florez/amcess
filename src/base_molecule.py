@@ -646,35 +646,29 @@ class Cluster(Molecule):
         molecule_symbols: list = molecule_to_move.symbols
         molecule_coordinates: list = molecule_to_move.coordinates
 
-        translated_coordinates = np.asarray(molecule_coordinates) + np.asarray(
-            [x, y, z]
-        )
+        molecule_center_of_mass = molecule_to_move.center_of_mass
+        molecule_principal_axes = molecule_to_move.principal_axes
+
+        translated_coordinates = np.asarray(
+            molecule_center_of_mass
+        ) + np.asarray([x, y, z])
 
         # checking if the new coordinates are into the boundary conditions
-        # if it is out of our sphere, we move a on the opposite direction
-        # 10% until this new move is into our sphere
+        # if it is out of our sphere, we rescale it to match the sphere radius
         distance: float = np.linalg.norm(
             translated_coordinates - np.asarray(self.sphere_center)
         )
         if self.sphere_radius and (distance > self.sphere_radius):
-            translated_coordinates = np.asarray(
-                molecule_coordinates
-            ) + -0.1 * np.asarray([x, y, z])
 
-        # if self.sphere_radius and (distance > self.sphere_radius):
-        #     translated_coordinates = np.asarray(
-        #         molecule_coordinates
-        #     ) + -0.9 * np.asarray([x, y, z])
-        #     # print(self.sphere_radius, distance)
-        #     while distance > self.sphere_radius:
-        #         translated_coordinates = np.asarray(
-        #             molecule_coordinates
-        #         ) + 0.9 * np.asarray([x, y, z])
+            unitary: float = self.sphere_radius / np.linalg.norm(
+                translated_coordinates
+            )
 
-        #         distance = np.linalg.norm(
-        #             translated_coordinates - np.asarray(self.sphere_center)
-        #         )
-        #         # print(self.sphere_radius, distance)
+            translated_coordinates = unitary * translated_coordinates
+
+        translated_coordinates = (
+            molecule_principal_axes + translated_coordinates
+        )
 
         translated_molecule = list()
         for i, atom in enumerate(molecule_symbols):
