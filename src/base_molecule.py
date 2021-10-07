@@ -4,7 +4,6 @@ import numpy as np
 from scipy.spatial.transform import Rotation
 
 from atomic_data import atomic_mass
-from search_configuration import SearchConfig
 
 
 class Molecule:

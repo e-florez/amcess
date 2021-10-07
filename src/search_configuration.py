@@ -116,12 +116,12 @@ class SearchConfig:
 
     def run(self, **kwargs):
         if self._search_methodology == 1:
-            self.DA(**kwargs)
+            self.da(**kwargs)
         if self._search_methodology == 2:
             print("*** Calculo Realizado con SHGO from Scipy ***")
-            self.SHGO(**kwargs)
+            self.shgo(**kwargs)
 
-    def DA(self, **kwargs):
+    def da(self, **kwargs):
         with open(self._outxyz, "w") as outxyz:
             self._search = solve_dual_annealing(
                 self._func,
@@ -136,7 +136,7 @@ class SearchConfig:
                 **kwargs
             )
 
-    def SHGO(self, **kwargs):
+    def shgo(self, **kwargs):
         with open(self._outxyz, "w") as outxyz:
 
             self._search_methodology = 2
