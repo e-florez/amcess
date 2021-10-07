@@ -49,9 +49,30 @@ class Molecule:
     def __add__(self, other):
         return self.add_atoms(other)
 
-    # ! check how to compare two Molecule objects
-    # def __eq__(self, other: object) -> bool:
-    #     return self.atoms == other.atoms
+    def __eq__(self, other: object) -> bool:
+        """
+        Compare atomic coordinates atoms-wise with an absolute tolerance
+        of 0.3 Angstrom (the shortest atomic radius is H: 0.25 A)
+
+        Parameters
+        ----------
+        other : object
+            Molecule or Cluster object
+
+        Returns
+        -------
+        bool
+            True if all coordinates match with an absolute tolerance
+            of 0.3 Anstrom
+        """
+        if isinstance(other, Molecule):
+            same_coordinates: bool = np.allclose(
+                self.coordinates,
+                other.coordinates,
+                rtol=0,  # relative tolerance (%)
+                atol=0.3,  # absolute tolerance (shortest atomic rad H: 0.25 A)
+            )
+            return same_coordinates
 
     def __mul__(self, value: int):
         return value * self
@@ -98,9 +119,9 @@ class Molecule:
         write_xyz = f"""\t{self._total_atoms}\n{_comments:<s}\n"""
         for atom in self.atoms:
             write_xyz += f"""{atom[0]:<6}"""
-            write_xyz += f"""\t{atom[1]:> .8f}"""
-            write_xyz += f"""\t{atom[2]:> .8f}"""
-            write_xyz += f"""\t{atom[3]:> .8f}\n"""
+            write_xyz += f"""\t{atom[1]:> 15.8f}"""
+            write_xyz += f"""\t{atom[2]:> 15.8f}"""
+            write_xyz += f"""\t{atom[3]:> 15.8f}\n"""
 
         return write_xyz
 
@@ -400,7 +421,10 @@ class Cluster(Molecule):
     Parameters
     ----------
     args : List, Dict, Molecule, Cluster
-        coordinates of each molecule/atom comma separates (support +/*)
+        coordinates of each molecule/atom comma separates (support +,-,*)
+    frozen_molecule : integer, optional
+        fixing molecule to NOT move or rotate, by default NEGATIVE
+        integer means all molecules can be moved freely
     sphere_radius : float, optional
         radius for the spherical boundary condition, by default None
     sphere_center : tuple, optional
@@ -415,6 +439,7 @@ class Cluster(Molecule):
     def __init__(
         self,
         *args,
+        frozen_molecule: list = [],
         sphere_radius: float = None,
         sphere_center: tuple = (0, 0, 0),
     ):
@@ -422,11 +447,14 @@ class Cluster(Molecule):
         self._multiplicity = 1
         self._charge = 0
 
+        # fixing molecule to NOT move or rotate
+        self._frozen_molecule = frozen_molecule
+
         # boundary conditions
         self._sphere_radius = sphere_radius
         self._sphere_center = sphere_center
 
-        for i, mol in enumerate(args):
+        for _, mol in enumerate(args):
             size: int = len(self._cluster_dict)
             if isinstance(mol, Cluster):
                 for j in mol.cluster_dictionary:
@@ -484,7 +512,7 @@ class Cluster(Molecule):
             )
 
         new_cluster = deepcopy(self)
-        for i in range(value - 1):
+        for _ in range(value - 1):
             new_cluster = new_cluster.add_molecule(deepcopy(self))
 
         return new_cluster
@@ -514,6 +542,14 @@ class Cluster(Molecule):
     @property
     def molecules(self):
         return self.cluster_dictionary
+
+    @property
+    def frozen_molecule(self) -> int:
+        return self._frozen_molecule
+
+    @frozen_molecule.setter
+    def frozen_molecule(self, value: int) -> None:
+        self._frozen_molecule = value
 
     @property
     def sphere_center(self) -> tuple:
@@ -593,6 +629,7 @@ class Cluster(Molecule):
 
         return self.__class__(
             *new_cluster_dict.values(),
+            frozen_molecule=self.frozen_molecule,
             sphere_radius=self.sphere_radius,
             sphere_center=self.sphere_center,
         )
@@ -608,6 +645,7 @@ class Cluster(Molecule):
 
         return self.__class__(
             deepcopy(self).molecules.pop(molecule),
+            frozen_molecule=self.frozen_molecule,
             sphere_radius=self.sphere_radius,
             sphere_center=self.sphere_center,
         )
@@ -625,16 +663,22 @@ class Cluster(Molecule):
 
         return self.__class__(
             *new_cluster.values(),
+            frozen_molecule=self.frozen_molecule,
             sphere_radius=self.sphere_radius,
             sphere_center=self.sphere_center,
         )
 
     def translate(
-        self, molecule: int, x: float = 0, y: float = 0, z: float = 0
+        self, molecule: int = None, x: float = 0, y: float = 0, z: float = 0
     ):
         """Returns a NEW Molecule Object with a TRANSLATED fragment"""
+        # avoiding to rotate a FROZEN molecule
+        if molecule in self.frozen_molecule:
+            return deepcopy(self)
 
-        if molecule > self.total_molecules:
+        if not isinstance(molecule, int) and (
+            0 < molecule >= self.total_molecules
+        ):
             raise IndexError(
                 f"\nMolecule with {self.total_molecules} total molecules "
                 f"and index [0-{self.total_molecules - 1}]"
@@ -644,7 +688,6 @@ class Cluster(Molecule):
 
         molecule_to_move: Molecule = self.get_molecule(molecule)
         molecule_symbols: list = molecule_to_move.symbols
-        molecule_coordinates: list = molecule_to_move.coordinates
 
         molecule_center_of_mass = molecule_to_move.center_of_mass
         molecule_principal_axes = molecule_to_move.principal_axes
@@ -660,11 +703,14 @@ class Cluster(Molecule):
         )
         if self.sphere_radius and (distance > self.sphere_radius):
 
-            unitary: float = self.sphere_radius / np.linalg.norm(
-                translated_coordinates
+            max_distance: float = self.sphere_radius / np.linalg.norm(
+                translated_coordinates - np.asarray(self.sphere_center)
             )
 
-            translated_coordinates = unitary * translated_coordinates
+            # rescaling to match radius
+            translated_coordinates = max_distance * translated_coordinates + (
+                1 - max_distance
+            ) * np.asarray(self.sphere_center)
 
         translated_coordinates = (
             molecule_principal_axes + translated_coordinates
@@ -687,25 +733,44 @@ class Cluster(Molecule):
 
         return self.__class__(
             *new_cluster.values(),
+            frozen_molecule=self.frozen_molecule,
             sphere_radius=self.sphere_radius,
             sphere_center=self.sphere_center,
         )
 
-    def rotate(self, molecule: int, x: float = 0, y: float = 0, z: float = 0):
+    def rotate(
+        self, molecule: int = None, x: float = 0, y: float = 0, z: float = 0
+    ):
         """
         Returns a NEW Cluster Object with a ROTATED molecule (CLOCKWISE)
         around molecule internal center of mass
         """
+        # avoiding to rotate a FROZEN molecule
+        if molecule in self.frozen_molecule:
+            return deepcopy(self)
+
+        if not isinstance(molecule, int) and (
+            0 < molecule >= self.total_molecules
+        ):
+            raise IndexError(
+                f"\nMolecule with {self.total_molecules} total molecules "
+                f"and index [0-{self.total_molecules - 1}]"
+                f"\nmolecule index must be less than {self.total_molecules}"
+                f"\nCheck! You want to remove molecule with index {molecule}"
+            )
 
         molecule_to_rotate: Molecule = self.get_molecule(molecule)
         molecule_symbols: list = molecule_to_rotate.symbols
 
         # avoid any rotatation attemp for a single atom system
-        if not (len(molecule_symbols) > 1):
+        if len(molecule_symbols) <= 1:
             return deepcopy(self)
 
         molecule_center_of_mass = molecule_to_rotate.center_of_mass
         molecule_principal_axes = molecule_to_rotate.principal_axes
+
+        # rotate around sphere center
+        x, y, z = np.asarray(self.sphere_center) + np.asarray([x, y, z])
 
         rotation_matrix = Rotation.from_euler(
             "xyz",
@@ -735,6 +800,7 @@ class Cluster(Molecule):
 
         return self.__class__(
             *new_cluster.values(),
+            frozen_molecule=self.frozen_molecule,
             sphere_radius=self.sphere_radius,
             sphere_center=self.sphere_center,
         )

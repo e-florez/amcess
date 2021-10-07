@@ -226,9 +226,35 @@ def test_cluster_class():
     )
 
     ca = Cluster(water, xe_coord)  # , kf_coord, nacl_coord)
+    cb = Cluster(water, xe_coord)  # , kf_coord, nacl_coord)
+    cc = Cluster(
+        Cluster(water).translate(0, x=0.09),
+        Cluster(xe_coord),  # .translate(0, x=0.05)
+    )  # , kf_coord, nacl_coord)
 
     print("-" * 40)
     print(ca.xyz)
+    print("-" * 40)
+    print(ca.molecules)
+    print("-" * 40)
+
+    # ca.frozen_molecule = 1
+    # print("frozen molecule: ", ca.frozen_molecule)
+
+    # print("Translating other:\n", ca.translate(0, x=90).xyz)
+    # print("Translating frozen:\n", ca.translate(1, x=90).xyz)
+    # print("Rotating other:\n", ca.rotate(0, x=90).xyz)
+    # print("Rotating frozen:\n", ca.rotate(1, x=90).xyz)
+
+    # print(ca.symbols)
+    # sa = sorted(ca.symbols)
+    # print(sorted(ca.symbols) == sa[1:])
+
+    # cax = ca.atoms
+    # cbx = cb.atoms
+
+    # print(cax == cbx)
+
     # print(ca.cluster_dictionary)
     # print("-" * 40)
     # print("\natoms: ", ca.atoms)
@@ -264,6 +290,14 @@ def test_cluster_class():
 
     # print("\nmagic add new dict:\n", ca + nacl_coord)
     # print("\nmagic add new list:\n", ca + kf_coord)
+
+    # print("id ca: ", id(ca))
+    # print("id cb: ", id(cb))
+
+    # print(ca == cb)
+    # print(ca.coordinates)
+    # print(ca == cc)
+    # print(cc.coordinates)
 
     # print("-" * 40)
     # g = 2
