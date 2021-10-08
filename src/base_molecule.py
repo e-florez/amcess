@@ -19,9 +19,7 @@ class Atom:
 
     @element.validator
     def _check_valid_3D_point(self, element, value):
-        try:
-            assert str(value).replace(" ", "").isalnum()
-        except (ValueError, AssertionError):
+        if not value.isalnum():
             raise ValueError(
                 "Must be valid NOT empty alphanumeric character"
                 f"\nyou get --> '{value}'"
@@ -31,9 +29,7 @@ class Atom:
     @y.validator
     @z.validator
     def _check_valid_point(self, coordinate, value):
-        try:
-            float(value)
-        except ValueError:
+        if not isinstance(value, float):
             raise ValueError(
                 "Must be valid NOT empty float,"
                 f"\nyou get --> '{value}' with type: '{type(value).__name__}'"
