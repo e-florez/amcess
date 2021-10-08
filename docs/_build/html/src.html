@@ -43,7 +43,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="tests package" href="tests.html" />
-    <link rel="prev" title="main module" href="main.html" /> 
+    <link rel="prev" title="setup module" href="setup.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -91,12 +91,13 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">amcess</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="conf.html">conf module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data.html">data package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html">setup module</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">src package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-src.base_molecule">src.base_molecule module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#src-context-module">src.context module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-src.dual_annealing">src.dual_annealing module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-src.example_docs_numpy">src.example_docs_numpy module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#example">Example</a></li>
@@ -302,15 +303,12 @@ to ONE (1)</p>
 </dd></dl>
 
 </section>
-<section id="src-context-module">
-<h2>src.context module<a class="headerlink" href="#src-context-module" title="Permalink to this headline">¶</a></h2>
-</section>
 <section id="module-src.dual_annealing">
 <span id="src-dual-annealing-module"></span><h2>src.dual_annealing module<a class="headerlink" href="#module-src.dual_annealing" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="src.dual_annealing.solve_dual_annealing">
 <span class="sig-prename descclassname"><span class="pre">src.dual_annealing.</span></span><span class="sig-name descname"><span class="pre">solve_dual_annealing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.dual_annealing.solve_dual_annealing" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find the global minimum of a function using Dual Annealing [1].</p>
+<dd><p>Find the global minimum of a function using Dual Annealing <a href="#id6"><span class="problematic" id="id1">[1]_</span></a>.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">solve_dual_annealing</span><span class="p">(</span>
 <span class="go">            function=lambda x: (x[0] ** 2 + x[1] - 11) ** 2,</span>
 <span class="go">            bounds=[(-5, 5), (-5, 5)],</span>
@@ -346,7 +344,7 @@ See OptimizeResult for a description of other attributes.</p>
 <section id="module-src.example_docs_numpy">
 <span id="src-example-docs-numpy-module"></span><h2>src.example_docs_numpy module<a class="headerlink" href="#module-src.example_docs_numpy" title="Permalink to this headline">¶</a></h2>
 <p>Example NumPy style docstrings.</p>
-<p>This module demonstrates documentation as specified by the <a href="#id6"><span class="problematic" id="id7">`NumPy
+<p>This module demonstrates documentation as specified by the <a href="#id7"><span class="problematic" id="id8">`NumPy
 Documentation HOWTO`_</span></a>. Docstrings may extend over multiple lines. Sections
 are created with a section header followed by an underline of equal length.</p>
 <section id="example">
@@ -608,7 +606,7 @@ on the first line, separated by a colon.</p>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="tests.html" class="btn btn-neutral float-right" title="tests package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="main.html" class="btn btn-neutral float-left" title="main module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="setup.html" class="btn btn-neutral float-left" title="setup module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
