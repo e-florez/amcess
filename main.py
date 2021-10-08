@@ -1,4 +1,6 @@
-from src.base_molecule import Molecule, Cluster
+from src.base_molecule import Atom, Molecule, Cluster
+
+# from src.base_molecule import Molecule, Cluster
 from data.molecules_coordinates import (
     li,
     water,
@@ -122,6 +124,31 @@ def system_w_li_cluster():
             file_xyz.write(w.xyz)
 
 
+def test_atom_class():
+
+    a_dict = {
+        "atoms": [
+            ("a1", 0, 0, 0),
+            ("a2", 0, 0, 0),
+            ("a3", 0, 0, 0),
+        ],
+        "charge": +5,
+        "multiplicity": 20,
+    }
+
+    b_list = [
+        ("b1", 0, 0, 0),
+        ("b1", 0, 0, 0),
+        ("b3", 0, 0, 0),
+    ]
+
+    mol = Cluster(b_list)
+    a = Cluster(b_list, a_dict, mol)
+
+    print("-" * 50)
+    print(a.xyz)
+
+
 def test_molecule_class():
     # li2 = Molecule0(li).translate(0, 50, 0, 0)
 
@@ -213,59 +240,41 @@ def test_cluster_class():
         "multiplicity": 3,
     }
 
-    mol = Molecule(
-        # li,
-        water,
-    )
+    # mol = Molecule(
+    #     # li,
+    #     water,
+    # )
 
-    na = Cluster(
+    ca = Cluster(
         # li,
-        water,
+        # water,
         kf_coord,
-        # nacl_coord,
+        nacl_coord,
     )
 
-    ca = Cluster(water, xe_coord)  # , kf_coord, nacl_coord)
-    cb = Cluster(water, xe_coord)  # , kf_coord, nacl_coord)
-    cc = Cluster(
-        Cluster(water).translate(0, x=0.09),
-        Cluster(xe_coord),  # .translate(0, x=0.05)
-    )  # , kf_coord, nacl_coord)
+    # ca = Cluster(na, xe_coord)
+    # cb = Cluster(water, xe_coord)  # , kf_coord, nacl_coord)
+    # cc = Cluster(
+    #     Cluster(water).translate(0, x=0.09),
+    #     Cluster(xe_coord),  # .translate(0, x=0.05)
+    # )  # , kf_coord, nacl_coord)
 
     print("-" * 40)
+    # print(na.cluster_dictionary)
+    # print("-" * 40)
     print(ca.xyz)
     print("-" * 40)
-    print(ca.molecules)
-    print("-" * 40)
-
-    # ca.frozen_molecule = 1
-    # print("frozen molecule: ", ca.frozen_molecule)
-
-    # print("Translating other:\n", ca.translate(0, x=90).xyz)
-    # print("Translating frozen:\n", ca.translate(1, x=90).xyz)
-    # print("Rotating other:\n", ca.rotate(0, x=90).xyz)
-    # print("Rotating frozen:\n", ca.rotate(1, x=90).xyz)
-
-    # print(ca.symbols)
-    # sa = sorted(ca.symbols)
-    # print(sorted(ca.symbols) == sa[1:])
-
-    # cax = ca.atoms
-    # cbx = cb.atoms
-
-    # print(cax == cbx)
-
-    # print(ca.cluster_dictionary)
-    # print("-" * 40)
-    # print("\natoms: ", ca.atoms)
-    # print("\nmolecules: ", ca.total_molecules)
-    # print("\ntotal atoms: ", ca.total_atoms)
-    # print("\ncharge: ", ca.charge)
-    # print("\nmultiplicity: ", ca.multiplicity)
-    # print("\nsymbols: ", ca.symbols)
-    # print("\nelements: ", ca.elements)
-    # print("\nmasses: ", ca.atomic_masses)
-    # print("\ntotal mass: ", ca.total_mass)
+    print("\nmolecules:\n\n", ca.molecules)
+    print("\ndictionary:\n\n", ca.cluster_dictionary)
+    print("\nsymbols: ", ca.symbols)
+    print("\natoms: ", ca.atoms)
+    print("\nmolecules: ", ca.total_molecules)
+    print("\ntotal atoms: ", ca.total_atoms)
+    print("\ncharge: ", ca.charge)
+    print("\nmultiplicity: ", ca.multiplicity)
+    print("\nelements: ", ca.elements)
+    print("\nmasses: ", ca.atomic_masses)
+    print("\ntotal mass: ", ca.total_mass)
     # print("\ncenter of mass: ", ca.center_of_mass)
     # print("\npp axes: ", ca.principal_axes)
     # print("\nnumber atoms (index):\n", ca.number_atoms)
@@ -291,13 +300,13 @@ def test_cluster_class():
     # print("\nmagic add new dict:\n", ca + nacl_coord)
     # print("\nmagic add new list:\n", ca + kf_coord)
 
-    # print("id ca: ", id(ca))
-    # print("id cb: ", id(cb))
+    # ca.frozen_molecule = 1
+    # print("frozen molecule: ", ca.frozen_molecule)
 
-    # print(ca == cb)
-    # print(ca.coordinates)
-    # print(ca == cc)
-    # print(cc.coordinates)
+    print("Translating other:\n", ca.translate(0, x=90).xyz)
+    print("Translating frozen:\n", ca.translate(1, x=90).xyz)
+    print("Rotating other:\n", ca.rotate(0, x=90).xyz)
+    print("Rotating frozen:\n", ca.rotate(1, x=90).xyz)
 
     # print("-" * 40)
     # g = 2
@@ -334,6 +343,7 @@ def run():
     # system_metal_complex()
 
     # ##test
+    # test_atom_class()
     # test_molecule_class()
     test_cluster_class()
 
