@@ -10,17 +10,16 @@ from scipy.optimize._dual_annealing import VisitingDistribution
 from scipy.optimize._dual_annealing import StrategyChain
 
 from scipy.optimize import OptimizeResult
-from scipy.optimize import minimize
-from scipy.special import gammaln
+
+# from scipy.optimize import minimize
+# from scipy.special import gammaln
 from scipy._lib._util import check_random_state
 
-from scipy import constants
 import numpy as np  # 1.21.2
 
 
 # from math_cost_function import *
-from src.ascec_criterion import *
-from src.heisenberg import *
+from src.ascec_criterion import Ascec
 
 
 def solve_dual_annealing(
@@ -49,9 +48,9 @@ def solve_dual_annealing(
                 lambda x: (x[0] ** 2 + x[1] - 11) ** 2
 
 
-        This funtions is a copy tthe function dual_annealing to have more control
-        about variables #!(Acá debería ir algo sobre la licencia, porqué se copío
-        #! las lineas de la función dual_annealing)
+        This funtions is a copy tthe function dual_annealing to have more
+        control about variables #!(Acá debería ir algo sobre la licencia,
+        #! porqué se copío las lineas de la función dual_annealing)
 
         Parameters
         ----------
@@ -62,21 +61,23 @@ def solve_dual_annealing(
             completely specify the function
 
         bounds : sequence, shape (n, 2)
-            Bounds for variables. (min, max) pairs for each element in x, defining
-            bounds for the objective function parameter.
+            Bounds for variables. (min, max) pairs for each element in x,
+            defining bounds for the objective function parameter.
 
         seed : {None, int, numpy.random.Generator,
 
             numpy.random.RandomState}, optional
-            If seed is None (or np.random), the numpy.random.RandomState singleton
-            is used. If seed is an int, a new RandomState instance is used, seeded
-            with seed. If seed is already a Generator or RandomState instance then
-            that instance is used. Specify seed for repeatable minimizations. The
-            random numbers generated with this seed only affect the visiting
-            distribution function and new coordinates generation.
+            If seed is None (or np.random), the numpy.random.RandomState
+            singleton is used. If seed is an int, a new RandomState instance
+            is used, seeded with seed. If seed is already a Generator or
+            RandomState instance then that instance is used. Specify seed
+            for repeatable minimizations. The random numbers generated
+            with this seed only affect the visiting distribution function
+            and new coordinates generation.
 
         NT : int, optional
-            The maximum number of global search iterations. Default value is 1000.
+            The maximum number of global search iterations. Default value
+            is 1000.
 
         T0 : float, optional
             The initial temperature, use higher values to facilitates a wider
@@ -86,8 +87,8 @@ def solve_dual_annealing(
 
         dT : float, optional
             During the annealing process, temperature is decreasing, when it
-            reaches initial_temp * restart_temp_ratio, the reannealing process is
-            triggered. Default value of the ratio is 2e-5. Range is (0, 1).
+            reaches initial_temp * restart_temp_ratio, the reannealing process
+            is triggered. Default value of the ratio is 2e-5. Range is (0, 1).
 
         mxcyle : int, optional
             Soft limit for the number of objective function calls. If the
@@ -96,21 +97,23 @@ def solve_dual_annealing(
             is done. Default value is 1e7.
 
         no_local_search : bool, optional
-            If no_local_search is set to True, a traditional Generalized Simulated
-            Annealing will be performed with no local search strategy applied.
+            If no_local_search is set to True, a traditional Generalized
+            Simulated Annealing will be performed with no local search
+            strategy applied.
 
         local_search_options : dict, optional
-            Extra keyword arguments to be passed to the local minimizer (minimize).
-            Some important options could be: method for the minimizer method to
-            use and args for objective function additional arguments.
+            Extra keyword arguments to be passed to the local minimizer
+            (minimize). Some important options could be: method for the
+            minimizer method to use and args for objective function
+            additional arguments.
 
     #* Funcionan los siguientes local_search_options
     #   BFGS o L-BFGS-B o CG o TNC o SLSQP (no usa Hess)
     #   COBYLA, Nelder-Mead (no usa jac y hess), Powell (no usa jac y hess)
     #todos BFGS, L-BFGS-B o SLSQP se usan por defecto
-    #!  trust_constr/ncg Whenever the gradient is estimated via finite-differences,
-    #!  we require the Hessian to be estimated using one of the quasi-Newton
-    #!  strategies.
+    #!  trust_constr/ncg Whenever the gradient is estimated
+    #!  via finite-differences, we require the Hessian to be
+    #!  estimated using one of the quasi-Newton strategies.
 
         visit_regions : float, optional
             Parameter for visiting distribution. Default value is 2.62. Higher
@@ -128,14 +131,15 @@ def solve_dual_annealing(
             A callback function with signature ``callback(x, f, context)``,
             which will be called for all minima found.
             ``x`` and ``f`` are the coordinates and function value of the
-            latest minimum found, and ``context`` has value in [0, 1, 2], with the
-            following meaning:
+            latest minimum found, and ``context`` has value in [0, 1, 2],
+            with the following meaning:
 
                 - 0: minimum detected in the annealing process.
                 - 1: detection occurred in the local search process.
                 - 2: detection done in the dual annealing process.
 
-            If the callback implementation returns True, the algorithm will stop.
+            If the callback implementation returns True, the algorithm
+            will stop.
 
         x0 : ndarray, shape(n,), optional
             Coordinates of a single N-D starting point.
@@ -144,10 +148,10 @@ def solve_dual_annealing(
         -------
         Optimize Result
             The optimization result represented as a OptimizeResult object.
-            Important attributes are: x the solution array, fun the value of the
-            function at the solution, and message which describes the cause of
-            the termination. See OptimizeResult for a description of other
-            attributes.
+            Important attributes are: x the solution array, fun the value
+            of the function at the solution, and message which describes
+            the cause of the termination. See OptimizeResult for a
+            description of other attributes.
 
         Exception
         ---------
@@ -155,8 +159,9 @@ def solve_dual_annealing(
 
         Note
         ----
-            References [1]: Tsallis C. Possible generalization of Boltzmann-Gibbs
-            statistics. Journal of Statistical Physics, 52, 479-487 (1998).
+            References [1]: Tsallis C. Possible generalization of
+            Boltzmann-Gibbs statistics. Journal of Statistical
+            Physics, 52, 479-487 (1998).
 
             Check `scipy.optimize.dual_annealing` official documentation
     """
@@ -197,7 +202,9 @@ def solve_dual_annealing(
     # Wrapper ascec
     ascec_wrapper = Ascec(ascec_activation)
     # Wrapper fot the minimizer
-    minimizer_wrapper = LocalSearchWrapper(bounds, func_wrapper, **local_search_options)
+    minimizer_wrapper = LocalSearchWrapper(
+        bounds, func_wrapper, **local_search_options
+    )
     # Initialization of random Generator for reproducible runs if seed provided
     rand_state = check_random_state(seed)
     # Initialization of the energy state
@@ -209,18 +216,27 @@ def solve_dual_annealing(
     temperature_restart = T0 * dT
 
     if there_is_molecule == 0:
-        # VisitingDistribution instance (Class used to generate new coordinates)
-        #! VisitingDistribution is based Cauchy-Lorentz distribution, se podría
-        #! usar para cluster de átomo, ya que con moléculas las puede destruir,
-        #! porqué no diferencia entre átomos y molécula.
-        #! Si usara el cm como sln, tampoco se podría debido a que también
-        #! necesitaría los ejes principales, cada vez que se edite el cm
-        # ? Una posible sln sería usar la clase Molecule
-        visit_dist = VisitingDistribution(lower, upper, visit_regions, rand_state)
+        # VisitingDistribution instance
+        # (Class used to generate new coordinates)
+        # #! VisitingDistribution is based Cauchy-Lorentz distribution,
+        # #! se podría usar para cluster de átomo, ya que con moléculas
+        # #! las puede destruir, porqué no diferencia entre átomos y
+        # #! molécula. Si usara el cm como sln, tampoco se podría debido
+        # #! a que también necesitaría los ejes principales, cada vez
+        # #! que se edite el cm
+        # #? Una posible sln sería usar la clase Molecule
+        visit_dist = VisitingDistribution(
+            lower, upper, visit_regions, rand_state
+        )
 
     # Strategy chain instance (Markov Chain, call: VisitingDistribution)
     strategy_chain = StrategyChain(
-        accept, visit_dist, func_wrapper, minimizer_wrapper, rand_state, energy_state
+        accept,
+        visit_dist,
+        func_wrapper,
+        minimizer_wrapper,
+        rand_state,
+        energy_state,
     )
     need_to_stop = False
     iteration = 0

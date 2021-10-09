@@ -1,6 +1,6 @@
 import numpy as np
 
- 
+
 def Rastrigin(x, T=None, *args):
     """
     Rastrigin function
@@ -30,7 +30,7 @@ def Rastrigin(x, T=None, *args):
     Reference:
         [1] Rastrigin, L. A. "Systems of extremal control." Mir, Moscow (1974).
     """
-    return np.sum(x*x - 10*np.cos(2*np.pi*x)) + 10*np.size(x)
+    return np.sum(x * x - 10 * np.cos(2 * np.pi * x)) + 10 * np.size(x)
 
 
 def Himmelblau(x, T=None, *args):
@@ -66,5 +66,6 @@ def Himmelblau(x, T=None, *args):
         [1] Himmelblau, D. (1972). Applied Nonlinear Programming. McGraw-Hill.
         ISBN 0-07-028921-2.
     """
-# !function is not good to analyze ascec criterio, because it's very uniform
-    return (x[0]**2 + x[1] - 11)**2 + (x[0] + x[1]**2 - 7)**2
+    # !function is not good to analyze ascec criterio,
+    # !because it's very uniform
+    return (x[0] ** 2 + x[1] - 11) ** 2 + (x[0] + x[1] ** 2 - 7) ** 2

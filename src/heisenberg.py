@@ -1,7 +1,7 @@
 from pyscf import gto, scf
 import numpy as np
 
-from src.base_molecule import *
+from src.base_molecule import Cluster
 
 import src.search_configuration as SC
 
@@ -40,21 +40,35 @@ def build_input_pyscf(x, molecule_object, type_search, ncall=[0]):
     else:
         system_object = before_coordinates.system
         if type_search == 1:
-            #! dual_annealing combinado con la propuesta de juan para bounds y
-            #! restando el centro de masa al parecer evita que se alejen las
-            #! las moleculas
-            mass_centers = np.zeros((system_object._total_fragments, 3), dtype=float)
+            # #! dual_annealing combinado con la propuesta
+            # #! de juan para bounds y restando el centro
+            # #!de masa al parecer evita que se alejen las
+            # #! las moleculas
+
+            mass_centers = np.zeros(
+                (system_object._total_fragments, 3), dtype=float
+            )
+
             for i in range(system_object._total_fragments):
                 mass_centers[i] = system_object.get_fragments(i).center_of_mass
-            r_random = x[0 : system_object._total_fragments * 3] - mass_centers.reshape(
-                (system_object._total_fragments * 3)
+
+            # #! Es para que black no me dañe el formato 0: a 0 :
+            # fmt: off
+            r_random = (
+                x[0: system_object._total_fragments * 3]
+                - mass_centers.reshape((system_object._total_fragments * 3))
             )
+
             theta_random = x[
-                system_object._total_fragments * 3 : system_object._total_fragments * 6
+                system_object._total_fragments
+                * 3: system_object._total_fragments * 6
             ]
+            # fmt: on
+
             x_random = np.concatenate((r_random, theta_random))
         elif type_search == 2:
-            #! SHGO sobrepone las geometrías cuando resto el centor de masa
+            # #! SHGO sobrepone las geometrías cuando resto el centor de
+            # #! masas
             x_random = x
 
     new_geom = dict()
@@ -69,23 +83,35 @@ def build_input_pyscf(x, molecule_object, type_search, ncall=[0]):
                     x_random[(i + system_object._total_fragments) * 3 + 1],
                     x_random[(i + system_object._total_fragments) * 3 + 2],
                 )
-                .translate(0, x_random[i * 3], x_random[i * 3 + 1], x_random[i * 3 + 2])
+                .translate(
+                    0,
+                    x_random[i * 3],
+                    x_random[i * 3 + 1],
+                    x_random[i * 3 + 2],
+                )
                 ._coordinates
             }
         else:
             # Translate
             new_geom[i] = {
                 "atoms": system_object.get_fragments(i)
-                .translate(0, x_random[i * 3], x_random[i * 3 + 1], x_random[i * 3 + 2])
+                .translate(
+                    0,
+                    x_random[i * 3],
+                    x_random[i * 3 + 1],
+                    x_random[i * 3 + 2],
+                )
                 ._coordinates
             }
 
-    system_object = Molecule(*new_geom.values())
+    system_object = Cluster(*new_geom.values())
 
-    # Controla que no este superpuestas las moleculas, para evitar exit con pyscf y SHGO
-    # En el caso que este superpuestas una molecula se translada una longitud aleatoria
+    # Controla que no este superpuestas las moleculas,
+    # para evitar exit con pyscf y SHGO
+    # En el caso que este superpuestas
+    # una molecula se translada una longitud aleatoria
     # y un angulo aleatorio entre 0 a 1 en las 3 direcciones
-    system_object = Molecule(*SC.overlaping(system_object).values())
+    system_object = Cluster(*SC.overlaping(system_object).values())
 
     before_coordinates(system_object)
     ###
@@ -127,7 +153,7 @@ def hamiltonian_pyscf(x, *args):
     e = scf.HF(mol).kernel()
     args[2].write(str(new_object._total_atoms) + "\n")
     args[2].write("Energy: " + str(e) + "\n")
-    l = 0
+    l: int = 0
     for symbols in new_object.symbols:
         args[2].write(
             str(symbols)
@@ -141,6 +167,6 @@ def hamiltonian_pyscf(x, *args):
             + str(new_object._coordinates[l][3] / 1.88973)
             + "\n"
         )
-        l += 1
-    l = 0
+        l: int = l + 1
+
     return e

@@ -2,7 +2,9 @@ import sys
 from scipy.optimize import shgo
 import random
 
-from src.m_dual_annealing import *
+from src.base_molecule import Cluster
+from src.m_dual_annealing import solve_dual_annealing
+from src.heisenberg import hamiltonian_pyscf
 
 
 def overlaping(_system_object):
@@ -17,12 +19,14 @@ def overlaping(_system_object):
 
     Print warning when there is overlaping
     """
-    import warnings  #! Falta definir el tipo de warning
+    import warnings  # !Falta definir el tipo de warning
 
     fragments = dict()
     for i in range(_system_object._total_fragments - 1):
         for j in range(i + 1, _system_object._total_fragments):
-            fragments[i] = {"atoms": _system_object.get_fragments(i)._coordinates}
+            fragments[i] = {
+                "atoms": _system_object.get_fragments(i)._coordinates
+            }
             comparison = (
                 _system_object.get_fragments(i).center_of_mass
                 == _system_object.get_fragments(j).center_of_mass
@@ -48,7 +52,9 @@ def overlaping(_system_object):
                 )
                 warnings.warn(message)
             else:
-                fragments[j] = {"atoms": _system_object.get_fragments(j)._coordinates}
+                fragments[j] = {
+                    "atoms": _system_object.get_fragments(j)._coordinates
+                }
     return fragments
 
 
@@ -64,11 +70,14 @@ class SearchConfig:
 
         if system_object is None:
             sys.exit(
-                "AttributeError system_object isn't a object of Molecule. It's None"
+                "AttributeError system_object isn't a object of Molecule.\
+                It's None"
             )
 
         if system_object.total_fragments == 1:
-            raise ValueError("System of study most have AT LEAST TWO FRAGMENTS")
+            raise ValueError(
+                "System of study most have AT LEAST TWO FRAGMENTS"
+            )
 
         self._system_object = system_object
 
@@ -79,7 +88,9 @@ class SearchConfig:
         # cost function
         self._basis = basis
         self._program_calculate_cost_function = program_electronic_structure
-        self._func = self.program_cost_function(self._program_calculate_cost_function)
+        self._func = self.program_cost_function(
+            self._program_calculate_cost_function
+        )
 
         # archivo de salida xyz con todas las configuraciones
         self._outxyz = outxyz
@@ -95,12 +106,16 @@ class SearchConfig:
             (-discretization, discretization),
         ]
         bound_rotate = [(0, 360), (0, 360), (0, 360)]
-        bound_translate = bound_translate * self._system_object._total_fragments
+        bound_translate = (
+            bound_translate * self._system_object._total_fragments
+        )
         bound_rotate = bound_rotate * self._system_object._total_fragments
         self._bounds = bound_translate + bound_rotate
 
         # verificar superposición de las moleculas
-        self._system_object = Molecule(*overlaping(self._system_object).values())
+        self._system_object = Cluster(
+            *overlaping(self._system_object).values()
+        )
 
     def bounds(self):
         return self._bounds

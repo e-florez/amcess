@@ -47,6 +47,7 @@ setup(
     install_requires=[
         "scipy>=1.7",
         "numpy>=1.21",
+        "pyscf>=1.7.6.post1",
     ],
 )
 
