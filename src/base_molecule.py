@@ -3,7 +3,7 @@ from copy import deepcopy
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from atomic_data import atomic_mass
+from src.atomic_data import atomic_mass
 
 
 class Molecule:
