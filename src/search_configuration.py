@@ -2,7 +2,7 @@ import sys
 from scipy.optimize import shgo
 import random
 
-from m_dual_annealing import *
+from src.m_dual_annealing import *
 
 
 def overlaping(_system_object):
