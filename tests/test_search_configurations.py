@@ -3,8 +3,8 @@ import sys
 
 sys.path.append("../src")
 
-from base_molecule import Cluster
-from search_configuration import SearchConfig
+from src.base_molecule import Cluster
+from src.search_configuration import SearchConfig
 
 
 @pytest.mark.parametrize(
