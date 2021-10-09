@@ -13,6 +13,7 @@ PATH = pathlib.Path(os.path.abspath(os.path.dirname(__file__)))
 REQUIREMENTS = [
     "scipy>=1.7",
     "numpy>=1.21",
+    "pyscf>=1.7.6.post1",
 ]
 
 with open(PATH / "src" / "__init__.py") as fp:

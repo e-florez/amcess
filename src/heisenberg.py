@@ -1,4 +1,3 @@
-import pyscf
 from pyscf import gto, scf
 import numpy as np
 
