@@ -1,9 +1,8 @@
-from pyscf import gto, scf
 import numpy as np
-
-from src.base_molecule import Cluster
+from pyscf import gto, scf
 
 import src.search_configuration as SC
+from src.base_molecule import Cluster
 
 
 def before_coordinates(system):

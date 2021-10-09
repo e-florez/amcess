@@ -1,24 +1,14 @@
 import types
 
-# ipdb para debugger python
-# import ipdb; ipdb.set_trace()
-# Object into _dual_annealing.py
-from scipy.optimize._dual_annealing import ObjectiveFunWrapper
-from scipy.optimize._dual_annealing import LocalSearchWrapper
-from scipy.optimize._dual_annealing import EnergyState
-from scipy.optimize._dual_annealing import VisitingDistribution
-from scipy.optimize._dual_annealing import StrategyChain
-
-from scipy.optimize import OptimizeResult
-
-# from scipy.optimize import minimize
-# from scipy.special import gammaln
-from scipy._lib._util import check_random_state
-
+# fmt: off
 import numpy as np  # 1.21.2
+from scipy._lib._util import check_random_state
+from scipy.optimize import OptimizeResult
+from scipy.optimize._dual_annealing import (EnergyState, LocalSearchWrapper,
+                                            ObjectiveFunWrapper, StrategyChain,
+                                            VisitingDistribution)
 
-
-# from math_cost_function import *
+# fmt: on
 from src.ascec_criterion import Ascec
 
 
