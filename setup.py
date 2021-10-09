@@ -11,6 +11,7 @@ PATH = pathlib.Path(os.path.abspath(os.path.dirname(__file__)))
 
 
 REQUIREMENTS = [
+    "h5py==3.1.0",
     "scipy>=1.7",
     "numpy>=1.21",
     "pyscf>=1.7.6.post1",
@@ -45,6 +46,7 @@ setup(
     long_description=LONG_DESCRIPTION,
     keywords=["optimization", "PES", "Potential Energy Surface", "Monte Carlo"],
     install_requires=[
+	"h5py==3.1.0",
         "scipy>=1.7",
         "numpy>=1.21",
         "pyscf>=1.7.6.post1",

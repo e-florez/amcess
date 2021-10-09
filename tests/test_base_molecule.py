@@ -1,8 +1,8 @@
 import pytest
 import sys
 
-sys.path.append("../src")
 from src.base_molecule import Cluster
+sys.path.append("../src")
 
 
 @pytest.mark.parametrize(
