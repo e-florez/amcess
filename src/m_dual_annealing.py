@@ -23,11 +23,6 @@ import numpy as np  # 1.21.2
 from ascec_criterion import *
 from heisenberg import *
 
-# from base_molecule import Cluster
-from move_fragments import *
-
-# pytest 6.2.5
-
 
 def solve_dual_annealing(
     func,
@@ -223,13 +218,6 @@ def solve_dual_annealing(
         #! necesitaría los ejes principales, cada vez que se edite el cm
         # ? Una posible sln sería usar la clase Molecule
         visit_dist = VisitingDistribution(lower, upper, visit_regions, rand_state)
-    else:
-        # visit_dist = Cluster(args)
-        #!Por ahora no lo hace nada, no lo estoy usando, estoy usando lo anterior articulado
-        #!con base_molecule
-        visit_dist = MoveFragments(
-            system_object, lower, upper, visit_regions, rand_state
-        )
 
     # Strategy chain instance (Markov Chain, call: VisitingDistribution)
     strategy_chain = StrategyChain(

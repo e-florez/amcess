@@ -17,7 +17,6 @@ water1 = {
 }
 
 h2o = base_molecule.Cluster(water1, water1)
-
 # Configuración de busqueda
 ################################################
 # Configuración de la busqueda
@@ -25,5 +24,6 @@ h2o = base_molecule.Cluster(water1, water1)
 
 
 search_config = search_configuration.SearchConfig(h2o)
-search_config.DA()
+
+search_config.da()
 print(search_config._search)

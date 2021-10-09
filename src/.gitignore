@@ -2,12 +2,11 @@
 
 # environment
 
-# temporary files
+# temporary dir and files
+__pycache__
 old/
 salida 
 examples
 tmp*
-
-# PBD files
 
 # for testing

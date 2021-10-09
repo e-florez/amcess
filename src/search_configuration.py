@@ -67,6 +67,9 @@ class SearchConfig:
                 "AttributeError system_object isn't a object of Molecule. It's None"
             )
 
+        if system_object.total_fragments == 1:
+            raise ValueError("System of study most have AT LEAST TWO FRAGMENTS")
+
         self._system_object = system_object
 
         #
@@ -116,9 +119,10 @@ class SearchConfig:
 
     def run(self, **kwargs):
         if self._search_methodology == 1:
+            print("*** Minimization: Dual Annealing ***")
             self.da(**kwargs)
         if self._search_methodology == 2:
-            print("*** Calculo Realizado con SHGO from Scipy ***")
+            print("*** Minimization: SHGO from Scipy ***")
             self.shgo(**kwargs)
 
     def da(self, **kwargs):
@@ -138,15 +142,11 @@ class SearchConfig:
 
     def shgo(self, **kwargs):
         with open(self._outxyz, "w") as outxyz:
-
             self._search_methodology = 2
-            shgo_tolerance_dict = {"ftol": 1e-6}
-            shgo_options_dict = {"options": shgo_tolerance_dict}
 
             self._search = shgo(
                 self._func,
                 bounds=self._bounds,
-                minimizer_kwargs=shgo_options_dict,
                 sampling_method="sobol",
                 args=(
                     self._basis,
