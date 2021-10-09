@@ -27,7 +27,7 @@ before_script:
   - source venv_testing/bin/activate
   # - pip install -r requirements.txt
   - pip install -r requirements.txt -r requirements_dev.txt
-  - pip remove h5py
+  - pip uninstall h5py
   - pip install -Iv h5py==3.2.1 
   - deactivate 
   
@@ -35,7 +35,7 @@ before_script:
   - virtualenv venv
   - source venv/bin/activate
   - pip install -r requirements.txt
-  - pip remove h5py
+  - pip uninstall h5py
   - pip install -Iv h5py==3.2.1 
   - deactivate
 
