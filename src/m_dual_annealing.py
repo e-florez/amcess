@@ -1,4 +1,3 @@
-from base_molecule import Cluster
 import types
 
 # ipdb para debugger python
@@ -20,8 +19,8 @@ import numpy as np  # 1.21.2
 
 
 # from math_cost_function import *
-from ascec_criterion import *
-from heisenberg import *
+from src.ascec_criterion import *
+from src.heisenberg import *
 
 
 def solve_dual_annealing(

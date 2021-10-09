@@ -1,9 +1,9 @@
 from pyscf import gto, scf
 import numpy as np
 
-from base_molecule import *
+from src.base_molecule import *
 
-import search_configuration as SC
+import src.search_configuration as SC
 
 
 def before_coordinates(system):
