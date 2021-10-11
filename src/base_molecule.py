@@ -2,6 +2,7 @@ from copy import deepcopy
 
 import attr
 import numpy as np
+from numpy.linalg import multi_dot
 from scipy.spatial.transform import Rotation
 
 from data.atomic_data import atomic_mass
@@ -97,8 +98,8 @@ class Molecule:
     """
 
     _atoms = attr.ib()
-    charge: int = attr.ib(default=0)
-    multiplicity: int = attr.ib(default=1)
+    _charge: int = attr.ib(default=0)
+    _multiplicity: int = attr.ib(default=1)
 
     # ===============================================================
     # VALIDATORS
@@ -116,7 +117,7 @@ class Molecule:
                     f"from --> {atoms}\n"
                 )
 
-    @charge.validator
+    @_charge.validator
     def _check_valid_charge(self, attribute, charge):
         if not isinstance(charge, int):
             raise ValueError(
@@ -124,11 +125,11 @@ class Molecule:
                 f"\nyou get --> 'charge = {charge}'\n"
             )
 
-    @multiplicity.validator
+    @_multiplicity.validator
     def _check_valid_multiplicity(self, attribute, multiplicity):
         if not isinstance(multiplicity, int) or multiplicity < 1:
             raise ValueError(
-                "\n\nmultiplicity must be an integer larger than 0"
+                "\n\nmultiplicity must be an integer larger than zero (0)"
                 f"\nyou get --> 'multiplicity = {multiplicity}'\n"
             )
 
@@ -139,7 +140,8 @@ class Molecule:
     def from_dict(cls, atoms_dict):
         "Dictionary type: {'atoms': [(<element> <X> <Y> <Z>), ...]}"
         if not "atoms" in atoms_dict:
-            raise KeyError(
+            # FIXME: KeyError does not support \n
+            raise TypeError(
                 "\n\nThe key 'atoms' is casesensitive"
                 "\n{'atoms': [(<element> <X> <Y> <Z>), ...]}"
                 f"\nyou get {atoms_dict}\n"
@@ -152,6 +154,39 @@ class Molecule:
     # ===============================================================
     # MAGIC METHODS
     # ===============================================================
+    def __add__(self, other) -> object:
+        return self.add_molecule(other)
+
+    # def __mul__(self, value: int):
+    #     return value * self
+
+    # def __rmul__(self, value: int):
+    #     """to replicate a molecule
+
+    #     Parameters
+    #     ----------
+    #     value : int
+    #         quantity to replicate Molecue
+
+    #     Return
+    #     ------
+    #     Cluster : object
+    #         summing or multiplying Molecule classes produce a Cluster class
+    #     """
+    #     if value < 1 or not isinstance(value, int):
+    #         raise ValueError(
+    #             "\nMultiplier must be and integer larger than zero"
+    #             f"\ncheck --> '{value}'"
+    #         )
+
+    #     new_cluster = deepcopy(self)
+    #     # for _ in range(value - 1):
+    #     #     new_cluster = new_cluster.add_molecule(deepcopy(self))
+
+    #     new_cluster *= value
+
+    #     return new_cluster
+
     def __str__(self):
         return str(attr.asdict(self))
 
@@ -167,6 +202,19 @@ class Molecule:
         return [Atom(*atom).atomic_mass for atom in self.atoms]
 
     @property
+    def charge(self) -> int:
+        return self._charge
+
+    @charge.setter
+    def charge(self, new_charge) -> int:
+        if not isinstance(new_charge, int):
+            raise ValueError(
+                "\n\ncharge must be an integer "
+                f"\nyou get --> 'charge = {new_charge}'\n"
+            )
+        self._charge = new_charge
+
+    @property
     def coordinates(self) -> list:
         return [c[1:] for c in self.atoms]
 
@@ -180,6 +228,19 @@ class Molecule:
             list of unique symbols
         """
         return list(set(self.symbols))
+
+    @property
+    def multiplicity(self) -> int:
+        return self._multiplicity
+
+    @multiplicity.setter
+    def multiplicity(self, new_multiplicity) -> int:
+        if not isinstance(new_multiplicity, int) or new_multiplicity < 1:
+            raise ValueError(
+                "\n\nmultiplicity must be an integer larger than zero (0)"
+                f"\nyou get --> 'multiplicity = {new_multiplicity}'\n"
+            )
+        self._multiplicity = new_multiplicity
 
     @property
     def numbering_atoms(self) -> str:
@@ -254,8 +315,8 @@ class Molecule:
     def xyz(self) -> str:
         """Printing Molecule coordinates using XYZ format"""
         comments = (
-            f"-- charge= {self.charge:<-g} and "
-            f"multiplicity= {self.multiplicity:<g} --"
+            f"-- charge={self.charge:<-g} and "
+            f"multiplicity={self.multiplicity:<g} --"
         )
         write_xyz = f"""\t{self.total_atoms}\n{comments:<s}\n"""
         for atom in self.atoms:
@@ -266,11 +327,87 @@ class Molecule:
 
         return write_xyz
 
+    def add_atoms(self, new_atoms: list) -> object:
+        """adding extra atoms can NOT be MOVED or ROTATED
+
+        Parameters
+        ----------
+        other : list
+            cartesian coordinates; like [(<element>, <X>, <Y>, <Y>), ...]
+
+        Returns
+        -------
+        Molecule : object
+            a new Molecule
+
+        Raises
+        ------
+        TypeError
+            for anything else
+        """
+        if not isinstance(new_atoms, list):
+            raise TypeError(
+                f"\n\ncoordinates format must be a list of tuple: "
+                "[(str, float, float, float), ...]"
+                f"check --> \n{new_atoms}\n"
+            )
+
+        total_atoms: list = self.atoms + new_atoms
+        return self.__class__(total_atoms)
+
+    def add_molecule(self, other) -> object:
+        if not isinstance(other, Molecule):
+            raise TypeError(
+                "\nOnly type 'Molecule', list or dict could be added"
+                f"\nyou have a type: '{type(other)}', check: \n{other}"
+            )
+        return Cluster(self, other)
+
+    def get_atom(self, atom: int) -> list:
+        """
+        Getting catesian coordinate sfor an atom
+
+        Parameters
+        ----------
+        atom : int
+            atom index
+
+        Returns
+        -------
+        list
+            ["element", "X", "Y", "Z"]
+
+        Raises
+        ------
+        IndexError
+        """
+        if atom >= self.total_atoms:
+            raise IndexError(
+                f"\nMolecule with {self.total_atoms} total atoms "
+                f"and index [0-{self.total_atoms - 1}]"
+                f"\n atom index must be less than {self.total_atoms}"
+                f"\nCheck! You want to get atom with index {atom}"
+            )
+        return self.atoms[atom]
+
+    def remove_atom(self, atom: int) -> object:
+        if atom > self.total_atoms:
+            raise IndexError(
+                f"\nMolecule with {self.total_atoms} total atoms "
+                f"and index [0-{self.total_atoms - 1}]"
+                f"\n atom index must be less than {self.total_atoms}"
+                f"\nCheck! You want to remove atom with index {atom}"
+            )
+        new_atoms: list = self.atoms
+
+        return self.__class__(new_atoms.pop(atom))
+
 
 # -------------------------------------------------------------
 class Cluster(Molecule):
     """
     Create a Cluster with molecules/atoms to move and rotate
+    using spherical boundary conditions (SBC).
     The format of the INPUT coordinates is as follows (any):
 
     1. Dictionary type: {"atoms": [(<element> <X> <Y> <Z>), ...]}
@@ -292,7 +429,7 @@ class Cluster(Molecule):
     Raises
     ------
     TypeError
-        [description]
+        for a wrong input argument
     """
 
     def __init__(
@@ -313,36 +450,282 @@ class Cluster(Molecule):
         self._sphere_radius = sphere_radius
         self._sphere_center = sphere_center
 
+        cluster_atoms: list = list()
+
+        for count, mol in enumerate(args):
+            size: int = len(self._cluster_dict)
+            if isinstance(mol, Cluster):
+                for j, key in enumerate(mol._cluster_dict):
+                    self._cluster_dict[size + j] = mol._cluster_dict[key]
+
+                self._charge += mol.charge
+                cluster_atoms += mol.atoms
+                # restarting the loop
+                continue
+            elif isinstance(mol, Molecule):
+                new_molecule = deepcopy(mol)
+            elif isinstance(mol, dict):
+                new_molecule = Molecule.from_dict(mol)
+            elif isinstance(mol, list):
+                new_molecule = Molecule(mol)
+            else:
+                raise TypeError(
+                    "\nOnly type 'Molecule', list or dict to initialize"
+                    "\n\t- Dict: {'atoms': [(<element> <X> <Y> <Z>), ...]}"
+                    "\n\t- List: [(<element> <X> <Y> <Z>), ...]"
+                    f"\nyou have a NOT valid '{type(mol)}', check: \n{mol}"
+                )
+
+            cluster_atoms += new_molecule.atoms
+
+            # ! how is computed the cluster total multiplicity?
+            self._charge += new_molecule.charge
+            self._cluster_dict[size + count] = new_molecule
+
+        # initialazing Cluster as a 'Molecule' (sum of all individual ones)
+        super().__init__(
+            atoms=cluster_atoms,
+            charge=self.charge,
+            multiplicity=self.multiplicity,
+        )
+
+    # ===============================================================
+    # MAGIC METHODS
+    # ===============================================================
+    def __add__(self, other):
+        return self.add_molecule(other)
+
+    def __mul__(self, value: int):
+        return value * self
+
+    def __rmul__(self, value: int):
+        """to replicate a molecule
+
+        Parameters
+        ----------
+        value : int
+            quantity to replicate Molecue
+
+        Return
+        ------
+        Cluster : object
+            summing or multiplying Molecule classes produce a Cluster class
+        """
+        if value < 1 or not isinstance(value, int):
+            raise ValueError(
+                "\nMultiplier must be and integer larger than zero"
+                f"\ncheck --> '{value}'"
+            )
+
+        new_cluster = deepcopy(self)
+        for _ in range(value - 1):
+            new_cluster = new_cluster.add_molecule(deepcopy(self))
+
+        return new_cluster
+
+    def __str__(self):
+        cluster_dict: dict = self._cluster_dict
+
+        cluster_string: str = (
+            f"Cluster of ({self.total_molecules}) molecules"
+            f" and ({self.total_atoms}) total atoms\n"
+        )
+        for key, molecule in cluster_dict.items():
+            atoms = molecule.atoms
+            cluster_string += f" #{key}: molecule with {len(atoms)} atoms:\n"
+            cluster_string += f"     --> atoms: {atoms}\n"
+            charge = molecule.charge
+            cluster_string += f"     --> charge: {charge:>+}\n"
+            multiplicity = molecule.multiplicity
+            cluster_string += f"     --> multiplicity: {multiplicity}\n"
+
+        return cluster_string
+
+    # ===============================================================
+    # PROPERTIES
+    # ===============================================================
+    @property
+    def cluster_dictionary(self) -> dict:
+        return self._cluster_dict
+
+    @property
+    def frozen_molecule(self) -> int:
+        return self._frozen_molecule
+
+    @frozen_molecule.setter
+    def frozen_molecule(self, value) -> None:
+        if isinstance(value, list):
+            self._frozen_molecule = value
+        else:
+            self._frozen_molecule = [value]
+
+    @property
+    def sphere_center(self) -> tuple:
+        return self._sphere_center
+
+    @sphere_center.setter
+    def sphere_center(self, new_center: tuple) -> None:
+        self._sphere_center = new_center
+
+    @property
+    def sphere_radius(self) -> float:
+        return self._sphere_radius
+
+    @sphere_radius.setter
+    def sphere_radius(self, new_radius: float) -> None:
+        self._sphere_radius = new_radius
+
+    @property
+    def total_molecules(self) -> int:
+        return len(self._cluster_dict)
+
+    def add_molecule(self, other) -> object:
+        new_cluster = deepcopy(self)
+        return self.__class__(new_cluster, other)
+
+    def get_molecule(self, molecule: int):
+        if molecule > self.total_molecules:
+            raise IndexError(
+                f"\nMolecule with {self.total_molecules} total molecules "
+                f"and index [0-{self.total_molecules - 1}]"
+                f"\nmolecule index must be less than {self.total_molecules}"
+                f"\nCheck! You want to get molecule with index {molecule}"
+            )
+
+        cluster_dict: dict = deepcopy(self).cluster_dictionary
+        new_molecule: Molecule = cluster_dict.pop(molecule)
+
+        return new_molecule
+
+    def remove_molecule(self, molecule: int) -> object:
+        if molecule > self.total_molecules:
+            raise IndexError(
+                f"\nMolecule with {self.total_molecules} total atoms "
+                f"and index [0-{self.total_molecules - 1}]"
+                f"\n molecule index must be less than {self.total_molecules}"
+                f"\nCheck! You want to remove molecule with index {molecule}"
+            )
+        new_cluster_dict: dict = deepcopy(self).cluster_dictionary
+        del new_cluster_dict[molecule]
+
+        return self.__class__(*new_cluster_dict.values())
+
+    def rotate(
+        self, molecule: int = None, x: float = 0, y: float = 0, z: float = 0
+    ):
+        """
+        Returns a NEW Cluster Object with a ROTATED molecule (CLOCKWISE)
+        around molecule internal center of mass
+        """
+        # avoiding to rotate a FROZEN molecule
+        if molecule in self.frozen_molecule:
+            return deepcopy(self)
+
+        if not isinstance(molecule, int) and (
+            0 < molecule >= self.total_molecules
+        ):
+            raise IndexError(
+                f"\nMolecule with {self.total_molecules} total molecules "
+                f"and index [0-{self.total_molecules - 1}]"
+                f"\nmolecule index must be less than {self.total_molecules}"
+                f"\nCheck! You want to remove molecule with index {molecule}"
+            )
+
+        molecule_to_rotate: Molecule = self._cluster_dict[molecule]
+        molecule_symbols: list = molecule_to_rotate.symbols
+
+        # avoid any rotatation attemp for a single atom system
+        if len(molecule_symbols) <= 1:
+            return deepcopy(self)
+
+        molecule_center_of_mass = molecule_to_rotate.center_of_mass
+        molecule_principal_axes = molecule_to_rotate.principal_axes
+
+        # rotate around sphere center
+        x, y, z = np.asarray(self.sphere_center) + np.asarray([x, y, z])
+
+        rotation_matrix = Rotation.from_euler(
+            "xyz",
+            [x, y, z],
+            degrees=True,
+        ).as_matrix()
+
+        rotated_coordinates = (
+            np.dot(molecule_principal_axes, rotation_matrix)
+            + molecule_center_of_mass
+        )
+
+        rotated_molecule = list()
+        for i, atom in enumerate(molecule_symbols):
+            rotated_molecule.append(
+                tuple([atom] + rotated_coordinates[i].tolist())
+            )
+
+        new_cluster = deepcopy(self)
+        new_cluster._cluster_dict[molecule] = Molecule(rotated_molecule)
+
+        return self.__class__(*new_cluster._cluster_dict.values())
+
+    def translate(
+        self, molecule: int = None, x: float = 0, y: float = 0, z: float = 0
+    ):
+        """Returns a NEW Molecule Object with a TRANSLATED fragment"""
+        # avoiding to rotate a FROZEN molecule
+        if molecule in self.frozen_molecule:
+            return deepcopy(self)
+
+        if not isinstance(molecule, int) and (
+            0 < molecule >= self.total_molecules
+        ):
+            raise IndexError(
+                f"\nMolecule with {self.total_molecules} total molecules "
+                f"and index [0-{self.total_molecules - 1}]"
+                f"\nmolecule index must be less than {self.total_molecules}"
+                f"\nCheck! You want to remove molecule with index {molecule}"
+            )
+
+        molecule_to_move: Molecule = self._cluster_dict[molecule]
+        molecule_symbols: list = molecule_to_move.symbols
+
+        molecule_center_of_mass = molecule_to_move.center_of_mass
+        molecule_principal_axes = molecule_to_move.principal_axes
+
+        translated_coordinates = np.asarray(
+            molecule_center_of_mass
+        ) + np.asarray([x, y, z])
+
+        # checking if the new coordinates are into the boundary conditions
+        # if it is out of our sphere, we rescale it to match the sphere radius
+        distance: float = np.linalg.norm(
+            translated_coordinates - np.asarray(self.sphere_center)
+        )
+        if self.sphere_radius and (distance > self.sphere_radius):
+
+            max_distance: float = self.sphere_radius / np.linalg.norm(
+                translated_coordinates - np.asarray(self.sphere_center)
+            )
+
+            # rescaling to match radius
+            translated_coordinates = max_distance * translated_coordinates + (
+                1 - max_distance
+            ) * np.asarray(self.sphere_center)
+
+        translated_coordinates = (
+            molecule_principal_axes + translated_coordinates
+        )
+
+        translated_molecule = list()
+        for i, atom in enumerate(molecule_symbols):
+            translated_molecule.append(
+                tuple([atom] + translated_coordinates[i].tolist())
+            )
+
+        new_cluster = deepcopy(self)
+        new_cluster._cluster_dict[molecule] = Molecule(translated_molecule)
+
+        return self.__class__(*new_cluster._cluster_dict.values())
+
 
 # -------------------------------------------------------------
 # -------------------------------------------------------------
 # -------------------------------------------------------------
-def test_Molecule():
-
-    # mol = Molecule([("a", 0, 0, 0), ("b", 10, 10, 10)], -10, 5))
-    # ---
-    mol = Molecule(
-        [("Xe", 0, 0, 0), ("Na", 5, 5, 5), ("Na", 10, 10, 10)], -10, 5
-    )
-
-    print("\n")
-    print(mol)
-    print("-" * 40)
-    print("atoms: :\n", mol.atoms)
-    print("charge:", mol.charge)
-    print("multiplicity:", mol.multiplicity)
-
-    print("-" * 40)
-    print("\nmasses: ", mol.atomic_masses)
-    print("\ntotal mass: ", mol.total_mass)
-    print("\nsymbols: ", mol.symbols)
-    print("\ntotal atoms: ", mol.total_atoms)
-    print("\nelements: ", mol.elements)
-
-    print("-" * 40)
-    print("\nnumbering atoms (index):\n", mol.numbering_atoms)
-    print(mol.xyz)
-
-    print("-" * 40)
-    print("\ncenter of mass: ", mol.center_of_mass)
-    print("\npp axes: ", mol.principal_axes)
