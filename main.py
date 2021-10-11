@@ -211,7 +211,7 @@ def test_cluster():
     li_mol = Molecule.from_dict(li)
 
     # init from dict and list
-    # ca = Cluster(nacl_coord, nacl_coord)
+    ca = Cluster(nacl_coord, nacl_coord, nacl_coord, nacl_coord)
     # ca = Cluster(kf_coord, nacl_coord)
 
     # # init from Molecule
@@ -220,9 +220,9 @@ def test_cluster():
     # # init from Molecule and dict, list
     # ca = Cluster(w_mol, kf_coord, nacl_coord)
 
-    # print("-" * 40)
-    # print(ca)
-    # print("-" * 40)
+    print("-" * 40)
+    print(ca)
+    print("-" * 40)
     # print(ca.xyz)
     # print("-" * 40)
     # print(ca.cluster_dictionary)
@@ -243,7 +243,9 @@ def test_cluster():
     # print("-" * 40)
     # # print("water mol:", w_mol)
     # # print("kf mol:", kf_mol)
+
     # magic_add = Cluster(w_mol + kf_mol)
+
     # print("-" * 40)
     # print("\nmagic add new obj:\n", magic_add)
 
@@ -251,7 +253,7 @@ def test_cluster():
     # print("\nmagic add new list:\n", magic_add + kf_coord)
     # print("\nmagic add new mol:\n", magic_add + kf_mol)
 
-    print("-" * 40)
+    # print("-" * 40)
     # magic_add = Cluster(w_mol)
     # magic_add = Cluster(kf_coord)
     # magic_add = Cluster(nacl_coord)
@@ -261,21 +263,32 @@ def test_cluster():
     # print("\nmagic rmul cluster:\n", 3 * magic_add)
     # print("\nmagic mul cluster:\n", magic_add * 3)
 
-    magic_add = Cluster(w_mol, kf_mol)
-    print(
-        f"",
-    )
+    # magic_add = Cluster(w_mol, kf_mol)
+    # print(
+    #     f"",
+    # )
 
-    ca = magic_add + w_mol
+    # ca = magic_add + w_mol
 
-    ca.frozen_molecule = 1
-    ca.frozen_molecule = [0, 1]
-    print("frozen molecule: ", ca.frozen_molecule)
+    # ca.frozen_molecule = 1
+    # # ca.frozen_molecule = [0, 1]
+    # print("frozen molecule: ", ca.frozen_molecule)
 
-    print("Translating other:\n", ca.translate(0, x=90).xyz)
-    print("Translating frozen:\n", ca.translate(1, x=90).xyz)
-    print("Rotating other:\n", ca.rotate(0, z=90).xyz)
-    print("Rotating frozen:\n", ca.rotate(1, z=90).xyz)
+    # print("No sphere radius: ", ca.sphere_radius)
+    # print("frozen molecule: ", ca.frozen_molecule)
+    # ca.sphere_radius = 20
+    # print("choosing a sphere radius: ", ca.sphere_radius)
+
+    # cb = ca.translate(0, x=100)
+    # print("New sphere radius: ", cb.sphere_radius)
+    # print("frozen molecule: ", cb.frozen_molecule)
+
+    # print("Translating other:\n", ca.translate(0, x=90).xyz)
+    # print("Translating frozen:\n", ca.translate(1, x=90).xyz)
+    # print("Rotating other:\n", ca.rotate(0, z=90).xyz)
+    # print("Rotating frozen:\n", ca.rotate(1, z=90).xyz)
+
+    # print("-" * 40)
 
     # print("-" * 40)
     # g = 2

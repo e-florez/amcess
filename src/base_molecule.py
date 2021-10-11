@@ -157,38 +157,37 @@ class Molecule:
     def __add__(self, other) -> object:
         return self.add_molecule(other)
 
-    # def __mul__(self, value: int):
-    #     return value * self
+    def __mul__(self, value: int):
+        return value * self
 
-    # def __rmul__(self, value: int):
-    #     """to replicate a molecule
+    def __rmul__(self, value: int):
+        """
+        Replicate a molecule.
+        summing or multiplying Molecule classes produce a Cluster class
 
-    #     Parameters
-    #     ----------
-    #     value : int
-    #         quantity to replicate Molecue
+        Parameters
+        ----------
+        value : int
+            quantity to replicate Molecue
 
-    #     Return
-    #     ------
-    #     Cluster : object
-    #         summing or multiplying Molecule classes produce a Cluster class
-    #     """
-    #     if value < 1 or not isinstance(value, int):
-    #         raise ValueError(
-    #             "\nMultiplier must be and integer larger than zero"
-    #             f"\ncheck --> '{value}'"
-    #         )
+        Return
+        ------
+        Cluster : object
+        """
+        if value < 1 or not isinstance(value, int):
+            raise ValueError(
+                "\nMultiplier must be and integer larger than zero"
+                f"\ncheck --> '{value}'"
+            )
 
-    #     new_cluster = deepcopy(self)
-    #     # for _ in range(value - 1):
-    #     #     new_cluster = new_cluster.add_molecule(deepcopy(self))
+        new_cluster = deepcopy(self)
+        for _ in range(value - 1):
+            new_cluster = new_cluster.add_molecule(deepcopy(self))
 
-    #     new_cluster *= value
-
-    #     return new_cluster
+        return new_cluster
 
     def __str__(self):
-        return str(attr.asdict(self))
+        return str(attr.astuple(self))
 
     # ===============================================================
     # PROPERTIES
@@ -452,12 +451,12 @@ class Cluster(Molecule):
 
         cluster_atoms: list = list()
 
-        for count, mol in enumerate(args):
+        # for count, mol in enumerate(args):
+        for mol in args:
             size: int = len(self._cluster_dict)
             if isinstance(mol, Cluster):
-                for j, key in enumerate(mol._cluster_dict):
-                    self._cluster_dict[size + j] = mol._cluster_dict[key]
-
+                for j in mol._cluster_dict:
+                    self._cluster_dict[size + j] = mol._cluster_dict[j]
                 self._charge += mol.charge
                 cluster_atoms += mol.atoms
                 # restarting the loop
@@ -477,10 +476,9 @@ class Cluster(Molecule):
                 )
 
             cluster_atoms += new_molecule.atoms
-
             # ! how is computed the cluster total multiplicity?
             self._charge += new_molecule.charge
-            self._cluster_dict[size + count] = new_molecule
+            self._cluster_dict[size] = new_molecule
 
         # initialazing Cluster as a 'Molecule' (sum of all individual ones)
         super().__init__(
@@ -581,7 +579,13 @@ class Cluster(Molecule):
 
     def add_molecule(self, other) -> object:
         new_cluster = deepcopy(self)
-        return self.__class__(new_cluster, other)
+        return self.__class__(
+            new_cluster,
+            other,
+            frozen_molecule=new_cluster.frozen_molecule,
+            sphere_radius=new_cluster.sphere_radius,
+            sphere_center=new_cluster.sphere_center,
+        )
 
     def get_molecule(self, molecule: int):
         if molecule > self.total_molecules:
@@ -605,10 +609,17 @@ class Cluster(Molecule):
                 f"\n molecule index must be less than {self.total_molecules}"
                 f"\nCheck! You want to remove molecule with index {molecule}"
             )
-        new_cluster_dict: dict = deepcopy(self).cluster_dictionary
+        new_cluster: Cluster = deepcopy(self)
+        new_cluster_dict: dict = new_cluster.cluster_dictionary
         del new_cluster_dict[molecule]
 
-        return self.__class__(*new_cluster_dict.values())
+        # return self.__class__(*new_cluster_dict.values())
+        return self.__class__(
+            *new_cluster._cluster_dict.values(),
+            frozen_molecule=new_cluster.frozen_molecule,
+            sphere_radius=new_cluster.sphere_radius,
+            sphere_center=new_cluster.sphere_center,
+        )
 
     def rotate(
         self, molecule: int = None, x: float = 0, y: float = 0, z: float = 0
@@ -664,7 +675,12 @@ class Cluster(Molecule):
         new_cluster = deepcopy(self)
         new_cluster._cluster_dict[molecule] = Molecule(rotated_molecule)
 
-        return self.__class__(*new_cluster._cluster_dict.values())
+        return self.__class__(
+            *new_cluster._cluster_dict.values(),
+            frozen_molecule=new_cluster.frozen_molecule,
+            sphere_radius=new_cluster.sphere_radius,
+            sphere_center=new_cluster.sphere_center,
+        )
 
     def translate(
         self, molecule: int = None, x: float = 0, y: float = 0, z: float = 0
@@ -723,7 +739,12 @@ class Cluster(Molecule):
         new_cluster = deepcopy(self)
         new_cluster._cluster_dict[molecule] = Molecule(translated_molecule)
 
-        return self.__class__(*new_cluster._cluster_dict.values())
+        return self.__class__(
+            *new_cluster._cluster_dict.values(),
+            frozen_molecule=new_cluster.frozen_molecule,
+            sphere_radius=new_cluster.sphere_radius,
+            sphere_center=new_cluster.sphere_center,
+        )
 
 
 # -------------------------------------------------------------
