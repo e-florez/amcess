@@ -2,7 +2,6 @@ from copy import deepcopy
 
 import attr
 import numpy as np
-from numpy.linalg import multi_dot
 from scipy.spatial.transform import Rotation
 
 from data.atomic_data import atomic_mass
@@ -139,7 +138,7 @@ class Molecule:
     @classmethod
     def from_dict(cls, atoms_dict):
         "Dictionary type: {'atoms': [(<element> <X> <Y> <Z>), ...]}"
-        if not "atoms" in atoms_dict:
+        if "atoms" not in atoms_dict:
             # FIXME: KeyError does not support \n
             raise TypeError(
                 "\n\nThe key 'atoms' is casesensitive"
