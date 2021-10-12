@@ -1,9 +1,9 @@
 from copy import deepcopy
 
-import attr
 import numpy as np
 from scipy.spatial.transform import Rotation
 
+import attr
 from data.atomic_data import atomic_mass
 
 

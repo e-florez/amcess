@@ -1,5 +1,4 @@
 import pytest
-
 from src.dual_annealing import solve_dual_annealing
 
 
