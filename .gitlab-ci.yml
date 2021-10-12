@@ -42,7 +42,7 @@ unit_test_tox:
   script:
     - pwd
     - ls -l
-    - source venv_testing/bin/activate
+    - source venv/bin/activate
     # - pytest -v tests/
     - tox
     - deactivate
