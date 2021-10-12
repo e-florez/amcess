@@ -1,4 +1,3 @@
-from _pytest.mark.structures import MarkGenerator
 from src.base_molecule import Atom, Molecule, Cluster
 
 # from src.base_molecule import Molecule, Cluster
