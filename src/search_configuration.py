@@ -1,68 +1,174 @@
-from m_dual_annealing import *
+import random
+import sys
+
+from scipy.optimize import shgo
+
+from src.base_molecule import Cluster
+from src.heisenberg import hamiltonian_pyscf
+from src.m_dual_annealing import solve_dual_annealing
+
+
+def overlaping(_system_object):
+    """[summary]
+    Confirm that the molecules aren't overlaping
+
+    Args:
+        _system_object ([Object]): Molecule object
+
+    Returns:
+        fragments [dictionary]: Input for Molecule Class
+
+    Print warning when there is overlaping
+    """
+    import warnings  # !Falta definir el tipo de warning
+
+    fragments = dict()
+    for i in range(_system_object._total_fragments - 1):
+        for j in range(i + 1, _system_object._total_fragments):
+            fragments[i] = {
+                "atoms": _system_object.get_fragments(i)._coordinates
+            }
+            comparison = (
+                _system_object.get_fragments(i).center_of_mass
+                == _system_object.get_fragments(j).center_of_mass
+            )
+            equal_arrays = comparison.all()
+            if equal_arrays:
+                r = random.random()
+                fragments[j] = {
+                    "atoms": _system_object.get_fragments(j)
+                    .translate(0, r, r, r)
+                    .rotate(0, r, r, r)
+                    ._coordinates
+                }
+                message = (
+                    "Center of Mass of the fragments "
+                    + str(i)
+                    + " and "
+                    + str(j)
+                    + " are overlapping. Then "
+                    + str(j)
+                    + " is move "
+                    + str(r)
+                )
+                warnings.warn(message)
+            else:
+                fragments[j] = {
+                    "atoms": _system_object.get_fragments(j)._coordinates
+                }
+    return fragments
+
 
 class SearchConfig:
-    def __init__(self, system_object, search_setting) -> None:
+    def __init__(
+        self,
+        system_object=None,
+        search_methodology=1,
+        basis="sto-3g",
+        program_electronic_structure=1,
+        outxyz="configurations.xyz",
+    ) -> None:
+
+        if system_object is None:
+            sys.exit(
+                "AttributeError system_object isn't a object of Molecule.\
+                It's None"
+            )
+
+        if system_object.total_fragments == 1:
+            raise ValueError(
+                "System of study most have AT LEAST TWO FRAGMENTS"
+            )
+
         self._system_object = system_object
-        self._bounds = search_setting["bounds"]
-        self._search_methodology = search_setting["search_methodology"]
-        self._basis = search_setting["basis"]
-        self._there_is_molecule = search_setting["type of fragments"] #0: todos átomos, 1: hay moléculas
-        #cost function
-        self._program_calculate_cost_function = search_setting["program_cost_function"]
-        self._func = self.program_cost_function(self._program_calculate_cost_function)
+
+        #
+        self._search_methodology = search_methodology
         self._search_name = self.search_name(self._search_methodology)
+
+        # cost function
+        self._basis = basis
+        self._program_calculate_cost_function = program_electronic_structure
+        self._func = self.program_cost_function(
+            self._program_calculate_cost_function
+        )
+
+        # archivo de salida xyz con todas las configuraciones
+        self._outxyz = outxyz
+
+        # Siguiendo propuesta de Juan, con ediciones, para definir el bounds
+        # al parcer con este bounds no se alejan las moleculas en shgo pero
+        # con dual_annealing no se evita todavía que se alejen
+        sphere_radius = self._system_object._total_atoms * 1.5 * 0.5
+        discretization = sphere_radius / 1.6
+        bound_translate = [
+            (-discretization, discretization),
+            (-discretization, discretization),
+            (-discretization, discretization),
+        ]
+        bound_rotate = [(0, 360), (0, 360), (0, 360)]
+        bound_translate = (
+            bound_translate * self._system_object._total_fragments
+        )
+        bound_rotate = bound_rotate * self._system_object._total_fragments
+        self._bounds = bound_translate + bound_rotate
+
+        # verificar superposición de las moleculas
+        self._system_object = Cluster(
+            *overlaping(self._system_object).values()
+        )
 
     def bounds(self):
         return self._bounds
 
     def search_name(self, search_name):
         if self._search_methodology == 1:
-            #args dual_annealing
-            self._NT = 1000
-            self._T0 = 5230.0
-            self._dT = 2e-5
-            self._mxcycle = 10000000.0
-            self._visit_regions = 2.62
-            self._accept = -5.0
-            self._no_local_search = False
-            self._args = (self._basis, self._system_object, 0) #0 asociar al llamado
-            self._local_search_options = {}
-            self._x0 = [1, 1, 0, 2.74, 1, 1] #punto inicio de la busqueda
-            self._callback = None
-            self._ascec_activation = False
-            self._seed = None
             return "dual_annealing from Scipy"
         if self._search_methodology == 2:
+            return "shgo from Scipy"
+        if self._search_methodology == 3:
             return "Bayesiana"
 
     def program_cost_function(self, _program_calculate_cost_function):
         if _program_calculate_cost_function == 1:
             return hamiltonian_pyscf
-#        if _program_calculate_cost_function == 1:
-#            return hamiltonian_horton
 
     def run(self, **kwargs):
         if self._search_methodology == 1:
-            #self._search = solve_dual_annealing(self._func, self._bounds,
-            #                                    self._ascec_activation,
-            #                                    self._there_is_molecule,
-            #                                    self._system_object,
-            #                                    **kwargs)
-            self._search = solve_dual_annealing(self._func, self._bounds,
-                                                self._ascec_activation,
-                                                self._there_is_molecule,
-                                                self._system_object,
-                                                self._seed,
-                                                self._NT, self._T0,
-                                                self._dT, self._mxcycle,
-                                                self._local_search_options,
-                                                self._no_local_search,
-                                                self._visit_regions,
-                                                self._accept,
-                                                self._x0, self._args,
-                                                self._callback)
+            print("*** Minimization: Dual Annealing ***")
+            self.da(**kwargs)
+        if self._search_methodology == 2:
+            print("*** Minimization: SHGO from Scipy ***")
+            self.shgo(**kwargs)
 
-#        if self._se... :
-#            ... = abc(x,y,z, ...)
-#        if self._.....:
-#           ... = bayesiana(x,y,z, ....)
+    def da(self, **kwargs):
+        with open(self._outxyz, "w") as outxyz:
+            self._search = solve_dual_annealing(
+                self._func,
+                self._bounds,
+                self._system_object,
+                args=(
+                    self._basis,
+                    self._system_object,
+                    outxyz,
+                    self._search_methodology,
+                ),
+                **kwargs
+            )
+
+    def shgo(self, **kwargs):
+        with open(self._outxyz, "w") as outxyz:
+            self._search_methodology = 2
+
+            self._search = shgo(
+                self._func,
+                bounds=self._bounds,
+                sampling_method="sobol",
+                args=(
+                    self._basis,
+                    self._system_object,
+                    outxyz,
+                    self._search_methodology,
+                ),
+                **kwargs
+            )

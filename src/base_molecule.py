@@ -3,7 +3,7 @@ from copy import deepcopy
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from data.atomic_data import atomic_mass
+from src.atomic_data import atomic_mass
 
 
 class Molecule:
@@ -239,12 +239,8 @@ class Molecule:
 
         Notes
         -----
-<<<<<<< HEAD
             total mass for dummy atoms (not in th ePeriodic Table) is equal
             to ONE (1)
-=======
-            total mass for dummy atoms (not in th ePeriodic Table) is equal to ONE (1)
->>>>>>> faa54c9321b4bb0e3088ea003d9bf808bc384258
 
         Returns
         -------
@@ -263,36 +259,6 @@ class Molecule:
         )
 
         return self._center_of_mass
-
-######Andy centro de masa del fragmento i
-    @property
-    def center_of_mass_fragment(self, fragment) -> tuple:
-        """[summary]
-
-        Notes
-        -----
-            total mass for dummy atoms (not in th ePeriodic Table) is equal to ONE (1)
-
-        Returns
-        -------
-        tuple : (float, float, float)
-            [description]
-        """
-
-        self._fragment = fragment
-        if not self._check_fragment(self._fragment):
-            return deepcopy(self)
-
-        _fragment_to_rotate: Cluster = self.get_fragments(self._fragment)
-        _fragment_symbols = _fragment_to_rotate.symbols
-
-        # avoid any rotatation attemp for a single atom system
-        if not (len(_fragment_symbols) > 1):
-            return deepcopy(self)
-
-        _fragment_center_of_mass = _fragment_to_rotate.center_of_mass
-
-        return _fragment_center_of_mass
 
     @property
     def principal_axis(self) -> tuple:

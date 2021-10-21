@@ -5,6 +5,10 @@
 # -----------------------------------------------------------------------------------------------------
 scipy==1.7.1
 numpy==1.21.2
+pyscf==1.7.6.post1
+h5py==3.1.0
+pyberny==0.6.3
+geomeTRIC==0.9.7.2
 
 jupyterlab==3.1.13
 
@@ -15,6 +19,7 @@ jupyterlab==3.1.13
 # pytest==6.2.5
 # coverage==5.5
 # pytest-cov==2.12.1
+# # h5py==3.2.1 #salta error con esta version pyscf
 
 # # code formatting
 # # ---------------
