@@ -1,7 +1,8 @@
 import numpy as np
-
 import pytest
+
 from src.base_molecule import Cluster, Molecule
+
 
 COORDINATES = {
     "dummy": [("A", 10, 20, 30), ("X0", -0.5, 0, -10)],
@@ -250,8 +251,6 @@ def test_molecule_get(system):
     new_system = mol.get_molecule(0)
 
     assert new_system.atoms == COORDINATES[system]
-
-sys.path.append("../src")
 
 
 @pytest.mark.parametrize(
