@@ -1,6 +1,8 @@
 import random
 import sys
 
+import numpy as np
+
 from scipy.optimize import shgo
 
 from src.base_molecule import Cluster
@@ -23,23 +25,31 @@ def overlaping(_system_object):
     import warnings  # !Falta definir el tipo de warning
 
     fragments = dict()
-    for i in range(_system_object._total_fragments - 1):
-        for j in range(i + 1, _system_object._total_fragments):
-            fragments[i] = {
-                "atoms": _system_object.get_fragments(i)._coordinates
-            }
-            comparison = (
-                _system_object.get_fragments(i).center_of_mass
-                == _system_object.get_fragments(j).center_of_mass
+    for i in range(_system_object.total_molecules - 1):
+        for j in range(i + 1, _system_object.total_molecules):
+            fragments[i] = {"atoms": _system_object.get_molecule(i).atoms}
+            # comparison = (
+            #     _system_object.get_molecule(i).center_of_mass
+            #     == _system_object.get_molecule(j).center_of_mass
+            # )
+            # equal_arrays = comparison.all()
+            # equal_arrays = comparison
+
+            # equal_arrays = np.allclose(
+            equal_arrays = np.allclose(
+                np.asarray(_system_object.get_molecule(i).coordinates),
+                np.asarray(_system_object.get_molecule(j).coordinates),
+                0.1,
+                # 0.000001,
             )
-            equal_arrays = comparison.all()
+
             if equal_arrays:
                 r = random.random()
                 fragments[j] = {
-                    "atoms": _system_object.get_fragments(j)
-                    .translate(0, r, r, r)
-                    .rotate(0, r, r, r)
-                    ._coordinates
+                    "atoms": _system_object.translate(j, r, r, r)
+                    .rotate(j, r, r, r)
+                    .get_molecule(0)
+                    .atoms
                 }
                 message = (
                     "Center of Mass of the fragments "
@@ -53,9 +63,7 @@ def overlaping(_system_object):
                 )
                 warnings.warn(message)
             else:
-                fragments[j] = {
-                    "atoms": _system_object.get_fragments(j)._coordinates
-                }
+                fragments[j] = {"atoms": _system_object.get_molecule(j).atoms}
     return fragments
 
 
@@ -75,7 +83,7 @@ class SearchConfig:
                 It's None"
             )
 
-        if system_object.total_fragments == 1:
+        if system_object.total_molecules == 1:
             raise ValueError(
                 "System of study most have AT LEAST TWO FRAGMENTS"
             )
@@ -99,7 +107,7 @@ class SearchConfig:
         # Siguiendo propuesta de Juan, con ediciones, para definir el bounds
         # al parcer con este bounds no se alejan las moleculas en shgo pero
         # con dual_annealing no se evita todavía que se alejen
-        sphere_radius = self._system_object._total_atoms * 1.5 * 0.5
+        sphere_radius = self._system_object.total_atoms * 1.5 * 0.5
         discretization = sphere_radius / 1.6
         bound_translate = [
             (-discretization, discretization),
@@ -107,10 +115,8 @@ class SearchConfig:
             (-discretization, discretization),
         ]
         bound_rotate = [(0, 360), (0, 360), (0, 360)]
-        bound_translate = (
-            bound_translate * self._system_object._total_fragments
-        )
-        bound_rotate = bound_rotate * self._system_object._total_fragments
+        bound_translate = bound_translate * self._system_object.total_molecules
+        bound_rotate = bound_rotate * self._system_object.total_molecules
         self._bounds = bound_translate + bound_rotate
 
         # verificar superposición de las moleculas

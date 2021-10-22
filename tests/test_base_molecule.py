@@ -251,8 +251,6 @@ def test_molecule_get(system):
 
     assert new_system.atoms == COORDINATES[system]
 
-sys.path.append("../src")
-
 
 @pytest.mark.parametrize(
     "steps, expected_translation",

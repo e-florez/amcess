@@ -5,7 +5,7 @@ import pytest
 from src.base_molecule import Cluster
 from src.search_configuration import SearchConfig
 
-sys.path.append("../src")
+# sys.path.append("../src")
 
 
 @pytest.mark.parametrize(
@@ -36,7 +36,7 @@ def test_cluster_object_into_search_conf(
         expected_coordinates ([list]): expected coordinates plus symbols
     """
     search_config = SearchConfig(Cluster(cluster1, cluster2))
-    assert search_config._system_object.coordinates == expected_coordinates
+    assert search_config._system_object.atoms == expected_coordinates
 
 
 @pytest.mark.parametrize(

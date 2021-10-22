@@ -287,7 +287,7 @@ class Molecule:
             List of N 3D tuples, where N is equal to the number of atoms
 
         .. _Jacobi coordinates:
-            https://en.wikipedia.org/wiki/Jacobi_coordinates
+            https://en.wikipedia.org/wiki/Jacobicoordinates
         """
 
         total_mass = 1 if not self.total_mass else self.total_mass
@@ -660,7 +660,7 @@ class Cluster(Molecule):
             degrees=True,
         ).as_matrix()
 
-        rotated_coordinates = (
+        rotatedcoordinates = (
             np.dot(molecule_principal_axes, rotation_matrix)
             + molecule_center_of_mass
         )
@@ -668,7 +668,7 @@ class Cluster(Molecule):
         rotated_molecule = list()
         for i, atom in enumerate(molecule_symbols):
             rotated_molecule.append(
-                tuple([atom] + rotated_coordinates[i].tolist())
+                tuple([atom] + rotatedcoordinates[i].tolist())
             )
 
         new_cluster = deepcopy(self)
@@ -705,34 +705,32 @@ class Cluster(Molecule):
         molecule_center_of_mass = molecule_to_move.center_of_mass
         molecule_principal_axes = molecule_to_move.principal_axes
 
-        translated_coordinates = np.asarray(
+        translatedcoordinates = np.asarray(
             molecule_center_of_mass
         ) + np.asarray([x, y, z])
 
         # checking if the new coordinates are into the boundary conditions
         # if it is out of our sphere, we rescale it to match the sphere radius
         distance: float = np.linalg.norm(
-            translated_coordinates - np.asarray(self.sphere_center)
+            translatedcoordinates - np.asarray(self.sphere_center)
         )
         if self.sphere_radius and (distance > self.sphere_radius):
 
             max_distance: float = self.sphere_radius / np.linalg.norm(
-                translated_coordinates - np.asarray(self.sphere_center)
+                translatedcoordinates - np.asarray(self.sphere_center)
             )
 
             # rescaling to match radius
-            translated_coordinates = max_distance * translated_coordinates + (
+            translatedcoordinates = max_distance * translatedcoordinates + (
                 1 - max_distance
             ) * np.asarray(self.sphere_center)
 
-        translated_coordinates = (
-            molecule_principal_axes + translated_coordinates
-        )
+        translatedcoordinates = molecule_principal_axes + translatedcoordinates
 
         translated_molecule = list()
         for i, atom in enumerate(molecule_symbols):
             translated_molecule.append(
-                tuple([atom] + translated_coordinates[i].tolist())
+                tuple([atom] + translatedcoordinates[i].tolist())
             )
 
         new_cluster = deepcopy(self)
