@@ -40,7 +40,7 @@ def test_cluster_object_coordinates_into_search_conf(
         (
             [("H", 0, 0, 0), ("F", 0.917, 0, 0)],
             [("H", 0, 0, 0), ("H", 0.74, 0, 0)],
-            ["H", "F"],  # in different order there is a error
+            ["F", "H"],  # in different order there is an error
         ),
     ],
 )
