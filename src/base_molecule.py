@@ -1,10 +1,9 @@
 from copy import deepcopy
 
-from scipy.spatial.transform import Rotation
 import attr
 import numpy as np
-
 from data.atomic_data import atomic_mass
+from scipy.spatial.transform import Rotation
 
 
 @attr.s(frozen=True)

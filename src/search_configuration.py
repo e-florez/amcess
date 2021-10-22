@@ -3,7 +3,7 @@ import sys
 
 from scipy.optimize import shgo
 
-from src.base_molecule import Cluster, Molecule
+from src.base_molecule import Cluster
 from src.heisenberg import hamiltonian_pyscf
 from src.m_dual_annealing import solve_dual_annealing
 

@@ -1,6 +1,5 @@
 import pytest
-
-from src.base_molecule import Cluster, Molecule
+from src.base_molecule import Cluster
 from src.search_configuration import SearchConfig
 
 
