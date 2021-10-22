@@ -88,6 +88,9 @@ def solve_gaussian_processes(
     if 'initial_design' not in bo_keys: gp_parameters['initial_design'] = 'latin'
     if 'optimize_restarts' not in bo_keys: gp_parameters['optimize_restarts'] = 5
     if 'xi' not in bo_keys: gp_parameters['xi'] = 0.001
+    if 'save_models_parameters' not in bo_keys: gp_parameters['save_models_parameters'] = False
+    if 'evaluations_file' not in bo_keys: gp_parameters['evaluations_file'] = None
+    if 'models_file' not in bo_keys: gp_parameters['models_file'] = None
 
     # Initialization of random Generator for reproducible runs if seed provided
     rand_state = check_random_state(seed)
@@ -107,7 +110,10 @@ def solve_gaussian_processes(
     optimize_res = OptimizeResult()
 
     opt = GPyOpt.methods.ModularBayesianOptimization(model, space, objective, acquisition, evaluator, initial_design)
-    opt.run_optimization(max_iter = NT, save_models_parameters=True, evaluations_file='evals.log', models_file='model.log')
+    opt.run_optimization(max_iter = NT, 
+                         save_models_parameters=gp_parameters['save_models_parameters'], 
+                         evaluations_file=gp_parameters['evaluations_file'], 
+                         models_file=gp_parameters['models_file'])
 
     # Setting the OptimizeResult values
     optimize_res.success = True
