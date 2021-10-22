@@ -1,6 +1,5 @@
 import numpy as np
 import pytest
-
 from src.base_molecule import Cluster, Molecule
 
 COORDINATES = {

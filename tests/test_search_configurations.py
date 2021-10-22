@@ -40,7 +40,7 @@ def test_cluster_object_coordinates_into_search_conf(
         (
             [("H", 0, 0, 0), ("F", 0.917, 0, 0)],
             [("H", 0, 0, 0), ("H", 0.74, 0, 0)],
-            ["F", "H"],  # in different order there is an error
+            ["F", "H"],
         ),
     ],
 )
@@ -57,7 +57,11 @@ def test_cluster_object_elements_into_search_conf(
         expected_coordinates ([list]): expected coordinates plus symbols
     """
     search_config = SearchConfig(Cluster(cluster1, cluster2))
-    assert search_config._system_object.elements == expected_coordinates
+    # it is necessary to sort to avoid errors because the elements attr
+    # can return in different order the symbols
+    assert (
+        sorted(search_config._system_object.elements) == expected_coordinates
+    )
 
 
 @pytest.mark.parametrize(
