@@ -1,7 +1,6 @@
 import random
 import sys
 
-import numpy as np
 
 from scipy.optimize import shgo
 
@@ -27,30 +26,19 @@ def overlaping(_system_object):
     fragments = dict()
     for i in range(_system_object.total_molecules - 1):
         for j in range(i + 1, _system_object.total_molecules):
-            fragments[i] = {"atoms": _system_object.get_molecule(i).atoms}
-            # comparison = (
-            #     _system_object.get_molecule(i).center_of_mass
-            #     == _system_object.get_molecule(j).center_of_mass
-            # )
-            # equal_arrays = comparison.all()
-            # equal_arrays = comparison
-
-            # equal_arrays = np.allclose(
-            equal_arrays = np.allclose(
-                np.asarray(_system_object.get_molecule(i).coordinates),
-                np.asarray(_system_object.get_molecule(j).coordinates),
-                0.1,
-                # 0.000001,
+            fragments[i] = _system_object.get_molecule(i)
+            equal_arrays = (
+                _system_object.get_molecule(i).center_of_mass
+                == _system_object.get_molecule(j).center_of_mass
             )
-
             if equal_arrays:
                 r = random.random()
-                fragments[j] = {
-                    "atoms": _system_object.translate(j, r, r, r)
-                    .rotate(j, r, r, r)
-                    .get_molecule(0)
-                    .atoms
-                }
+                fragments[j] = (
+                    Cluster(_system_object.get_molecule(j))
+                    .translate(0, r, r, r)
+                    .rotate(0, r, r, r)
+                    .coordinates
+                )
                 message = (
                     "Center of Mass of the fragments "
                     + str(i)
@@ -63,7 +51,7 @@ def overlaping(_system_object):
                 )
                 warnings.warn(message)
             else:
-                fragments[j] = {"atoms": _system_object.get_molecule(j).atoms}
+                fragments[j] = _system_object.get_molecule(j)
     return fragments
 
 
@@ -89,7 +77,6 @@ class SearchConfig:
             )
 
         self._system_object = system_object
-
         #
         self._search_methodology = search_methodology
         self._search_name = self.search_name(self._search_methodology)

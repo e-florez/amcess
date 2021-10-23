@@ -91,6 +91,7 @@ dmypy.json
 
 # temporary files
 tmp/
+*tmp*
 
 # XYL log files
 **/*.xyz
