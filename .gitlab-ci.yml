@@ -21,17 +21,7 @@ before_script:
   - pip install virtualenv
   - pip install sphinx
   - pip install sphinx_rtd_theme
-  
-  # for testing purposes
-  - virtualenv venv_testing
-  - source venv_testing/bin/activate
-  # - pip install -r requirements.txt
-  - pip install -r requirements.txt -r requirements_dev.txt
-#  - pip uninstall h5py --yes
-#  - pip install -Iv h5py==3.1.0 
-  - deactivate 
-  
-  # for the module
+  - pip install -r requirements.txt -r requirements_dev.txt 
   - virtualenv venv
   - source venv/bin/activate
   - pip install -r requirements.txt
@@ -54,7 +44,7 @@ unit_test_tox:
   script:
     - pwd
     - ls -l
-    - source venv_testing/bin/activate
+    - source venv/bin/activate
     # - pytest -v tests/
     - tox
     - deactivate
