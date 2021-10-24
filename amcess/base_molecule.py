@@ -604,7 +604,13 @@ class Cluster(Molecule):
         cluster_dict: dict = deepcopy(self).cluster_dictionary
         new_molecule: Molecule = cluster_dict.pop(molecule)
 
-        return new_molecule
+        # return new_molecule
+        return self.__class__(
+            new_molecule,
+            frozen_molecule=self.frozen_molecule,
+            sphere_radius=self.sphere_radius,
+            sphere_center=self.sphere_center,
+        )
 
     def remove_molecule(self, molecule: int) -> object:
         if molecule > self.total_molecules:
@@ -618,7 +624,6 @@ class Cluster(Molecule):
         new_cluster_dict: dict = new_cluster.cluster_dictionary
         del new_cluster_dict[molecule]
 
-        # return self.__class__(*new_cluster_dict.values())
         return self.__class__(
             *new_cluster._cluster_dict.values(),
             frozen_molecule=new_cluster.frozen_molecule,
@@ -748,6 +753,12 @@ class Cluster(Molecule):
             sphere_radius=new_cluster.sphere_radius,
             sphere_center=new_cluster.sphere_center,
         )
+
+
+def move(self, molecule: int, seed: int = None) -> object:
+    """Moving (translating and rotating) without overlapping"""
+
+    pass
 
 
 # -------------------------------------------------------------

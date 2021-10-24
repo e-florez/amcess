@@ -223,7 +223,7 @@ def test_cluster():
 
     print("+--" * 30)
     print(ca)
-    print("+--" * 30)
+    # print("+--" * 30)
     # print(ca.xyz)
     # print("+--" * 30)
     # print(ca.cluster_dictionary)
@@ -264,12 +264,18 @@ def test_cluster():
     # print("\nmagic rmul cluster:\n", 3 * magic_add)
     # print("\nmagic mul cluster:\n", magic_add * 3)
 
+    # print("+--" * 30)
     # magic_add = Cluster(w_mol, kf_mol)
-    # print(
-    #     f"",
-    # )
-
     # ca = magic_add + w_mol
+    # print(ca.xyz)
+
+    # print("+--" * 30)
+    # g = ca.get_molecule(1)
+
+    # print(type(g))
+    # print(g)
+    # g = g.translate(0, x=100)
+    # print(g)
 
     # ca.frozen_molecule = 1
     # # ca.frozen_molecule = [0, 1]
@@ -511,8 +517,8 @@ def run():
 
     # ##test
     # test_atom()
-    test_molecule()
-    # test_cluster()
+    # test_molecule()
+    test_cluster()
 
 
 if __name__ == "__main__":

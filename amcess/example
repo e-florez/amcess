@@ -2,7 +2,7 @@ import sys
 
 sys.path.append("../")
 
-from src import base_molecule, search_configuration
+from amcess import base_molecule, search_configuration
 
 
 #################################################
