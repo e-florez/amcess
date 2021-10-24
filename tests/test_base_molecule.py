@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from src.base_molecule import Cluster, Molecule
+from amcess.base_molecule import Cluster, Molecule
 
 COORDINATES = {
     "dummy": [("A", 10, 20, 30), ("X0", -0.5, 0, -10)],

@@ -4,9 +4,9 @@ import sys
 
 from scipy.optimize import shgo
 
-from src.base_molecule import Cluster
-from src.heisenberg import hamiltonian_pyscf
-from src.m_dual_annealing import solve_dual_annealing
+from amcess.base_molecule import Cluster
+from amcess.heisenberg import hamiltonian_pyscf
+from amcess.m_dual_annealing import solve_dual_annealing
 
 
 def overlaping(_system_object):

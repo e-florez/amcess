@@ -1,8 +1,8 @@
 import numpy as np
 from pyscf import gto, scf
 
-import src.search_configuration as SC
-from src.base_molecule import Cluster
+import amcess.search_configuration as SC
+from amcess.base_molecule import Cluster
 
 
 def beforeatoms(system):

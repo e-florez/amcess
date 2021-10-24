@@ -1,6 +1,6 @@
 import pytest
-from src.base_molecule import Cluster
-from src.search_configuration import SearchConfig
+from amcess.base_molecule import Cluster
+from amcess.search_configuration import SearchConfig
 
 
 @pytest.mark.parametrize(

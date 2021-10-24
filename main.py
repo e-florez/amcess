@@ -1,6 +1,6 @@
-from src.base_molecule import Atom, Molecule, Cluster
+from amcess.base_molecule import Atom, Molecule, Cluster
 
-# from src.base_molecule import Molecule, Cluster
+# from amcess.base_molecule import Molecule, Cluster
 from data.molecules_coordinates import (
     li,
     water,
