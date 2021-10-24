@@ -195,6 +195,12 @@ class Molecule:
     def atoms(self) -> list:
         return self._atoms
 
+    @atoms.setter
+    def atoms(self, *args, **kwargs) -> None:
+        raise AttributeError(
+            "\n\nyou cannot reset 'atoms'. Consider create a new instance \n"
+        )
+
     @property
     def atomic_masses(self) -> list:
         return [Atom(*atom).atomic_mass for atom in self.atoms]
@@ -363,7 +369,7 @@ class Molecule:
 
     def get_atom(self, atom: int) -> list:
         """
-        Getting catesian coordinate sfor an atom
+        Getting catesian coordinate for an atom
 
         Parameters
         ----------

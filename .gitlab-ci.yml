@@ -56,7 +56,7 @@ run_python:
     - pwd
     - ls -l
     - source venv/bin/activate
-    - python main.py 
+    - python setup.py sdist
     - deactivate
 
   # script:

@@ -153,6 +153,8 @@ def test_molecule():
     print(mol)
     print("-" * 40)
     print("atoms: :\n", mol.atoms)
+    # mol.atoms = 1  # cannot reset atoms
+
     print("charge:", mol.charge)
     print("multiplicity:", mol.multiplicity)
 
@@ -509,8 +511,8 @@ def run():
 
     # ##test
     # test_atom()
-    # test_molecule()
-    test_cluster()
+    test_molecule()
+    # test_cluster()
 
 
 if __name__ == "__main__":
