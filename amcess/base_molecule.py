@@ -1,6 +1,4 @@
 from copy import deepcopy
-from sys import modules
-from typing import overload
 
 import attr
 import numpy as np
@@ -570,6 +568,13 @@ class Cluster(Molecule):
 
     @sphere_center.setter
     def sphere_center(self, new_center: tuple) -> None:
+        if len(new_center) != 3:
+            raise ValueError(
+                "\n\nThe Sphere center must be a tuple with three elements: "
+                "(float, float, float)"
+                f"\nplease, check: '{new_center}'\n"
+            )
+
         self._sphere_center = new_center
 
     @property
@@ -659,30 +664,27 @@ class Cluster(Molecule):
         Cluster : object
             returns a new Cluster object
         """
-
-        # initializing a new cluster whit the first molecule
-        new_cluster: Cluster = Cluster(self.get_molecule(0))
-
         # center of mass coordinates
-        com_x = self.sphere_center[0]
-        com_y = self.sphere_center[1]
-        com_z = self.sphere_center[2]
+        sc_x = self.sphere_center[0]
+        sc_y = self.sphere_center[1]
+        sc_z = self.sphere_center[2]
 
-        # moving into the cluster sphere
-        new_cluster = new_cluster.translate(0, com_x, com_y, com_z)
+        # initializing a new cluster moving the first molecule
+        # to the center of the cluster sphere
+        molecule = self.get_molecule(0)
+        new_cluster = molecule.translate(0, sc_x, sc_y, sc_z)
 
         for i in range(1, self.total_molecules):
-            molecule: Cluster = self.get_molecule(i)
-
-            # moving into the cluster sphere
-            molecule = molecule.translate(0, com_x, com_y, com_z)
+            # moving the next single molecule into the cluster sphere
+            molecule = self.get_molecule(i).translate(0, sc_x, sc_y, sc_z)
 
             if Cluster.overlapping(
                 molecule.coordinates, new_cluster.coordinates
             ):
-                molecule = molecule.move_molecule()
-
-            new_cluster += molecule
+                new_cluster += molecule
+                new_cluster = new_cluster.move_molecule(i)
+            else:
+                new_cluster += molecule
 
         return Cluster(
             new_cluster,
@@ -696,6 +698,7 @@ class Cluster(Molecule):
         molecule: int = 0,
         max_step: float = None,
         max_rotation: float = None,
+        max_closeness: int = 1.0,
         seed: int = None,
     ) -> object:
         """Moving (translating and rotating) randomly without overlapping
@@ -709,6 +712,8 @@ class Cluster(Molecule):
             maximun value for any translation, by default None
         max_rotation : float, optional
             maximun angle fro any rotation, by default None
+        max_closeness : float
+            maximun closeness between any pair of atoms, by default 1.0 A
         seed : int, optional
             seed to initialize the random generator function, by default None
 
@@ -724,9 +729,11 @@ class Cluster(Molecule):
             After serching for max_overlap_cycle and no place found for the
             molecule without overlapping any other
         """
-
-        # predefine maximun closeness between any pair of atoms
-        max_closeness: int = 1.0
+        if not isinstance(max_closeness, (int, float)) or max_closeness < 0.1:
+            raise ValueError(
+                "\n\n Maximun closeness between any pair of atom must be"
+                f" larger than '0.1' Angstrom\nPlease, check '{max_closeness}'"
+            )
 
         if not max_step or not isinstance(max_step, (int, float)):
             max_step = 1.1 * max_closeness

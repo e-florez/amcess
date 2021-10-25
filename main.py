@@ -334,13 +334,17 @@ def test_cluster():
     # )
     # print(b.xyz)
 
-    ca = Cluster(3 * Molecule.from_dict(water))
-    print(ca.xyz)
-    print("+--" * 30)
+    # ca = Cluster(3 * Molecule.from_dict(water))
+    # print(ca.xyz)
+    # # print("+--" * 30)
 
-    ini = ca.initialize_cluster()
+    # # print("sphere None: ", ca.sphere_center)
+    # ca._sphere_center = (10, 0, 0)
+    # # print("sphere: ", len(ca.sphere_center))
 
-    print(ini.xyz)
+    # ini = ca.initialize_cluster()
+
+    # print(ini.xyz)
 
 
 def old_molecule_class():
