@@ -220,8 +220,8 @@ def test_cluster():
     # # init from Molecule and dict, list
     ca = Cluster(w_mol, kf_coord, nacl_coord)
 
-    print("+--" * 30)
-    print(ca)
+    # print("+--" * 30)
+    # print(ca)
     # print("+--" * 30)
     # print(ca.xyz)
     # print("+--" * 30)
@@ -271,6 +271,12 @@ def test_cluster():
     # print("+--" * 30)
     # g = ca.get_molecule(1)
 
+    # m = ca.get_molecule(0)
+    # print(m.coordinates)
+
+    # r = ca.remove_molecule(0)
+    # print(r.coordinates)
+
     # print(type(g))
     # print(g)
     # g = g.translate(0, x=100)
@@ -303,44 +309,33 @@ def test_cluster():
     # a = ca.get_molecule(0)
     # print(a.center_of_mass)
 
-    # r = 2
-    # print(f"\nremove {r}: \n", ca.remove_molecule(r))
-    # print(f"\nremove element: \n", ca.remove_element("H"))
-    # b = ca.remove_molecule(r)
-    # print(b.molecules)
-
     # m = 0
     # print(
     #     f"",
     #     ca.translate(m, x=10, y=20, z=30).translate(m + 1, x=10, y=20, z=30),
     # )
 
-    print("+--" * 30)
-    # print(ca)
-    # print(ca.cluster_dictionary)
+    # ca = Cluster(3 * Molecule.from_dict(water))
+
+    # print("+--" * 30)
+    # print(ca.atoms)
+    # print(ca.xyz)
     # print("+--" * 30)
 
-    m = ca.get_molecule(0)
-    print(m.coordinates)
+    # print("No sphere radius: ", ca.sphere_radius)
+    # ca.sphere_radius = 1
+    # print("choosing a sphere radius: ", ca.sphere_radius)
 
-    r = ca.remove_molecule(0)
-    print(r.coordinates)
+    # b = ca.move_molecule(
+    #     molecule=2,
+    #     max_step=None,
+    #     max_rotation=None,
+    #     seed=1234,
+    # )
+    # print(b.xyz)
 
-    import numpy as np
-
-    # # np.linalg.norm(np.asarray(cm) - expected_cm) < 0.1
-    # for a in m.coordinates:
-    #     for b in r.coordinates:
-
-    #         x = a[0] - b[0]
-    #         y = a[1] - b[1]
-    #         z = a[2] - b[2]
-    #         x2 = x * x
-    #         y2 = y * y
-    #         z2 = z * z
-    #         w = (x2 + y2 + z2) ** 0.5
-    #         d = np.linalg.norm(np.asarray(a) - np.asarray(b))
-    #         print(f"{d:> .4f}  {w:> .4f}")
+    ca = Cluster(3 * Molecule.from_dict(water))
+    print("+--" * 30)
 
 
 def old_molecule_class():
