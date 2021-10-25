@@ -335,7 +335,12 @@ def test_cluster():
     # print(b.xyz)
 
     ca = Cluster(3 * Molecule.from_dict(water))
+    print(ca.xyz)
     print("+--" * 30)
+
+    ini = ca.initialize_cluster()
+
+    print(ini.xyz)
 
 
 def old_molecule_class():
