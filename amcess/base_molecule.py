@@ -1,4 +1,6 @@
 from copy import deepcopy
+from sys import modules
+from typing import overload
 
 import attr
 import numpy as np
@@ -439,7 +441,7 @@ class Cluster(Molecule):
     def __init__(
         self,
         *args,
-        frozen_molecule: list = [],
+        frozen_molecule: list = None,
         sphere_radius: float = None,
         sphere_center: tuple = (0, 0, 0),
     ):
@@ -556,11 +558,11 @@ class Cluster(Molecule):
         return self._frozen_molecule
 
     @frozen_molecule.setter
-    def frozen_molecule(self, value) -> None:
-        if isinstance(value, list):
-            self._frozen_molecule = value
+    def frozen_molecule(self, values) -> None:
+        if isinstance(values, list):
+            self._frozen_molecule = values
         else:
-            self._frozen_molecule = [value]
+            self._frozen_molecule = [values]
 
     @property
     def sphere_center(self) -> tuple:
@@ -593,7 +595,7 @@ class Cluster(Molecule):
         )
 
     def get_molecule(self, molecule: int):
-        if molecule > self.total_molecules:
+        if molecule not in self.cluster_dictionary:
             raise IndexError(
                 f"\nMolecule with {self.total_molecules} total molecules "
                 f"and index [0-{self.total_molecules - 1}]"
@@ -604,7 +606,6 @@ class Cluster(Molecule):
         cluster_dict: dict = deepcopy(self).cluster_dictionary
         new_molecule: Molecule = cluster_dict.pop(molecule)
 
-        # return new_molecule
         return self.__class__(
             new_molecule,
             frozen_molecule=self.frozen_molecule,
@@ -613,7 +614,7 @@ class Cluster(Molecule):
         )
 
     def remove_molecule(self, molecule: int) -> object:
-        if molecule > self.total_molecules:
+        if molecule not in self.cluster_dictionary:
             raise IndexError(
                 f"\nMolecule with {self.total_molecules} total atoms "
                 f"and index [0-{self.total_molecules - 1}]"
@@ -754,11 +755,132 @@ class Cluster(Molecule):
             sphere_center=new_cluster.sphere_center,
         )
 
+    def move(
+        self,
+        molecule: int,
+        max_step: float = None,
+        max_rotation: float = None,
+        seed: int = None,
+    ) -> object:
+        """Moving (translating and rotating) without overlapping"""
 
-def move(self, molecule: int, seed: int = None) -> object:
-    """Moving (translating and rotating) without overlapping"""
+        if (
+            not max_step
+            or not isinstance(max_step, float)
+            or max_step > 2 * self.sphere_radius
+        ):
+            max_step = self.sphere_radius
 
-    pass
+        if (
+            not max_rotation
+            or not isinstance(max_rotation, float)
+            or max_rotation > 180
+        ):
+            max_rotation = 30
+
+        random_gen = np.random.default_rng(seed)
+
+        molecule_to_move: Cluster = self.get_molecule(molecule)
+
+        cluster_without_molecule: Cluster = self.remove_molecule(molecule)
+        cluster_coordinates: Cluster = cluster_without_molecule.coordinates
+
+        max_overlap_cycle: int = 1000
+        max_closeness: int = 0.5
+
+        for count in range(max_overlap_cycle):
+
+            if count % 10 == 0:
+                max_step *= 1.1
+                max_rotation *= 1.1
+
+            # angle between [0, max_rotation) degrees
+            rotation_x = random_gen.uniform() * max_rotation
+            rotation_y = random_gen.uniform() * max_rotation
+            rotation_z = random_gen.uniform() * max_rotation
+
+            # moving between [-max_step, +max_step] Angstrom
+            tranlation_x = max_step * (random_gen.uniform() - 0.5)
+            tranlation_y = max_step * (random_gen.uniform() - 0.5)
+            tranlation_z = max_step * (random_gen.uniform() - 0.5)
+
+            new_molecule: Cluster = molecule_to_move.translate(
+                0,
+                tranlation_x,
+                tranlation_y,
+                tranlation_z,
+            ).rotate(
+                0,
+                rotation_x,
+                rotation_y,
+                rotation_z,
+            )
+
+            molecule_coordinates: list = new_molecule.coordinates
+
+            overlap: bool = Cluster.overlapping(
+                molecule_coordinates,
+                cluster_coordinates,
+                max_closeness=max_closeness,
+            )
+
+            if not overlap:
+                break
+
+        cluster_dict: dict = cluster_without_molecule.cluster_dictionary
+        cluster_dict[molecule] = new_molecule
+
+        new_cluster = Cluster(
+            *cluster_dict.values(),
+            frozen_molecule=self.frozen_molecule,
+            sphere_radius=self.sphere_radius,
+            sphere_center=self.sphere_center,
+        )
+
+        if count < max_overlap_cycle:
+            return new_cluster
+        else:
+            raise AttributeError(
+                "\n\n *** Overlapping Error ***"
+                "\nat least one atom is overlapped with a distance"
+                f"less than '{max_closeness}'' Angstroms"
+                f"\n Please, check: \n\n{new_cluster.xyz}"
+            )
+
+    @staticmethod
+    def overlapping(
+        first_coordinates: list,
+        second_coordinates: list,
+        max_closeness: float = 0.5,
+    ) -> bool:
+        """pair-wise checking if any overlapping among points
+        with a radius defined by `max_closeness`
+
+        Parameters
+        ----------
+        first_coordinates : list
+            list of tuples [(float, float, float), ...]
+        second_coordinates : list
+            list of tuples [(float, float, float), ...]
+        max_closeness : float, optional
+            maximun closeness between two pairs, by default 0.5
+
+        Returns
+        -------
+        bool
+            True if two point are closer than `max_closeness`
+        """
+
+        for first_atom in first_coordinates:
+            for second_atom in second_coordinates:
+                distance = np.linalg.norm(
+                    np.asarray(first_atom) - np.asarray(second_atom)
+                )
+
+                if distance < max_closeness:
+                    return True
+
+        return False
 
 
 # -------------------------------------------------------------

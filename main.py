@@ -1,6 +1,5 @@
 from amcess.base_molecule import Atom, Molecule, Cluster
 
-# from amcess.base_molecule import Molecule, Cluster
 from data.molecules_coordinates import (
     li,
     water,
@@ -212,14 +211,14 @@ def test_cluster():
     li_mol = Molecule.from_dict(li)
 
     # init from dict and list
-    ca = Cluster(nacl_coord, nacl_coord, nacl_coord, nacl_coord)
+    # ca = Cluster(nacl_coord, nacl_coord, nacl_coord, nacl_coord)
     # ca = Cluster(kf_coord, nacl_coord)
 
     # # init from Molecule
     # ca = Cluster(w_mol, kf_mol)
 
     # # init from Molecule and dict, list
-    # ca = Cluster(w_mol, kf_coord, nacl_coord)
+    ca = Cluster(w_mol, kf_coord, nacl_coord)
 
     print("+--" * 30)
     print(ca)
@@ -316,10 +315,32 @@ def test_cluster():
     #     ca.translate(m, x=10, y=20, z=30).translate(m + 1, x=10, y=20, z=30),
     # )
 
-    # print("+--" * 30)
+    print("+--" * 30)
     # print(ca)
     # print(ca.cluster_dictionary)
     # print("+--" * 30)
+
+    m = ca.get_molecule(0)
+    print(m.coordinates)
+
+    r = ca.remove_molecule(0)
+    print(r.coordinates)
+
+    import numpy as np
+
+    # # np.linalg.norm(np.asarray(cm) - expected_cm) < 0.1
+    # for a in m.coordinates:
+    #     for b in r.coordinates:
+
+    #         x = a[0] - b[0]
+    #         y = a[1] - b[1]
+    #         z = a[2] - b[2]
+    #         x2 = x * x
+    #         y2 = y * y
+    #         z2 = z * z
+    #         w = (x2 + y2 + z2) ** 0.5
+    #         d = np.linalg.norm(np.asarray(a) - np.asarray(b))
+    #         print(f"{d:> .4f}  {w:> .4f}")
 
 
 def old_molecule_class():
