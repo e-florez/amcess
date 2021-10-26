@@ -76,6 +76,7 @@ pytestdebug.log
 .env
 .venv
 *venv
+*venv*
 env/
 venv/
 ENV/
@@ -90,6 +91,7 @@ dmypy.json
 
 # temporary files
 tmp/
+*tmp*
 
 # XYL log files
 **/*.xyz
