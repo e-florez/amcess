@@ -91,7 +91,7 @@ def solve_gaussian_processes(
     if 'save_models_parameters' not in bo_keys: gp_parameters['save_models_parameters'] = False
     if 'evaluations_file' not in bo_keys: gp_parameters['evaluations_file'] = None
     if 'models_file' not in bo_keys: gp_parameters['models_file'] = None
-
+    if 'MCMC' not in bo_keys: gp_parameters['MCMC'] = None
     # Initialization of random Generator for reproducible runs if seed provided
     rand_state = check_random_state(seed)
 
@@ -101,9 +101,14 @@ def solve_gaussian_processes(
     acquisition_optimizer = GPyOpt.optimization.AcquisitionOptimizer(space)
 
     objective = GPyOpt.core.task.SingleObjective(func)
-    model = GPyOpt.models.GPModel(optimize_restarts=gp_parameters['optimize_restarts'], verbose=False)
     initial_design = GPyOpt.experiment_design.initial_design(gp_parameters['initial_design'], space, gp_parameters['initer'])
-    acquisition=GPyOpt.acquisitions.AcquisitionEI(model, space, acquisition_optimizer, jitter=gp_parameters['xi'])
+    # define model and acquisition function
+    if gp_parameters['MCMC']:
+        model = GPyOpt.models.GPModel_MCMC(exact_feval=True, verbose=False)
+        acquisition=GPyOpt.acquisitions.AcquisitionEI_MCMC(model, space, acquisition_optimizer)
+    else:
+        model = GPyOpt.models.GPModel(exact_feval=True,optimize_restarts=gp_parameters['optimize_restarts'], verbose=False, ARD=True)
+        acquisition=GPyOpt.acquisitions.AcquisitionEI(model, space, acquisition_optimizer, jitter=gp_parameters['xi'])
     evaluator = GPyOpt.core.evaluators.Sequential(acquisition)
 
     # OptimizeResult object to be returned
