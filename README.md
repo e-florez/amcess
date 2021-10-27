@@ -18,8 +18,8 @@
 
 
 <p align="center">
-  <a href="Atomic and Molecular Cluster Energy Surface Sampler">
-  <img width="400" height="200" src="./docs/_static/amcess_logo.png"></a>
+  <!-- <a href="Atomic and Molecular Cluster Energy Surface Sampler"> -->
+  <img width="400" height="200" src="./docs/_static/amcess_logo.png">
 </p>
 
 <!-- ![Atomic and Molecular Cluster Energy Surface Sampler](./docs/_static/amcess_logo.png) -->
@@ -33,10 +33,11 @@ systems and generate candidate structures for the local and global minima.
 ### Description
 Some of the technics implemented are:
 
-- Stochastic 
+ * Stochastic
       - Simulated Annealing (Metropolis-Monte Carlo)
       - Dual Annealing
-- Bayesian Optimization
+
+* Bayesian Optimization
 
 To compute the energy (cost-function), one could use some of these 
 quantum chemistry packages:
