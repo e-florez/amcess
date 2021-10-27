@@ -6,7 +6,7 @@ from src.base_molecule import Cluster
 
 
 def beforeatoms(system):
-    """[summary]
+    """
     Store attribute of before object made with Molecule
 
     Args:
@@ -20,17 +20,19 @@ def beforeatoms(system):
 
 
 def build_input_pyscf(x, molecule_object, type_search, ncall=[0]):
-    """[summary]
+    """
     Build input to pyscf
 
-    Args:
-        x ([array 1D]): possible new positions and angles.
-                    dual_annealing use couchy distribution.
-                    shgo #?
-        system_object ([type]): [description]
+    Parameters
+    ----------
+        x : array 1D
+            possible new positions and angles.
+        system_object : object
+            ([type]): [description]
         icall ([type]): [description]
 
-    Returns:
+    Returns
+    -------
         [type]: [description]
     """
     x_random = np.zeros((len(x[:])), dtype=float)
@@ -128,18 +130,24 @@ def build_input_pyscf(x, molecule_object, type_search, ncall=[0]):
     return input_mol, system_object
 
 
-def hamiltonian_pyscf(x, *args):
-    """[summary]
+def hf_pyscf(x, *args):
+    """
     Calculate of electronic energy with pyscf
 
-    Args:
-        x [array 1D]: possible new positions and angles.
-                    dual_annealing use couchy distribution
+    Parameters
+    ----------
+        x : array 1D
+            Possible new positions and angles
         shgo #?
-        args [list]: basis set, Object of Molecule,
-                    name output xyz, type optimizaiton
-    Returns:
-        e [floar]: [description]
+        args : list
+            basis set, Object of Molecule, name output xyz,
+            type optimizaiton
+
+    Returns
+    -------
+        e : float
+            electronic energy
+
     """
 
     input_pyscf, new_object = build_input_pyscf(x, args[1], args[3])
