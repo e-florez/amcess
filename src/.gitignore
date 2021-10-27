@@ -9,5 +9,6 @@ salida
 examples
 tmp*
 2h2o.py
+*pyc
 
 # for testing

@@ -1,11 +1,10 @@
 import random
 import sys
 
-
 from scipy.optimize import shgo
 
-from src.base_molecule import Cluster, Molecule
-from src.electronic_energy import hf_pyscf
+import src.electronic_energy as ee
+from src.base_molecule import Cluster
 from src.m_dual_annealing import solve_dual_annealing
 
 
@@ -169,7 +168,7 @@ class SearchConfig:
 
         """
         if _program_calculate_cost_function == 1:
-            return hf_pyscf
+            return ee.hf_pyscf
 
     def run(self, **kwargs):
         """ """

@@ -4,32 +4,48 @@ from src.electronic_energy import hf_pyscf
 
 
 @pytest.mark.parametrize(
-    "cluster1, cluster2, expected_coordinates",
+    "x0, bases, cluster1, cluster2, output, type_searching, expected_energy",
     [
         (
-            [("H", 0, 0, 0), ("F", 0.917, 0, 0)],
+            [1, 2, 3, 1, 2, 3, 0.9, 0.8, 0.7, 0.09, 0.08, 0.07],
+            "sto-3g",
+            [("H", 0, 0, 1), ("H", 0.74, 0, 1)],
             [("H", 0, 0, 0), ("H", 0.74, 0, 0)],
-            [
-                ("H", 0, 0, 0),
-                ("F", 0.917, 0, 0),
-                ("H", 0, 0, 0),
-                ("H", 0.74, 0, 0),
-            ],
+            "output.xyz",
+            1,
+            -1.90426278138573,
         ),
     ],
 )
-def test_cluster_object_coordinates_into_search_conf(
-    cluster1, cluster2, expected_coordinates
+def test_electronic_energy_with_hf_pyscf(
+    x0, bases, cluster1, cluster2, output, type_searching, expected_energy
 ):
-    """[summary]
-    Test: Passed of object from Cluser to SearchConfig
-    Args:
-        cluster1 ([dict]): dictionary with symbols and coordinates
-                            of the first molecule
-        cluster2 ([dict]): dictionary with symbols and coordinates
-                            of the second molecule
-        expected_coordinates ([list]): expected coordinates plus symbols
     """
-    search_config = hf_pyscf(Cluster(cluster1, cluster2))
+    Test for electronic energy calculate with hf_pyscf
 
-    assert search_config._system_object.atoms == expected_coordinates
+    Parameters
+    ----------
+        x0: array 1D
+            Values to translate and rotate each molecule
+        bases: string
+            Label of the bases set
+        cluster1 : dict
+            Dictionary with symbols and coordinates of the
+            first molecule
+        cluster2 : dict
+            Dictionary with symbols and coordinates of the
+            second molecule
+        output : string
+            Name of the output xyz to save energy and coordinates
+        type_searching : int
+            Type of searching used to find the candidates
+            structures
+        expected_energy : float
+            Expected electronic energy
+
+    """
+    with open(output, "w") as outxyz:
+        e = hf_pyscf(
+            x0, bases, Cluster(cluster1, cluster2), outxyz, type_searching
+        )
+    assert e - expected_energy < 1.0e-7
