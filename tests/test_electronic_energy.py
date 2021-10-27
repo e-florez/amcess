@@ -1,6 +1,6 @@
 import pytest
-from src.base_molecule import Cluster
-from src.electronic_energy import hf_pyscf
+from amcess.base_molecule import Cluster
+from amcess.electronic_energy import hf_pyscf
 
 
 @pytest.mark.parametrize(

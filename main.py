@@ -1,6 +1,5 @@
-from src.base_molecule import Atom, Molecule, Cluster
+from amcess.base_molecule import Atom, Molecule, Cluster
 
-# from src.base_molecule import Molecule, Cluster
 from data.molecules_coordinates import (
     li,
     water,
@@ -137,8 +136,8 @@ def test_atom():
 
     print("\n")
     print(a)
-    print("-" * 40)
-    print("atoms: :\n", a)
+    print("-" * 30)
+    print("atoms:\n", a)
 
 
 def test_molecule():
@@ -149,37 +148,39 @@ def test_molecule():
         [("Xe", 0, 0, 0), ("Na", 5, 5, 5), ("Na", 10, 10, 10)], -10, 5
     )
 
-    print("\n")
-    print(mol)
-    print("-" * 40)
-    print("atoms: :\n", mol.atoms)
-    print("charge:", mol.charge)
-    print("multiplicity:", mol.multiplicity)
+    # print("\n")
+    # print(mol)
+    # print("+--" * 30)
+    # print("atoms: :\n", mol.atoms)
+    # # mol.atoms = 1  # cannot reset atoms
 
-    print("-" * 40)
-    mol.charge = 200
-    print("new charge: ", mol.charge)
-    # mol.charge = "a"  # wrong charge
-    # mol.charge = 10.2  # wrong charge
-    mol.multiplicity = 13
-    print("new multiplicity", mol.multiplicity)
-    # mol.multiplicity = -3  # wrong multiplicity
-    # mol.multiplicity = "x"  # wrong multiplicity
+    # print("charge:", mol.charge)
+    # print("multiplicity:", mol.multiplicity)
 
-    print("-" * 40)
-    print("\nmasses: ", mol.atomic_masses)
-    print("\ntotal mass: ", mol.total_mass)
-    print("\nsymbols: ", mol.symbols)
-    print("\ntotal atoms: ", mol.total_atoms)
-    print("\nelements: ", mol.elements)
+    # print("+--" * 30)
+    # mol.charge = 200
+    # print("new charge: ", mol.charge)
+    # # mol.charge = "a"  # wrong charge
+    # # mol.charge = 10.2  # wrong charge
+    # mol.multiplicity = 13
+    # print("new multiplicity", mol.multiplicity)
+    # # mol.multiplicity = -3  # wrong multiplicity
+    # # mol.multiplicity = "x"  # wrong multiplicity
 
-    print("-" * 40)
-    print("\nnumbering atoms (index):\n", mol.numbering_atoms)
-    print(mol.xyz)
+    # print("+--" * 30)
+    # print("\nmasses: ", mol.atomic_masses)
+    # print("\ntotal mass: ", mol.total_mass)
+    # print("\nsymbols: ", mol.symbols)
+    # print("\ntotal atoms: ", mol.total_atoms)
+    # print("\nelements: ", mol.elements)
 
-    print("-" * 40)
-    print("\ncenter of mass: ", mol.center_of_mass)
-    print("\npp axes: ", mol.principal_axes)
+    # print("+--" * 30)
+    # print("\nnumbering atoms (index):\n", mol.numbering_atoms)
+    # print(mol.xyz)
+
+    # print("+--" * 30)
+    # print("\ncenter of mass: ", mol.center_of_mass)
+    # print("\npp axes: ", mol.principal_axes)
 
 
 def test_cluster():
@@ -210,20 +211,20 @@ def test_cluster():
     li_mol = Molecule.from_dict(li)
 
     # init from dict and list
-    ca = Cluster(nacl_coord, nacl_coord, nacl_coord, nacl_coord)
+    # ca = Cluster(nacl_coord, nacl_coord, nacl_coord, nacl_coord)
     # ca = Cluster(kf_coord, nacl_coord)
 
     # # init from Molecule
-    # ca = Cluster(w_mol, kf_mol)
+    # ca = Cluster(xe_coord)
 
     # # init from Molecule and dict, list
     # ca = Cluster(w_mol, kf_coord, nacl_coord)
 
-    print("-" * 40)
-    print(ca)
-    print("-" * 40)
+    # print("+--" * 30)
+    # print(ca)
+    # print("+--" * 30)
     # print(ca.xyz)
-    # print("-" * 40)
+    # print("+--" * 30)
     # print(ca.cluster_dictionary)
     # print("\nmolecules:", ca.total_molecules)
     # print("\nsymbols: ", ca.symbols)
@@ -239,20 +240,20 @@ def test_cluster():
     # print("\npp axes: ", ca.principal_axes)
     # print("\nnumber atoms (index):\n", ca.numbering_atoms)
 
-    # print("-" * 40)
+    # print("+--" * 30)
     # # print("water mol:", w_mol)
     # # print("kf mol:", kf_mol)
 
     # magic_add = Cluster(w_mol + kf_mol)
 
-    # print("-" * 40)
+    # print("+--" * 30)
     # print("\nmagic add new obj:\n", magic_add)
 
     # print("\nmagic add new dict:\n", magic_add + nacl_coord)
     # print("\nmagic add new list:\n", magic_add + kf_coord)
     # print("\nmagic add new mol:\n", magic_add + kf_mol)
 
-    # print("-" * 40)
+    # print("+--" * 30)
     # magic_add = Cluster(w_mol)
     # magic_add = Cluster(kf_coord)
     # magic_add = Cluster(nacl_coord)
@@ -262,12 +263,24 @@ def test_cluster():
     # print("\nmagic rmul cluster:\n", 3 * magic_add)
     # print("\nmagic mul cluster:\n", magic_add * 3)
 
+    # print("+--" * 30)
     # magic_add = Cluster(w_mol, kf_mol)
-    # print(
-    #     f"",
-    # )
-
     # ca = magic_add + w_mol
+    # print(ca.xyz)
+
+    # print("+--" * 30)
+    # g = ca.get_molecule(1)
+
+    # m = ca.get_molecule(0)
+    # print(m.coordinates)
+
+    # r = ca.remove_molecule(0)
+    # print(r.coordinates)
+
+    # print(type(g))
+    # print(g)
+    # g = g.translate(0, x=100)
+    # print(g)
 
     # ca.frozen_molecule = 1
     # # ca.frozen_molecule = [0, 1]
@@ -287,20 +300,14 @@ def test_cluster():
     # print("Rotating other:\n", ca.rotate(0, z=90).xyz)
     # print("Rotating frozen:\n", ca.rotate(1, z=90).xyz)
 
-    # print("-" * 40)
+    # print("+--" * 30)
 
-    # print("-" * 40)
+    # print("+--" * 30)
     # g = 2
     # print(f"\ngetting {g}: \n", ca.get_molecule(g))
     # print("\ngetting element: \n", ca.get_element("H"))
     # a = ca.get_molecule(0)
     # print(a.center_of_mass)
-
-    # r = 2
-    # print(f"\nremove {r}: \n", ca.remove_molecule(r))
-    # print(f"\nremove element: \n", ca.remove_element("H"))
-    # b = ca.remove_molecule(r)
-    # print(b.molecules)
 
     # m = 0
     # print(
@@ -308,10 +315,55 @@ def test_cluster():
     #     ca.translate(m, x=10, y=20, z=30).translate(m + 1, x=10, y=20, z=30),
     # )
 
-    # print("-" * 40)
-    # print(ca)
-    # print(ca.cluster_dictionary)
-    # print("-" * 40)
+    # ca = Cluster(3 * Molecule.from_dict(water))
+
+    # print("+--" * 30)
+    # print(ca.atoms)
+    # print(ca.xyz)
+    # print("+--" * 30)
+
+    # print("No sphere radius: ", ca.sphere_radius)
+    # ca.sphere_radius = 1
+    # print("choosing a sphere radius: ", ca.sphere_radius)
+
+    # b = ca.move_molecule(
+    #     molecule=2,
+    #     max_step=None,
+    #     max_rotation=None,
+    #     seed=1234,
+    # )
+    # print(b.xyz)
+
+    ca = Cluster(2 * Molecule.from_dict(water))
+    print(ca.xyz)
+    # # print("+--" * 30)
+
+    # # print("sphere None: ", ca.sphere_center)
+    # ca._sphere_center = (10, 0, 0)
+    # # print("sphere: ", len(ca.sphere_center))
+
+    water_molecule = [
+        ("O", 0, 0, 0),
+        ("H", 0.58708, 0.75754, 0),
+        ("H", -0.58708, 0.75754, 0),
+    ]
+
+    w2 = Cluster(water_molecule, water_molecule)
+
+    # let's move any molecule randomly to avoid averlaping
+    new_w2 = w2.move_molecule(1)
+    # print(new_w2.xyz)
+
+    ca = 3 * w2
+
+    # let's define the spherical boundary conditions
+    ca.sphere_center = 0, 0, 0
+    # w2.sphere_center = 10, 10, 10
+    ca.sphere_radius = 20
+
+    ini = ca.initialize_cluster(max_closeness=10)
+
+    print(ini.xyz)
 
 
 def old_molecule_class():
@@ -348,9 +400,9 @@ def old_molecule_class():
 
     # print(Atom("Na", 0, 0.000000, 0.000000))
 
-    print("-" * 40)
+    print("+--" * 30)
     print(na)
-    print("-" * 40)
+    print("+--" * 30)
     print("\natoms: ", na.atoms)
     print("\ncharge: ", na.charge)
     print("\nmultiplicity: ", na.multiplicity)
@@ -378,7 +430,7 @@ def old_molecule_class():
     print("\nremove H: \n", na.remove_element("Na"))
     print("\ngetting H: \n", na.get_element("Na"))
 
-    print("-" * 40)
+    print("+--" * 30)
     print(na)
 
 
@@ -424,11 +476,11 @@ def old_cluster_class():
     #     Cluster(xe_coord),  # .translate(0, x=0.05)
     # )  # , kf_coord, nacl_coord)
 
-    print("-" * 40)
+    print("+--" * 30)
     # print(na.cluster_dictionary)
-    # print("-" * 40)
+    # print("+--" * 30)
     print(ca.xyz)
-    print("-" * 40)
+    print("+--" * 30)
     print("\nmolecules:\n\n", ca.molecules)
     print("\ndictionary:\n\n", ca.cluster_dictionary)
     print("\nsymbols: ", ca.symbols)
@@ -444,7 +496,7 @@ def old_cluster_class():
     # print("\npp axes: ", ca.principal_axes)
     # print("\nnumber atoms (index):\n", ca.number_atoms)
 
-    # print("-" * 40)
+    # print("+--" * 30)
     # print(ca.cluster_dictionary)
     # print(na.cluster_dictionary)
     # print("\nmagic add new obj:\n", ca + na)
@@ -473,7 +525,7 @@ def old_cluster_class():
     print("Rotating other:\n", ca.rotate(0, x=90).xyz)
     print("Rotating frozen:\n", ca.rotate(1, x=90).xyz)
 
-    # print("-" * 40)
+    # print("+--" * 30)
     # g = 2
     # print(f"\ngetting {g}: \n", ca.get_molecule(g))
     # print("\ngetting element: \n", ca.get_element("H"))
@@ -491,10 +543,10 @@ def old_cluster_class():
     #     ca.translate(m, x=10, y=20, z=30).translate(m + 3, x=10, y=20, z=30),
     # )
 
-    # print("-" * 40)
+    # print("+--" * 30)
     # print(ca)
     # print(ca.cluster_dictionary)
-    # print("-" * 40)
+    # print("+--" * 30)
 
 
 # -------------------------------------------------------------------
