@@ -53,7 +53,7 @@ class Atom:
     def _check_valid_point(self, coordinate, value):
         if not isinstance(value, (int, float)):
             raise ValueError(
-                "\n\nMust be valid NOT empty float,"
+                "\n\nMust be valid NOT empty float"
                 f"\nyou get --> '{value}' with type: '{type(value).__name__}'"
             )
 
@@ -173,7 +173,7 @@ class Molecule:
         ------
         Cluster : object
         """
-        if value < 1 or not isinstance(value, int):
+        if not isinstance(value, int) or value < 1:
             raise ValueError(
                 "\nMultiplier must be and integer larger than zero"
                 f"\ncheck --> '{value}'"
@@ -186,7 +186,7 @@ class Molecule:
         return new_cluster
 
     def __str__(self):
-        return str(attr.astuple(self))
+        return self.xyz
 
     # ===============================================================
     # PROPERTIES
@@ -385,7 +385,7 @@ class Molecule:
         ------
         IndexError
         """
-        if atom >= self.total_atoms:
+        if not isinstance(atom, int) or atom >= self.total_atoms:
             raise IndexError(
                 f"\nMolecule with {self.total_atoms} total atoms "
                 f"and index [0-{self.total_atoms - 1}]"
@@ -395,16 +395,19 @@ class Molecule:
         return self.atoms[atom]
 
     def remove_atom(self, atom: int) -> object:
-        if atom > self.total_atoms:
+        if not isinstance(atom, int) or atom >= self.total_atoms:
             raise IndexError(
                 f"\nMolecule with {self.total_atoms} total atoms "
                 f"and index [0-{self.total_atoms - 1}]"
                 f"\n atom index must be less than {self.total_atoms}"
-                f"\nCheck! You want to remove atom with index {atom}"
+                f"\nCheck! You want to remove atom with index '{atom}'"
             )
-        new_atoms: list = self.atoms
 
-        return self.__class__(new_atoms.pop(atom))
+        new_atoms: list = list(self.atoms)
+
+        del new_atoms[atom]
+
+        return self.__class__(new_atoms)
 
 
 # -------------------------------------------------------------
@@ -563,6 +566,44 @@ class Cluster(Molecule):
             self._frozen_molecule = [values]
 
     @property
+    def initialize_cluster(self) -> object:
+        """Create a new cluster object which any atom is overlapped
+
+        Returns
+        -------
+        Cluster : object
+            returns a new Cluster object
+        """
+        # center of mass coordinates
+        sc_x = self.sphere_center[0]
+        sc_y = self.sphere_center[1]
+        sc_z = self.sphere_center[2]
+
+        # initializing a new cluster moving the first molecule
+        # to the center of the cluster sphere
+        molecule = self.get_molecule(0)
+        new_cluster = molecule.translate(0, sc_x, sc_y, sc_z)
+
+        for i in range(1, self.total_molecules):
+            # moving the next single molecule into the cluster sphere
+            molecule = self.get_molecule(i).translate(0, sc_x, sc_y, sc_z)
+
+            if Cluster.overlapping(
+                molecule.coordinates, new_cluster.coordinates
+            ):
+                new_cluster += molecule
+                new_cluster = new_cluster.move_molecule(i)
+            else:
+                new_cluster += molecule
+
+        return Cluster(
+            new_cluster,
+            frozen_molecule=self.frozen_molecule,
+            sphere_radius=self.sphere_radius,
+            sphere_center=self.sphere_center,
+        )
+
+    @property
     def sphere_center(self) -> tuple:
         return self._sphere_center
 
@@ -583,6 +624,12 @@ class Cluster(Molecule):
 
     @sphere_radius.setter
     def sphere_radius(self, new_radius: float) -> None:
+        if not isinstance(new_radius, (int, float)) or new_radius < 0.9:
+            raise ValueError(
+                "\n\nThe Sphere  Radius must be larger than 1 Angstrom"
+                f"\nplease, check: '{new_radius}'\n"
+            )
+
         self._sphere_radius = new_radius
 
     @property
@@ -651,43 +698,6 @@ class Cluster(Molecule):
 
         return self.__class__(
             new_molecule,
-            frozen_molecule=self.frozen_molecule,
-            sphere_radius=self.sphere_radius,
-            sphere_center=self.sphere_center,
-        )
-
-    def initialize_cluster(self) -> object:
-        """Create a new cluster object which
-
-        Returns
-        -------
-        Cluster : object
-            returns a new Cluster object
-        """
-        # center of mass coordinates
-        sc_x = self.sphere_center[0]
-        sc_y = self.sphere_center[1]
-        sc_z = self.sphere_center[2]
-
-        # initializing a new cluster moving the first molecule
-        # to the center of the cluster sphere
-        molecule = self.get_molecule(0)
-        new_cluster = molecule.translate(0, sc_x, sc_y, sc_z)
-
-        for i in range(1, self.total_molecules):
-            # moving the next single molecule into the cluster sphere
-            molecule = self.get_molecule(i).translate(0, sc_x, sc_y, sc_z)
-
-            if Cluster.overlapping(
-                molecule.coordinates, new_cluster.coordinates
-            ):
-                new_cluster += molecule
-                new_cluster = new_cluster.move_molecule(i)
-            else:
-                new_cluster += molecule
-
-        return Cluster(
-            new_cluster,
             frozen_molecule=self.frozen_molecule,
             sphere_radius=self.sphere_radius,
             sphere_center=self.sphere_center,
@@ -840,8 +850,10 @@ class Cluster(Molecule):
         if molecule in self.frozen_molecule:
             return deepcopy(self)
 
-        if not isinstance(molecule, int) and (
-            0 < molecule >= self.total_molecules
+        if (
+            not isinstance(molecule, int)
+            or molecule >= self.total_molecules
+            or molecule < 0
         ):
             raise IndexError(
                 f"\nMolecule with {self.total_molecules} total molecules "
@@ -898,8 +910,10 @@ class Cluster(Molecule):
         if molecule in self.frozen_molecule:
             return deepcopy(self)
 
-        if not isinstance(molecule, int) and (
-            0 < molecule >= self.total_molecules
+        if (
+            not isinstance(molecule, int)
+            or molecule >= self.total_molecules
+            or molecule < 0
         ):
             raise IndexError(
                 f"\nMolecule with {self.total_molecules} total molecules "

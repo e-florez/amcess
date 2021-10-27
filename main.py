@@ -137,7 +137,7 @@ def test_atom():
     print("\n")
     print(a)
     print("-" * 30)
-    print("atoms: :\n", a)
+    print("atoms:\n", a)
 
 
 def test_molecule():
@@ -148,39 +148,39 @@ def test_molecule():
         [("Xe", 0, 0, 0), ("Na", 5, 5, 5), ("Na", 10, 10, 10)], -10, 5
     )
 
-    print("\n")
-    print(mol)
-    print("+--" * 30)
-    print("atoms: :\n", mol.atoms)
-    # mol.atoms = 1  # cannot reset atoms
+    # print("\n")
+    # print(mol)
+    # print("+--" * 30)
+    # print("atoms: :\n", mol.atoms)
+    # # mol.atoms = 1  # cannot reset atoms
 
-    print("charge:", mol.charge)
-    print("multiplicity:", mol.multiplicity)
+    # print("charge:", mol.charge)
+    # print("multiplicity:", mol.multiplicity)
 
-    print("+--" * 30)
-    mol.charge = 200
-    print("new charge: ", mol.charge)
-    # mol.charge = "a"  # wrong charge
-    # mol.charge = 10.2  # wrong charge
-    mol.multiplicity = 13
-    print("new multiplicity", mol.multiplicity)
-    # mol.multiplicity = -3  # wrong multiplicity
-    # mol.multiplicity = "x"  # wrong multiplicity
+    # print("+--" * 30)
+    # mol.charge = 200
+    # print("new charge: ", mol.charge)
+    # # mol.charge = "a"  # wrong charge
+    # # mol.charge = 10.2  # wrong charge
+    # mol.multiplicity = 13
+    # print("new multiplicity", mol.multiplicity)
+    # # mol.multiplicity = -3  # wrong multiplicity
+    # # mol.multiplicity = "x"  # wrong multiplicity
 
-    print("+--" * 30)
-    print("\nmasses: ", mol.atomic_masses)
-    print("\ntotal mass: ", mol.total_mass)
-    print("\nsymbols: ", mol.symbols)
-    print("\ntotal atoms: ", mol.total_atoms)
-    print("\nelements: ", mol.elements)
+    # print("+--" * 30)
+    # print("\nmasses: ", mol.atomic_masses)
+    # print("\ntotal mass: ", mol.total_mass)
+    # print("\nsymbols: ", mol.symbols)
+    # print("\ntotal atoms: ", mol.total_atoms)
+    # print("\nelements: ", mol.elements)
 
-    print("+--" * 30)
-    print("\nnumbering atoms (index):\n", mol.numbering_atoms)
-    print(mol.xyz)
+    # print("+--" * 30)
+    # print("\nnumbering atoms (index):\n", mol.numbering_atoms)
+    # print(mol.xyz)
 
-    print("+--" * 30)
-    print("\ncenter of mass: ", mol.center_of_mass)
-    print("\npp axes: ", mol.principal_axes)
+    # print("+--" * 30)
+    # print("\ncenter of mass: ", mol.center_of_mass)
+    # print("\npp axes: ", mol.principal_axes)
 
 
 def test_cluster():
@@ -215,15 +215,15 @@ def test_cluster():
     # ca = Cluster(kf_coord, nacl_coord)
 
     # # init from Molecule
-    # ca = Cluster(w_mol, kf_mol)
+    ca = Cluster(xe_coord)
 
     # # init from Molecule and dict, list
-    ca = Cluster(w_mol, kf_coord, nacl_coord)
+    # ca = Cluster(w_mol, kf_coord, nacl_coord)
 
     # print("+--" * 30)
     # print(ca)
     # print("+--" * 30)
-    # print(ca.xyz)
+    print(ca.xyz)
     # print("+--" * 30)
     # print(ca.cluster_dictionary)
     # print("\nmolecules:", ca.total_molecules)
