@@ -1,26 +1,4 @@
 
-<div align="center">
-  <a href=https://www.python.org/downloads/release/python-390/>
-  <img src=https://img.shields.io/badge/python-3.9-blue.svg></a>
-  <a href=https://img.shields.io/badge/license-MIT-blue.svg>
-  <img src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
-  <a href=https://mybinder.org/v2/gl/ADanianZE%2Fascec/main?filepath=workflow%2F01_importing_atoms_and_molecules.ipynb>
-  <img src="https://mybinder.org/badge_logo.svg"></a><br>  
-  <a href=http://mypy-lang.org/>
-  <img src="http://www.mypy-lang.org/static/mypy_badge.svg"></a>
-  <a href=https://github.com/psf/black>
-  <img src="https://img.shields.io/badge/code%20style-black-000000.svg"></a><br>  
-  <a href=https://img.shields.io/gitlab/pipeline/ADanianZE/ascec/main?style=plastic>
-  <img src="https://img.shields.io/gitlab/pipeline/ADanianZE/ascec/main?style=plastic"></a>
-  <a href=https://gitlab.com/ADanianZE/ascec/-/commits/main>
-  <img src="https://gitlab.com/ADanianZE/ascec/badges/main/pipeline.svg"></a>
-  <a href=https://img.shields.io/gitlab/coverage/ADanianZE/ascec/main?style=plastic>
-  <img src="https://img.shields.io/gitlab/coverage/ADanianZE/ascec/main?style=plastic"></a>
-  <a href=https://coveralls.io/gitlab/ADanianZE/ascec?branch=main>
-  <img src="https://coveralls.io/repos/gitlab/ADanianZE/ascec/badge.svg?branch=main"></a>
-</div>
-
-
 <!-- [![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-390/)
 ![Gitlab pipeline status](https://img.shields.io/gitlab/pipeline/ADanianZE/ascec/main?style=plastic)
 [![pipeline status](https://gitlab.com/ADanianZE/ascec/badges/main/pipeline.svg)](https://gitlab.com/ADanianZE/ascec/-/commits/main)
@@ -35,9 +13,41 @@
 
 <!-- ![Atomic and Molecular Cluster Energy Surface Sampler](./docs/_static/amcess_logo.png) -->
 
+
+<div align="center">
+  <a href=http://mypy-lang.org/>
+  <img src="http://www.mypy-lang.org/static/mypy_badge.svg"></a>
+  <a href=https://github.com/psf/black>
+  <img src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
+  <br>
+  <a href=https://www.python.org/downloads/release/python-390/>
+  <img src=https://img.shields.io/badge/python-3.9-blue.svg></a>
+  <a href=https://img.shields.io/badge/license-MIT-blue.svg>
+  <img src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
+  <a href=https://mybinder.org/v2/gl/ADanianZE%2Fascec/main?filepath=workflow%2F01_importing_atoms_and_molecules.ipynb>
+  <img src="https://mybinder.org/badge_logo.svg"></a>
+  <br>  
+  <a href=https://img.shields.io/gitlab/pipeline/ADanianZE/ascec/main?style=plastic>
+  <img src="https://img.shields.io/gitlab/pipeline/ADanianZE/ascec/main?style=plastic"></a>
+  <a href=https://gitlab.com/ADanianZE/ascec/-/commits/main>
+  <img src="https://gitlab.com/ADanianZE/ascec/badges/main/pipeline.svg"></a>
+  <a href=https://img.shields.io/gitlab/coverage/ADanianZE/ascec/main?style=plastic>
+  <img src="https://img.shields.io/gitlab/coverage/ADanianZE/ascec/main?style=plastic"></a>
+  <a href=https://coveralls.io/gitlab/ADanianZE/ascec?branch=main>
+  <img src="https://coveralls.io/repos/gitlab/ADanianZE/ascec/badge.svg?branch=main"></a>
+</div>
+
+---
+
 <div align="center">
   <a href="Atomic and Molecular Cluster Energy Surface Sampler">
-  <img width="400" height="200" src="./docs/_static/amcess_logo.png"></a><br>
+  <img width="400" height="200" src="./docs/_static/amcess_logo.png"></a>
+  <br>
+</div>
+
+---
+
+<div>
   <h1> Atomic and Molecular Cluster Energy Surface Sampler (AMCESS) </h1>
 </div>
 
