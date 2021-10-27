@@ -1,4 +1,3 @@
-from _pytest.python import write_docstring
 import numpy as np
 import pytest
 
