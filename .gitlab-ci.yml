@@ -14,19 +14,12 @@ cache:
   paths:
     - .cache/pip
     - venv/
-    - venv_testing
 
 before_script:
   - python --version
-  - pip install virtualenv
-  - pip install sphinx
-  - pip install sphinx_rtd_theme
-  - pip install -r requirements.txt -r requirements_dev.txt 
-  - virtualenv venv
+  - python -m venv venv
   - source venv/bin/activate
-  - pip install -r requirements.txt
-#  - pip uninstall h5py --yes
-#  - pip install -Iv h5py==3.1.0 
+  - pip install -r requirements.txt -r requirements_dev.txt 
   - deactivate
 
 
@@ -45,7 +38,7 @@ unit_test_tox:
     - pwd
     - ls -l
     - source venv/bin/activate
-    # - pytest -v tests/
+    # - pytest -sxv --cov=/amcess/ tests/
     - tox
     - deactivate
 
@@ -57,6 +50,7 @@ run_python:
     - ls -l
     - source venv/bin/activate
     - python setup.py sdist
+    - pip install -e .
     - deactivate
 
   # script:

@@ -1,8 +1,8 @@
 
-<!-- <p align="center">
+<p align="center">
   <a href=https://www.python.org/downloads/release/python-390/>
   <img src=https://img.shields.io/badge/python-3.9-blue.svg alt="Python3.9"></a>
-</p> -->
+</p>
 
 
 [![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-390/)
@@ -16,8 +16,35 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 ![Pod License](https://img.shields.io/badge/license-MIT-blue.svg)
 
-# Atomi and Molecular Cluster Energy Surface Sampler (AMCESS)
 
+<p align="center">
+  <a href="Atomic and Molecular Cluster Energy Surface Sampler">
+  <img width="400" height="200" src="./docs/_static/amcess_logo.png"></a>
+</p>
+
+<!-- ![Atomic and Molecular Cluster Energy Surface Sampler](./docs/_static/amcess_logo.png) -->
+
+
+# Atomic and Molecular Cluster Energy Surface Sampler (AMCESS)
+
+Tools to explore the Potential Energy Surface (PES) for atomic and molecular 
+systems and generate candidate structures for the local and global minima.
+
+### Description
+Some of the technics implemented are:
+
+- Stochastic 
+      - Simulated Annealing (Metropolis-Monte Carlo)
+      - Dual Annealing
+- Bayesian Optimization
+
+To compute the energy (cost-function), one could use some of these 
+quantum chemistry packages:
+
+- Non Relativistic: NWChem, Gaussian, DALTON,
+GAMESS
+
+- Relativistic: DIRAC, ADF
 
 
 
@@ -52,8 +79,15 @@ AMCESS is writyten for **Python 3.9**
 
 
 4. Run AMCESS:
-
-    ```python main.py```
+    
+    ```
+    >>>pip install -e .
+    Installing collected packages: amcess
+    Running setup.py develop for amcess
+    Successfully installed amcess
+    >>>from amcess.base_molecule import Molecule, Cluster
+    ...
+    ```
 
 ### Usage
 
@@ -66,7 +100,10 @@ Workflow:
       - Notebook ([binder](https://mybinder.org/v2/gl/ADanianZE%2Fascec/main?filepath=workflow%2F02_move_rotate_molecules.ipynb)): `02_move_rotate_molecules.ipynb` 
 3. Moving Molecules randomly from a Cluster. 
       - Notebook ([binder](https://mybinder.org/v2/gl/ADanianZE%2Fascec/main?filepath=workflow%2F03_move_rotate_cluster.ipynb)): `03_move_rotate_cluster.ipynb` 
-
+4. Freezing any molecule and redefine its sphere center. 
+      - Notebook ([binder](https://mybinder.org/v2/gl/ADanianZE%2Fascec/main?filepath=workflow%2F04_freeze_molecule_redefine_center.ipynb)): `04_freeze_molecule_redefine_center.ipynb` 
+5. Initialize a cluster avoiding atomic overlapping
+      - Notebook ([binder](https://mybinder.org/v2/gl/ADanianZE%2Fascec/main?filepath=workflow%2F05_initialize_cluster_and_move_molecule.ipynb)): `05_initialize_cluster_and_move_molecule.ipynb` 
 
 ### Contributing
 
