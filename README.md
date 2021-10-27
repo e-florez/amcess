@@ -47,7 +47,7 @@
 
 ---
 
-<div>
+<div align="center">
   <h1> Atomic and Molecular Cluster Energy Surface Sampler (AMCESS) </h1>
 </div>
 
