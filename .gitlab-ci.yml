@@ -67,6 +67,7 @@ pages:
   script:
   - pwd
   - ls -l
+  - source venv/bin/activate
   - cd docs/
   - ls -l
   - sphinx-build -b html . ../public

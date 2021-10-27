@@ -1,4 +1,4 @@
-
+<!-- 
 <p align="center">
   <a href=https://www.python.org/downloads/release/python-390/>
   <img src=https://img.shields.io/badge/python-3.9-blue.svg alt="Python3.9"></a>
@@ -15,11 +15,12 @@
 [![mypy: checked](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 ![Pod License](https://img.shields.io/badge/license-MIT-blue.svg)
-
+ -->
 
 <p align="center">
-  <!-- <a href="Atomic and Molecular Cluster Energy Surface Sampler"> -->
-  <img width="400" height="200" src="./docs/_static/amcess_logo.png">
+  <a href="Atomic and Molecular Cluster Energy Surface Sampler">
+  <img src="./docs/_static/amcess_logo.png">
+  </a>
 </p>
 
 <!-- ![Atomic and Molecular Cluster Energy Surface Sampler](./docs/_static/amcess_logo.png) -->
@@ -34,8 +35,9 @@ systems and generate candidate structures for the local and global minima.
 Some of the technics implemented are:
 
  * Stochastic
-      - Simulated Annealing (Metropolis-Monte Carlo)
-      - Dual Annealing
+
+      * Simulated Annealing (Metropolis-Monte Carlo)
+      * Dual Annealing
 
 * Bayesian Optimization
 
