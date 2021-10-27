@@ -215,7 +215,7 @@ def test_cluster():
     # ca = Cluster(kf_coord, nacl_coord)
 
     # # init from Molecule
-    ca = Cluster(xe_coord)
+    # ca = Cluster(xe_coord)
 
     # # init from Molecule and dict, list
     # ca = Cluster(w_mol, kf_coord, nacl_coord)
@@ -223,7 +223,7 @@ def test_cluster():
     # print("+--" * 30)
     # print(ca)
     # print("+--" * 30)
-    print(ca.xyz)
+    # print(ca.xyz)
     # print("+--" * 30)
     # print(ca.cluster_dictionary)
     # print("\nmolecules:", ca.total_molecules)
@@ -334,17 +334,36 @@ def test_cluster():
     # )
     # print(b.xyz)
 
-    # ca = Cluster(3 * Molecule.from_dict(water))
-    # print(ca.xyz)
+    ca = Cluster(2 * Molecule.from_dict(water))
+    print(ca.xyz)
     # # print("+--" * 30)
 
     # # print("sphere None: ", ca.sphere_center)
     # ca._sphere_center = (10, 0, 0)
     # # print("sphere: ", len(ca.sphere_center))
 
-    # ini = ca.initialize_cluster()
+    water_molecule = [
+        ("O", 0, 0, 0),
+        ("H", 0.58708, 0.75754, 0),
+        ("H", -0.58708, 0.75754, 0),
+    ]
 
-    # print(ini.xyz)
+    w2 = Cluster(water_molecule, water_molecule)
+
+    # let's move any molecule randomly to avoid averlaping
+    new_w2 = w2.move_molecule(1)
+    # print(new_w2.xyz)
+
+    ca = 3 * w2
+
+    # let's define the spherical boundary conditions
+    ca.sphere_center = 0, 0, 0
+    # w2.sphere_center = 10, 10, 10
+    ca.sphere_radius = 20
+
+    ini = ca.initialize_cluster(max_closeness=10)
+
+    print(ini.xyz)
 
 
 def old_molecule_class():

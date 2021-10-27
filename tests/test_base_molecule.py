@@ -869,7 +869,7 @@ def test_cluster_initialize_cluster():
         [("Z2", -10, -10, -10)],
     )
 
-    w3_no_overlapping = w3.initialize_cluster
+    w3_no_overlapping = w3.initialize_cluster()
 
     overlap = []
     for i in w3_no_overlapping.cluster_dictionary:

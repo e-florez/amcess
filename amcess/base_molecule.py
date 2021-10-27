@@ -566,44 +566,6 @@ class Cluster(Molecule):
             self._frozen_molecule = [values]
 
     @property
-    def initialize_cluster(self) -> object:
-        """Create a new cluster object which any atom is overlapped
-
-        Returns
-        -------
-        Cluster : object
-            returns a new Cluster object
-        """
-        # center of mass coordinates
-        sc_x = self.sphere_center[0]
-        sc_y = self.sphere_center[1]
-        sc_z = self.sphere_center[2]
-
-        # initializing a new cluster moving the first molecule
-        # to the center of the cluster sphere
-        molecule = self.get_molecule(0)
-        new_cluster = molecule.translate(0, sc_x, sc_y, sc_z)
-
-        for i in range(1, self.total_molecules):
-            # moving the next single molecule into the cluster sphere
-            molecule = self.get_molecule(i).translate(0, sc_x, sc_y, sc_z)
-
-            if Cluster.overlapping(
-                molecule.coordinates, new_cluster.coordinates
-            ):
-                new_cluster += molecule
-                new_cluster = new_cluster.move_molecule(i)
-            else:
-                new_cluster += molecule
-
-        return Cluster(
-            new_cluster,
-            frozen_molecule=self.frozen_molecule,
-            sphere_radius=self.sphere_radius,
-            sphere_center=self.sphere_center,
-        )
-
-    @property
     def sphere_center(self) -> tuple:
         return self._sphere_center
 
@@ -682,6 +644,57 @@ class Cluster(Molecule):
             frozen_molecule=new_cluster.frozen_molecule,
             sphere_radius=new_cluster.sphere_radius,
             sphere_center=new_cluster.sphere_center,
+        )
+
+    def initialize_cluster(
+        self, max_closeness: float = 1.0, seed: int = None
+    ) -> object:
+        """Create a new cluster object which any atom is overlapped
+        Parameters
+        ----------
+        max_closeness : float, optional
+            maximun closeness between two pairs, by default 1.0
+        seed : int, optional
+            seed to initialize the random generator function, by default None
+
+        Returns
+        -------
+        Cluster : object
+            returns a new Cluster object
+        """
+        # center of mass coordinates
+        sc_x = self.sphere_center[0]
+        sc_y = self.sphere_center[1]
+        sc_z = self.sphere_center[2]
+
+        # initializing a new cluster moving the first molecule
+        # to the center of the cluster sphere
+        molecule = self.get_molecule(0)
+        new_cluster = molecule.translate(0, sc_x, sc_y, sc_z)
+
+        for i in range(1, self.total_molecules):
+            # moving the next single molecule into the cluster sphere
+            molecule = self.get_molecule(i).translate(0, sc_x, sc_y, sc_z)
+
+            if Cluster.overlapping(
+                molecule.coordinates, new_cluster.coordinates
+            ):
+                new_cluster += molecule
+                new_cluster = new_cluster.move_molecule(
+                    i,
+                    max_step=None,
+                    max_rotation=None,
+                    max_closeness=max_closeness,
+                    seed=seed,
+                )
+            else:
+                new_cluster += molecule
+
+        return Cluster(
+            new_cluster,
+            frozen_molecule=self.frozen_molecule,
+            sphere_radius=self.sphere_radius,
+            sphere_center=self.sphere_center,
         )
 
     def get_molecule(self, molecule: int):
@@ -798,7 +811,7 @@ class Cluster(Molecule):
             if not overlap:
                 break
 
-        cluster_dict: dict = self.cluster_dictionary
+        cluster_dict: dict = deepcopy(self.cluster_dictionary)
         cluster_dict[molecule] = new_molecule
 
         new_cluster = Cluster(
