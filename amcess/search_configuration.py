@@ -105,7 +105,7 @@ class SearchConfig:
             )
 
         self._system_object = system_object
-        #
+
         self._search_methodology = search_methodology
 
         self._bases = bases
@@ -160,7 +160,7 @@ class SearchConfig:
 
     @output_name.setter
     def output_name(self, new_name_output):
-        if isinstance(new_name_output, str):
+        if not isinstance(new_name_output, str):
             raise TypeError(
                 "\n\nThe new name to output is not a string"
                 f"\nplease, check: '{type(new_name_output)}'\n"
@@ -174,7 +174,7 @@ class SearchConfig:
 
     @search_name.setter
     def search_name(self, change_search_methodology):
-        if isinstance(change_search_methodology, int):
+        if not isinstance(change_search_methodology, int):
             raise TypeError(
                 "\n\nThe search methodology is associated with a integer \n"
                 "1 -> Dual Annealing \n"
@@ -191,13 +191,27 @@ class SearchConfig:
 
     @bases_set.setter
     def bases_set(self, new_bases_set):
-        if isinstance(new_bases_set, str):
+        if not isinstance(new_bases_set, str):
             raise TypeError(
                 "\n\nThe new name to output is not a string"
                 f"\nplease, check: '{type(new_bases_set)}'\n"
             )
 
         self._bases_set = new_bases_set
+
+    @property
+    def radius_contour(self):
+        return self._tolerance_contour_radius
+
+    @radius_contour.setter
+    def radius_contour(self, new_tol_radius):
+        if not isinstance(new_tol_radius, float):
+            raise TypeError(
+                "\n\nThe new tolerance for contour radius is not a float"
+                f"\nplease, check: '{type(new_tol_radius)}'\n"
+            )
+
+        self._tolerance_contour_radius = new_tol_radius
 
     # ===============================================================
     # Methods
