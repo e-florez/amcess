@@ -92,6 +92,7 @@ dmypy.json
 # temporary files
 tmp/
 *tmp*
+*test*
 
 # pictures 
 *.jpg

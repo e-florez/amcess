@@ -76,7 +76,7 @@ ibuprofen = {
         # ("H", -4.52428000, 2.36580800, 0.66674500),
     ],
     "charge": -1,
-    "multiplicity": 1,    
+    "multiplicity": 1,
 }
 
 # https://en.wikipedia.org/wiki/NanoPutian
