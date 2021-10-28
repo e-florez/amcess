@@ -57,7 +57,7 @@ systems and generate candidate structures for the local and global minima.
 
 
 <div align="center">
-  <img width="200" height="100" src="./docs/_static/ibuprofen.png" VSPACE=50 HSPACE=10>
+  <img width="200" height="80" src="./docs/_static/ibuprofen.png" VSPACE=50 HSPACE=10>
   <img width="350" height="200" src="./docs/_static/ibu_w6_white.gif" HSPACE=20>
   <br>
   Molecular cluster of ibuprofen and six water molecules
