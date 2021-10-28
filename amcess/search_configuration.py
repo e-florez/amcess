@@ -4,7 +4,7 @@ import sys
 from scipy.optimize import shgo
 
 import amcess.electronic_energy as ee
-from amcess.base_molecule import Cluster
+from amcess.base_molecule import Cluster, Molecule
 from amcess.m_dual_annealing import solve_dual_annealing
 
 
@@ -121,6 +121,16 @@ class SearchConfig:
         # al parcer con este bounds no se alejan las moleculas en shgo pero
         # con dual_annealing no se evita todavía que se alejen
         # TODO Remplazar por el bounds definido por la clase Cluster
+        print(
+            "sphere radii \n",
+            system_object._sphere_radius,
+            system_object._sphere_center,
+        )
+        if system_object._sphere_radius == None:
+            aggregation = Molecule(system_object.symbols_coordinates)
+            print(system_object.symbols_coordinates)
+        exit()
+
         sphere_radius = self._system_object.total_atoms * 1.5 * 0.5
         discretization = sphere_radius / 1.6
         bound_translate = [

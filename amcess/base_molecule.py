@@ -223,6 +223,10 @@ class Molecule:
         return [c[1:] for c in self.atoms]
 
     @property
+    def symbols_coordinates(self) -> list:
+        return [c[0:] for c in self.atoms]
+
+    @property
     def elements(self) -> list:
         """Show a list of unique symbols
 
