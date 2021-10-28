@@ -1,7 +1,9 @@
 import random
 import sys
 
+import scipy
 from scipy.optimize import shgo
+import numpy as np
 
 import amcess.electronic_energy as ee
 from amcess.base_molecule import Cluster, Molecule
@@ -88,6 +90,7 @@ class SearchConfig:
         search_methodology=1,
         basis="sto-3g",
         program_electronic_structure=1,
+        tolerance_contour_radius=1,
         outxyz="configurations.xyz",
     ) -> None:
 
@@ -114,31 +117,19 @@ class SearchConfig:
             self._program_calculate_cost_function
         )
 
-        # archivo de salida xyz con todas las configuraciones
+        self._tolerance_contour_radius = tolerance_contour_radius
+
         self._outxyz = outxyz
 
-        # Siguiendo propuesta de Juan, con ediciones, para definir el bounds
-        # al parcer con este bounds no se alejan las moleculas en shgo pero
-        # con dual_annealing no se evita todavía que se alejen
-        # TODO Remplazar por el bounds definido por la clase Cluster
-        print(
-            "sphere radii \n",
-            system_object._sphere_radius,
-            system_object._sphere_center,
-        )
         if system_object._sphere_radius == None:
-            aggregation = Molecule(system_object.symbols_coordinates)
-            print(system_object.symbols_coordinates)
-        exit()
+            system_object.spherical_contour_cluster(tolerance_contour_radius)
 
-        sphere_radius = self._system_object.total_atoms * 1.5 * 0.5
-        discretization = sphere_radius / 1.6
         bound_translate = [
-            (-discretization, discretization),
-            (-discretization, discretization),
-            (-discretization, discretization),
+            (-system_object.sphere_radius, system_object.sphere_radius),
+            (-system_object.sphere_radius, system_object.sphere_radius),
+            (-system_object.sphere_radius, system_object.sphere_radius),
         ]
-        bound_rotate = [(0, 360), (0, 360), (0, 360)]
+        bound_rotate = [(0, scipy.pi), (0, scipy.pi), (0, scipy.pi)]
         bound_translate = bound_translate * self._system_object.total_molecules
         bound_rotate = bound_rotate * self._system_object.total_molecules
         self._bounds = bound_translate + bound_rotate
