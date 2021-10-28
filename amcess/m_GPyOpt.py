@@ -2,7 +2,6 @@ import GPyOpt
 import numpy as np
 from scipy._lib._util import check_random_state
 from scipy.optimize import OptimizeResult
-from src.ascec_criterion import Ascec
 
 def GPyOpt_formatted_bounds(bounds):
     """ Create dictionary with GPyOpt format for bounds """

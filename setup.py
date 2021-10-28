@@ -17,7 +17,7 @@ REQUIREMENTS = [
     "pyscf>=1.7.6.post1",
 ]
 
-with open(PATH / "src" / "__init__.py") as fp:
+with open(PATH / "amcess" / "__init__.py") as fp:
     for line in fp.readlines():
         if line.startswith("__version__ = "):
             VERSION = line.split("=", 1)[-1].replace('"', "").strip()
@@ -38,7 +38,7 @@ setup(
     version="0.1.0",
     author="Edison Florez",
     author_email="edisonffhc@gmail.com",
-    packages=["src"],
+    packages=["amcess"],
     scripts=["main.py"],
     url="http://pypi.python.org/pypi/amcess/",
     license="The MIT License",

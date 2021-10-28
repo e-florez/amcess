@@ -9,7 +9,7 @@ from scipy.optimize._dual_annealing import (EnergyState, LocalSearchWrapper,
                                             VisitingDistribution)
 
 # fmt: on
-from src.ascec_criterion import Ascec
+from amcess.ascec_criterion import Ascec
 
 
 def solve_dual_annealing(

@@ -1,23 +1,26 @@
 import random
 import sys
 
-
 from scipy.optimize import shgo
 
-from src.base_molecule import Cluster
-from src.heisenberg import hamiltonian_pyscf
-from src.m_dual_annealing import solve_dual_annealing
+import amcess.electronic_energy as ee
+from amcess.base_molecule import Cluster
+from amcess.m_dual_annealing import solve_dual_annealing
 
 
 def overlaping(_system_object):
-    """[summary]
+    """
     Confirm that the molecules aren't overlaping
 
-    Args:
-        _system_object ([Object]): Molecule object
+    Parameters
+    ----------
+        _system_object : object
+            Cluster object
 
-    Returns:
-        fragments [dictionary]: Input for Molecule Class
+    Returns
+    -------
+        fragments : dictionary
+            Input for Cluster class
 
     Print warning when there is overlaping
     """
@@ -37,8 +40,7 @@ def overlaping(_system_object):
                     Cluster(_system_object.get_molecule(j))
                     .translate(0, r, r, r)
                     .rotate(0, r, r, r)
-                    .coordinates
-                )
+                ).get_molecule(0)
                 message = (
                     "Center of Mass of the fragments "
                     + str(i)
@@ -56,6 +58,30 @@ def overlaping(_system_object):
 
 
 class SearchConfig:
+    """
+    Interface to articulate the cluster object with type of search
+    and the calculation of energy
+
+    Parameters
+    ----------
+        system_object : object
+            Object made with the Cluster class
+        search_methodology : int
+            Integer associated with type of searching
+        basis : string
+            Label of bases set
+        program_electronic_structure : int
+            Integer associated with the program to make the
+            electronic structure calculations
+        outxyz : string
+            Name of the output xyz with coordinates of the
+            configurations accepts
+
+    Returns
+    -------
+        Output xyz with coordinates and electronic structure
+    """
+
     def __init__(
         self,
         system_object=None,
@@ -94,6 +120,7 @@ class SearchConfig:
         # Siguiendo propuesta de Juan, con ediciones, para definir el bounds
         # al parcer con este bounds no se alejan las moleculas en shgo pero
         # con dual_annealing no se evita todavía que se alejen
+        # TODO Remplazar por el bounds definido por la clase Cluster
         sphere_radius = self._system_object.total_atoms * 1.5 * 0.5
         discretization = sphere_radius / 1.6
         bound_translate = [
@@ -115,6 +142,7 @@ class SearchConfig:
         return self._bounds
 
     def search_name(self, search_name):
+        """Say what type of searching is used"""
         if self._search_methodology == 1:
             return "dual_annealing from Scipy"
         if self._search_methodology == 2:
@@ -123,10 +151,27 @@ class SearchConfig:
             return "Bayesiana"
 
     def program_cost_function(self, _program_calculate_cost_function):
+        """
+        Assign the name of the cost function, which is associated with
+        determined program to calculate the energy of the electronic
+        structure
+
+        Parameters
+        ----------
+            _program_calculate_cost_function ([type]): [description]
+
+        Returns
+        -------
+            called
+            name of the function cost which associated with a specify
+            program
+
+        """
         if _program_calculate_cost_function == 1:
-            return hamiltonian_pyscf
+            return ee.hf_pyscf
 
     def run(self, **kwargs):
+        """ """
         if self._search_methodology == 1:
             print("*** Minimization: Dual Annealing ***")
             self.da(**kwargs)
@@ -135,6 +180,10 @@ class SearchConfig:
             self.shgo(**kwargs)
 
     def da(self, **kwargs):
+        """
+        Execute solve dual annealing to search candidate structure
+        and open output file
+        """
         with open(self._outxyz, "w") as outxyz:
             self._search = solve_dual_annealing(
                 self._func,
@@ -150,6 +199,10 @@ class SearchConfig:
             )
 
     def shgo(self, **kwargs):
+        """
+        Execute solve shgo to search candidate structure
+        and open output file
+        """
         with open(self._outxyz, "w") as outxyz:
             self._search_methodology = 2
 
