@@ -68,5 +68,7 @@ def Himmelblau(x, T=None, *args):
     """
     # !function is not good to analyze ascec criterio,
     # !because it's very uniform
-    if np.shape(x) == (1, 2): x = np.reshape(x, 2)
+    # reshape is required when using bayesian optimization
+    if np.shape(x) == (1, 2):
+        x = np.reshape(x, 2)
     return (x[0] ** 2 + x[1] - 11) ** 2 + (x[0] + x[1] ** 2 - 7) ** 2

@@ -3,19 +3,49 @@ import numpy as np
 from scipy._lib._util import check_random_state
 from scipy.optimize import OptimizeResult
 
+
 def GPyOpt_formatted_bounds(bounds):
     """ Create dictionary with GPyOpt format for bounds """
-    return [dict(zip(['name', 'type', 'domain', 'dimensionality'], 
-                     ['x' + str(i), 'continuous', bound, 1])) for i, bound in enumerate(bounds)]
+    return [dict(zip(['name', 'type', 'domain', 'dimensionality'],
+                     ['x' + str(i), 'continuous', bound, 1]))
+            for i, bound in enumerate(bounds)]
 
-def solve_gaussian_processes(
-    func, 
-    bounds,
-    NT,
-    seed=None,
-    gp_parameters={},
-    ):
-    """Find the global minimum of a function using Bayesian Optimization 
+
+def define_run_optimization_args(gp_params):
+    """Define arguments for run_optimization method. If no values are
+    given by user, it returns default values.
+
+    Parameters
+    ----------
+    gp_params : dictionary
+        parameters given by user
+
+    Returns
+    -------
+    dictionary
+        output with model parameters
+    """
+    default_runopt = {'save_models_parameters': False,
+                      'evaluations_file': None,
+                      'models_file': None}
+
+    runopt_args = {}
+    for key, value in default_runopt.items():
+        if key in gp_params.keys():
+            runopt_args[key] = gp_params[key]
+        else:
+            runopt_args[key] = value
+
+    return runopt_args
+
+
+def solve_gaussian_processes(func,
+                             bounds,
+                             NT,
+                             seed=None,
+                             gp_params={},
+                             ):
+    """Find the global minimum of a function using Bayesian Optimization
     with Gaussian Processes [1].
 
             Example:
@@ -44,14 +74,14 @@ def solve_gaussian_processes(
             for repeatable minimizations. The random numbers generated
             with this seed only affect the visiting distribution function
             and new coordinates generation.
-        
+
         NT : int, optional
             The maximum number of global search iterations. Default value
             is 1000.
 
         Returns
         -------
-    [1] "Gaussian Processes for Machine Learning" C. E. Rasmussen and 
+    [1] "Gaussian Processes for Machine Learning" C. E. Rasmussen and
     C. K. I. Williams. MIT Press, 2006.
 
     Check https://sheffieldml.github.io/GPyOpt/ official documentation
@@ -82,42 +112,81 @@ def solve_gaussian_processes(
         raise ValueError("Bounds do not have the same dimensions")
 
     # Check values in optimization_parameters:
-    bo_keys = gp_parameters.keys()
-    if 'initer' not in bo_keys: gp_parameters['initer'] = 3*len(bounds)
-    if 'initial_design' not in bo_keys: gp_parameters['initial_design'] = 'latin'
-    if 'optimize_restarts' not in bo_keys: gp_parameters['optimize_restarts'] = 5
-    if 'xi' not in bo_keys: gp_parameters['xi'] = 0.001
-    if 'save_models_parameters' not in bo_keys: gp_parameters['save_models_parameters'] = False
-    if 'evaluations_file' not in bo_keys: gp_parameters['evaluations_file'] = None
-    if 'models_file' not in bo_keys: gp_parameters['models_file'] = None
-    if 'MCMC' not in bo_keys: gp_parameters['MCMC'] = None
+    gpyopt_keys = gp_params.keys()
+    if 'initer' not in gpyopt_keys:
+        gp_params['initer'] = 3*len(bounds)
+    if 'initial_design' not in gpyopt_keys:
+        gp_params['initial_design'] = 'latin'
+    if 'optimize_restarts' not in gpyopt_keys:
+        gp_params['optimize_restarts'] = 5
+    if 'xi' not in gpyopt_keys:
+        gp_params['xi'] = 0.001
+    if 'MCMC' not in gpyopt_keys:
+        gp_params['MCMC'] = None
+
+    # Define run_optimization parameters
+    run_optimization_args = define_run_optimization_args(gp_params)
+
     # Initialization of random Generator for reproducible runs if seed provided
-    rand_state = check_random_state(seed)
+    check_random_state(seed)
 
     # Define search space
     xbounds = GPyOpt_formatted_bounds(bounds)
-    space = GPyOpt.Design_space(space = xbounds)
-    acquisition_optimizer = GPyOpt.optimization.AcquisitionOptimizer(space)
-
+    space = GPyOpt.Design_space(
+                        space=xbounds
+                        )
+    acquisition_opt = GPyOpt.optimization.AcquisitionOptimizer(
+                        space
+                        )
     objective = GPyOpt.core.task.SingleObjective(func)
-    initial_design = GPyOpt.experiment_design.initial_design(gp_parameters['initial_design'], space, gp_parameters['initer'])
+    initial_design = GPyOpt.experiment_design.initial_design(
+                        gp_params['initial_design'],
+                        space,
+                        gp_params['initer']
+                        )
     # define model and acquisition function
-    if gp_parameters['MCMC']:
-        model = GPyOpt.models.GPModel_MCMC(exact_feval=True, verbose=False)
-        acquisition=GPyOpt.acquisitions.AcquisitionEI_MCMC(model, space, acquisition_optimizer)
+    if gp_params['MCMC']:
+        model = GPyOpt.models.GPModel_MCMC(
+                        exact_feval=True,
+                        verbose=False
+                        )
+        acquisition = GPyOpt.acquisitions.AcquisitionEI_MCMC(
+                        model,
+                        space,
+                        acquisition_opt
+                        )
     else:
-        model = GPyOpt.models.GPModel(exact_feval=True,optimize_restarts=gp_parameters['optimize_restarts'], verbose=False, ARD=True)
-        acquisition=GPyOpt.acquisitions.AcquisitionEI(model, space, acquisition_optimizer, jitter=gp_parameters['xi'])
-    evaluator = GPyOpt.core.evaluators.Sequential(acquisition)
+        model = GPyOpt.models.GPModel(
+                        exact_feval=True,
+                        optimize_restarts=gp_params['optimize_restarts'],
+                        verbose=False,
+                        ARD=True
+                        )
+        acquisition = GPyOpt.acquisitions.AcquisitionEI(
+                        model,
+                        space,
+                        acquisition_opt,
+                        jitter=gp_params['xi']
+                        )
+    evaluator = GPyOpt.core.evaluators.Sequential(
+                        acquisition
+                        )
 
     # OptimizeResult object to be returned
     optimize_res = OptimizeResult()
 
-    opt = GPyOpt.methods.ModularBayesianOptimization(model, space, objective, acquisition, evaluator, initial_design)
-    opt.run_optimization(max_iter = NT, 
-                         save_models_parameters=gp_parameters['save_models_parameters'], 
-                         evaluations_file=gp_parameters['evaluations_file'], 
-                         models_file=gp_parameters['models_file'])
+    opt = GPyOpt.methods.ModularBayesianOptimization(
+                        model,
+                        space,
+                        objective,
+                        acquisition,
+                        evaluator,
+                        initial_design
+                        )
+    opt.run_optimization(
+                        max_iter=NT,
+                        **run_optimization_args
+                        )
 
     # Setting the OptimizeResult values
     optimize_res.success = True
@@ -125,5 +194,5 @@ def solve_gaussian_processes(
     optimize_res.x = opt.x_opt
     optimize_res.fun = opt.fx_opt
     optimize_res.nfev = NT
-    
+
     return optimize_res
