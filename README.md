@@ -54,20 +54,26 @@
 Tools to explore the Potential Energy Surface (PES) for atomic and molecular 
 systems and generate candidate structures for the local and global minima.
 
-<div align="center">
-  <a href="Cluster of ibuprofen and six water molecules">
-  <img width="400" height="200" src="./docs/_static/ibu_w6_white.gif"></a>
-  <br>
-</div>
 
 <div align="center">
-  <a href="taken from: http://www.denizyuret.com/2015/03/alec-radfords-animations-for.html">
-  <img width="300" height="200" src="./docs/_static/2d_surface_1.gif"></a>
-  <img width="300" height="200" src="./docs/_static/2d_surface_2.gif"></a>
+  <a href="Molecular cluster of ibuprofen and six water molecules">
+  <img width="400" height="200" src="./docs/_static/ibu_w6_white.gif"></a>
   <br>
-  <img width="300" height="200" src="./docs/_static/2d_surface_3.gif"></a>
-  <img width="300" height="200" src="./docs/_static/2d_surface_4.gif"></a>
-  <br>  
+  Molecular cluster of ibuprofen and six water molecules
+  [<a href="www.doi.org/10.1063/1.4874258">doi: 10.1063/1.4874258</a>]
+  <br>
+</div><
+
+<div align="center">
+  <img width="300" height="200" src="./docs/_static/2d_surface_1.gif">
+  <img width="300" height="200" src="./docs/_static/2d_surface_2.gif">
+  <br>
+  <img width="300" height="200" src="./docs/_static/2d_surface_3.gif">
+  <img width="300" height="200" src="./docs/_static/2d_surface_4.gif">
+  <br> 
+  Example images taken from Deniz Yuret's blog on October 29, 2021, from an entry:
+  </br>
+  <a href="http://www.denizyuret.com/2015/03/alec-radfords-animations-for.html">Alec Radford's animations for optimization algorithms</a>
 </div>
 
 ### Description
