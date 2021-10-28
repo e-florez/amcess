@@ -93,6 +93,10 @@ dmypy.json
 tmp/
 *tmp*
 
+# pictures 
+*.jpg
+**pics/
+
 # XYL log files
 **/*.xyz
 

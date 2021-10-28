@@ -54,6 +54,22 @@
 Tools to explore the Potential Energy Surface (PES) for atomic and molecular 
 systems and generate candidate structures for the local and global minima.
 
+<div align="center">
+  <a href="Cluster of ibuprofen and six water molecules">
+  <img width="400" height="200" src="./docs/_static/ibu_w6_white.gif"></a>
+  <br>
+</div>
+
+<div align="center">
+  <a href="taken from: http://www.denizyuret.com/2015/03/alec-radfords-animations-for.html">
+  <img width="300" height="200" src="./docs/_static/2d_surface_1.gif"></a>
+  <img width="300" height="200" src="./docs/_static/2d_surface_2.gif"></a>
+  <br>
+  <img width="300" height="200" src="./docs/_static/2d_surface_3.gif"></a>
+  <img width="300" height="200" src="./docs/_static/2d_surface_4.gif"></a>
+  <br>  
+</div>
+
 ### Description
 Some of the technics implemented are:
 

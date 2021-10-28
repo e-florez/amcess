@@ -719,10 +719,10 @@ class Cluster(Molecule):
     def move_molecule(
         self,
         molecule: int = 0,
-        max_step: float = None,
-        max_rotation: float = None,
         max_closeness: int = 1.0,
         seed: int = None,
+        max_step: float = None,
+        max_rotation: float = None,
     ) -> object:
         """Moving (translating and rotating) randomly without overlapping
         any atom
