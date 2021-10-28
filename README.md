@@ -56,8 +56,7 @@ systems and generate candidate structures for the local and global minima.
 
 
 <div align="center">
-  <a href="Molecular cluster of ibuprofen and six water molecules">
-  <img width="400" height="200" src="./docs/_static/ibu_w6_white.gif"></a>
+  <img width="400" height="200" src="./docs/_static/ibu_w6_white.gif">
   <br>
   Molecular cluster of ibuprofen and six water molecules
   [<a href="www.doi.org/10.1063/1.4874258">doi: 10.1063/1.4874258</a>]
@@ -71,8 +70,9 @@ systems and generate candidate structures for the local and global minima.
   <img width="300" height="200" src="./docs/_static/2d_surface_3.gif">
   <img width="300" height="200" src="./docs/_static/2d_surface_4.gif">
   <br> 
-  Example images taken from Deniz Yuret's blog on October 29, 2021, from an entry:
-  </br>
+  Example images taken from Deniz Yuret's blog on October 29, 2021, 
+  <br>
+  from:
   <a href="http://www.denizyuret.com/2015/03/alec-radfords-animations-for.html">Alec Radford's animations for optimization algorithms</a>
 </div>
 
