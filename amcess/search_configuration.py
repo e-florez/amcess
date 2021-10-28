@@ -3,10 +3,9 @@ import sys
 
 import scipy
 from scipy.optimize import shgo
-import numpy as np
 
 import amcess.electronic_energy as ee
-from amcess.base_molecule import Cluster, Molecule
+from amcess.base_molecule import Cluster
 from amcess.m_dual_annealing import solve_dual_annealing
 
 
@@ -119,7 +118,7 @@ class SearchConfig:
 
         self._outxyz = outxyz
 
-        if system_object._sphere_radius == None:
+        if system_object._sphere_radius is None:
             system_object.spherical_contour_cluster(tolerance_contour_radius)
 
         bound_translate = [
@@ -144,7 +143,7 @@ class SearchConfig:
     def bounds(self):
         return self._bounds
 
-    @bounds.setter()
+    @bounds.setter
     def bounds(self, new_bounds):
         if len(new_bounds) != len(self._bounds):
             raise ValueError(
@@ -159,7 +158,7 @@ class SearchConfig:
     def output_name(self):
         return self._output_name
 
-    @output_name.setter()
+    @output_name.setter
     def output_name(self, new_name_output):
         if isinstance(new_name_output, str):
             raise TypeError(
@@ -173,7 +172,7 @@ class SearchConfig:
     def search_name(self):
         return self._search_methodology
 
-    @search_name.setter()
+    @search_name.setter
     def search_name(self, change_search_methodology):
         if isinstance(change_search_methodology, int):
             raise TypeError(
@@ -190,7 +189,7 @@ class SearchConfig:
     def bases_set(self):
         return self._bases_set
 
-    @bases_set.setter()
+    @bases_set.setter
     def bases_set(self, new_bases_set):
         if isinstance(new_bases_set, str):
             raise TypeError(
