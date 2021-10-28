@@ -157,11 +157,11 @@ Workflow:
 ...
 
 ### Licence
-
+GNU General Public License
 ...
 
 ### Authors and Acknowledgment
-Main author: Alejandra Mendez, Juan Jose Aucar, Daniel Bajac, César Ibargüen, Andy Zapata, Edison Florez (_edisonffh@mail.com_)
+Main authors: Alejandra Mendez, Juan Jose Aucar, Daniel Bajac, César Ibargüen, Andy Zapata, Edison Florez (_edisonffh@mail.com_)
 
 ### Project Status
 
