@@ -1,25 +1,99 @@
 
-<!-- <p align="center">
-  <a href=https://www.python.org/downloads/release/python-390/>
-  <img src=https://img.shields.io/badge/python-3.9-blue.svg alt="Python3.9"></a>
-</p> -->
-
-
-[![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-390/)
+<!-- [![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-390/)
 ![Gitlab pipeline status](https://img.shields.io/gitlab/pipeline/ADanianZE/ascec/main?style=plastic)
 [![pipeline status](https://gitlab.com/ADanianZE/ascec/badges/main/pipeline.svg)](https://gitlab.com/ADanianZE/ascec/-/commits/main)
 ![Gitlab code coverage](https://img.shields.io/gitlab/coverage/ADanianZE/ascec/main?style=plastic)
+[![Coverage Status](https://coveralls.io/repos/gitlab/ADanianZE/ascec/badge.svg?branch=main)](https://coveralls.io/gitlab/ADanianZE/ascec?branch=main)
 [![coverage report](https://gitlab.com/ADanianZE/ascec/badges/main/coverage.svg)](https://gitlab.com/ADanianZE/ascec/-/commits/main)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gl/ADanianZE%2Fascec/main?filepath=workflow%2F01_importing_atoms_and_molecules.ipynb)
 ![GitLab tag (latest by date)](https://img.shields.io/gitlab/v/tag/ADanianZE/ascec?style=plastic)
 [![mypy: checked](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-![Pod License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Pod License](https://img.shields.io/badge/license-MIT-blue.svg)  -->
 
-# Atomi and Molecular Cluster Energy Surface Sampler (AMCESS)
+<!-- ![Atomic and Molecular Cluster Energy Surface Sampler](./docs/_static/amcess_logo.png) -->
+
+
+<div align="center">
+  <a href=http://mypy-lang.org/>
+  <img src="http://www.mypy-lang.org/static/mypy_badge.svg"></a>
+  <a href=https://github.com/psf/black>
+  <img src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
+  <br>
+  <a href=https://www.python.org/downloads/release/python-390/>
+  <img src=https://img.shields.io/badge/python-3.9-blue.svg></a>
+  <a href=https://img.shields.io/badge/license-MIT-blue.svg>
+  <img src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
+  <a href=https://mybinder.org/v2/gl/ADanianZE%2Fascec/main?filepath=workflow%2F01_importing_atoms_and_molecules.ipynb>
+  <img src="https://mybinder.org/badge_logo.svg"></a>
+  <br>  
+  <a href=https://img.shields.io/gitlab/pipeline/ADanianZE/ascec/main?style=plastic>
+  <img src="https://img.shields.io/gitlab/pipeline/ADanianZE/ascec/main?style=plastic"></a>
+  <a href=https://gitlab.com/ADanianZE/ascec/-/commits/main>
+  <img src="https://gitlab.com/ADanianZE/ascec/badges/main/pipeline.svg"></a>
+  <a href=https://img.shields.io/gitlab/coverage/ADanianZE/ascec/main?style=plastic>
+  <img src="https://img.shields.io/gitlab/coverage/ADanianZE/ascec/main?style=plastic"></a>
+  <a href=https://coveralls.io/gitlab/ADanianZE/ascec?branch=main>
+  <img src="https://coveralls.io/repos/gitlab/ADanianZE/ascec/badge.svg?branch=main"></a>
+</div>
+
+---
+
+<div align="center">
+  <a href="Atomic and Molecular Cluster Energy Surface Sampler">
+  <img width="400" height="200" src="./docs/_static/amcess_logo.png"></a>
+  <br>
+</div>
+
+---
+
+<div align="center">
+  <h1> Atomic and Molecular Cluster Energy Surface Sampler (AMCESS) </h1>
+</div>
+
+Tools to explore the Potential Energy Surface (PES) for atomic and molecular 
+systems and generate candidate structures for the local and global minima.
 
 
 
+<div align="center">
+  <img width="200" height="80" src="./docs/_static/ibuprofen.png" VSPACE=50 HSPACE=10>
+  <img width="350" height="200" src="./docs/_static/ibu_w6_white.gif" HSPACE=20>
+  <br>
+  Molecular cluster of ibuprofen and six water molecules
+  [<a href="http://www.doi.org/10.1063/1.4874258">doi: 10.1063/1.4874258</a>]
+  <br>
+  <br>
+</div>
+
+<div align="center">
+  <img width="300" height="200" src="./docs/_static/2d_surface_1.gif">
+  <img width="300" height="200" src="./docs/_static/2d_surface_2.gif">
+  <br>
+  <img width="300" height="200" src="./docs/_static/2d_surface_3.gif">
+  <img width="300" height="200" src="./docs/_static/2d_surface_4.gif">
+  <br> 
+  Example images taken from Deniz Yuret's blog on October 29, 2021 
+  <br>
+  from:
+  <a href="http://www.denizyuret.com/2015/03/alec-radfords-animations-for.html">Alec Radford's animations for optimization algorithms</a>
+</div>
+
+### Description
+Some of the technics implemented are:
+
+ * Stochastic
+      * Simulated Annealing (Metropolis-Monte Carlo)
+      * Dual Annealing
+* Bayesian Optimization
+
+To compute the energy (cost-function), one could use some of these 
+quantum chemistry packages:
+
+- Non Relativistic: NWChem, Gaussian, DALTON,
+GAMESS
+
+- Relativistic: DIRAC, ADF
 
 ### Technical Documentation
 Technical documents behind this project can be accessed [here](https://adanianze.gitlab.io/ascec).
@@ -52,8 +126,15 @@ AMCESS is writyten for **Python 3.9**
 
 
 4. Run AMCESS:
-
-    ```python main.py```
+    
+    ```
+    >>>pip install -e .
+    Installing collected packages: amcess
+    Running setup.py develop for amcess
+    Successfully installed amcess
+    >>>from amcess.base_molecule import Molecule, Cluster
+    ...
+    ```
 
 ### Usage
 
@@ -66,18 +147,20 @@ Workflow:
       - Notebook ([binder](https://mybinder.org/v2/gl/ADanianZE%2Fascec/main?filepath=workflow%2F02_move_rotate_molecules.ipynb)): `02_move_rotate_molecules.ipynb` 
 3. Moving Molecules randomly from a Cluster. 
       - Notebook ([binder](https://mybinder.org/v2/gl/ADanianZE%2Fascec/main?filepath=workflow%2F03_move_rotate_cluster.ipynb)): `03_move_rotate_cluster.ipynb` 
-
+4. Freezing any molecule and redefine its sphere center. 
+      - Notebook ([binder](https://mybinder.org/v2/gl/ADanianZE%2Fascec/main?filepath=workflow%2F04_freeze_molecule_redefine_center.ipynb)): `04_freeze_molecule_redefine_center.ipynb` 
+5. Initialize a cluster avoiding atomic overlapping
+      - Notebook ([binder](https://mybinder.org/v2/gl/ADanianZE%2Fascec/main?filepath=workflow%2F05_initialize_cluster_and_move_molecule.ipynb)): `05_initialize_cluster_and_move_molecule.ipynb` 
 
 ### Contributing
 
 ...
 
 ### Licence
-
-...
+GNU General Public License
 
 ### Authors and Acknowledgment
-Main author: Alejandra Mendez, Juan Jose Aucar, Daniel Bajac, César Ibargüen, Andy Zapata, Edison Florez (_edisonffh@mail.com_)
+Main authors: Alejandra Mendez, Juan Jose Aucar, Daniel Bajac, César Ibargüen, Andy Zapata, Edison Florez (_edisonffh@mail.com_)
 
 ### Project Status
 
