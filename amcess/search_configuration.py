@@ -88,7 +88,7 @@ class SearchConfig:
         self,
         system_object=None,
         search_methodology=1,
-        basis="sto-3g",
+        bases="sto-3g",
         program_electronic_structure=1,
         tolerance_contour_radius=1,
         outxyz="configurations.xyz",
@@ -108,10 +108,8 @@ class SearchConfig:
         self._system_object = system_object
         #
         self._search_methodology = search_methodology
-        self._search_name = self.search_name(self._search_methodology)
 
-        # cost function
-        self._basis = basis
+        self._bases = bases
         self._program_calculate_cost_function = program_electronic_structure
         self._func = self.program_cost_function(
             self._program_calculate_cost_function
@@ -139,17 +137,72 @@ class SearchConfig:
             *overlaping(self._system_object).values()
         )
 
+    # ===============================================================
+    # PROPERTIES
+    # ===============================================================
+    @property
     def bounds(self):
         return self._bounds
 
-    def search_name(self, search_name):
-        """Say what type of searching is used"""
-        if self._search_methodology == 1:
-            return "dual_annealing from Scipy"
-        if self._search_methodology == 2:
-            return "shgo from Scipy"
-        if self._search_methodology == 3:
-            return "Bayesiana"
+    @bounds.setter()
+    def bounds(self, new_bounds):
+        if len(new_bounds) != len(self._bounds):
+            raise ValueError(
+                "\n\nArray dimensions insufficient: "
+                f"\ndimensions of old bounds: '{len(self._bounds)}'\n"
+                f"\ndimensions of new bounds: '{len(new_bounds)}'\n"
+            )
+
+        self._bounds = new_bounds
+
+    @property
+    def output_name(self):
+        return self._output_name
+
+    @output_name.setter()
+    def output_name(self, new_name_output):
+        if isinstance(new_name_output, str):
+            raise TypeError(
+                "\n\nThe new name to output is not a string"
+                f"\nplease, check: '{type(new_name_output)}'\n"
+            )
+
+        self._outxyz = new_name_output
+
+    @property
+    def search_name(self):
+        return self._search_methodology
+
+    @search_name.setter()
+    def search_name(self, change_search_methodology):
+        if isinstance(change_search_methodology, int):
+            raise TypeError(
+                "\n\nThe search methodology is associated with a integer \n"
+                "1 -> Dual Annealing \n"
+                "2 -> SHGO \n"
+                "3 -> Bayessiana \n"
+                f"\nplease, check: '{type(change_search_methodology)}'\n"
+            )
+
+        self._search_methodology = change_search_methodology
+
+    @property
+    def bases_set(self):
+        return self._bases_set
+
+    @bases_set.setter()
+    def bases_set(self, new_bases_set):
+        if isinstance(new_bases_set, str):
+            raise TypeError(
+                "\n\nThe new name to output is not a string"
+                f"\nplease, check: '{type(new_bases_set)}'\n"
+            )
+
+        self._bases_set = new_bases_set
+
+    # ===============================================================
+    # Methods
+    # ===============================================================
 
     def program_cost_function(self, _program_calculate_cost_function):
         """
@@ -174,10 +227,8 @@ class SearchConfig:
     def run(self, **kwargs):
         """ """
         if self._search_methodology == 1:
-            print("*** Minimization: Dual Annealing ***")
             self.da(**kwargs)
         if self._search_methodology == 2:
-            print("*** Minimization: SHGO from Scipy ***")
             self.shgo(**kwargs)
 
     def da(self, **kwargs):
@@ -185,18 +236,19 @@ class SearchConfig:
         Execute solve dual annealing to search candidate structure
         and open output file
         """
+        print("*** Minimization: Dual Annealing ***")
         with open(self._outxyz, "w") as outxyz:
             self._search = solve_dual_annealing(
                 self._func,
                 self._bounds,
                 self._system_object,
                 args=(
-                    self._basis,
+                    self._bases,
                     self._system_object,
                     outxyz,
                     self._search_methodology,
                 ),
-                **kwargs
+                **kwargs,
             )
 
     def shgo(self, **kwargs):
@@ -204,6 +256,7 @@ class SearchConfig:
         Execute solve shgo to search candidate structure
         and open output file
         """
+        print("*** Minimization: SHGO from Scipy ***")
         with open(self._outxyz, "w") as outxyz:
             self._search_methodology = 2
 
@@ -212,10 +265,10 @@ class SearchConfig:
                 bounds=self._bounds,
                 sampling_method="sobol",
                 args=(
-                    self._basis,
+                    self._bases,
                     self._system_object,
                     outxyz,
                     self._search_methodology,
                 ),
-                **kwargs
+                **kwargs,
             )
