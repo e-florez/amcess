@@ -69,7 +69,7 @@ class SearchConfig:
             Object made with the Cluster class
         search_methodology : int
             Integer associated with type of searching
-        basis : string
+        bases : string
             Label of bases set
         program_electronic_structure : int
             Integer associated with the program to make the

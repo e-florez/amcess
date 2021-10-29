@@ -1,3 +1,5 @@
+import os
+
 import pytest
 from amcess.base_molecule import Cluster
 from amcess.electronic_energy import hf_pyscf
@@ -48,4 +50,5 @@ def test_electronic_energy_with_hf_pyscf(
         e = hf_pyscf(
             x0, bases, Cluster(cluster1, cluster2), outxyz, type_searching
         )
+    os.remove("output.xyz")
     assert e - expected_energy < 1.0e-7
