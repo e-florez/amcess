@@ -66,7 +66,7 @@ def test_cluster_object_elements_into_search_conf(
 
 
 @pytest.mark.parametrize(
-    "cluster1, cluster2, expected_basis",
+    "cluster1, cluster2, expected_bases",
     [
         (
             [("H", 0, 0, 0), ("F", 0.917, 0, 0)],
@@ -75,7 +75,7 @@ def test_cluster_object_elements_into_search_conf(
         ),
     ],
 )
-def test_search_conf_basis_default(cluster1, cluster2, expected_basis):
+def test_search_conf_basis_default(cluster1, cluster2, expected_bases):
     """[summary]
     Test: Basis set by default (sto-3g)
     Args:
@@ -86,4 +86,4 @@ def test_search_conf_basis_default(cluster1, cluster2, expected_basis):
         expected_basis ([string]): basis set
     """
     search_config = SearchConfig(Cluster(cluster1, cluster2))
-    assert search_config._basis == expected_basis
+    assert search_config._bases == expected_bases

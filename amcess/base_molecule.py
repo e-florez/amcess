@@ -601,6 +601,31 @@ class Cluster(Molecule):
     # ===============================================================
     # METHODS
     # ===============================================================
+    def spherical_contour_cluster(self, tolerance):
+        """
+        Define a spherical contour that it contains our cluster
+
+        Parameters
+        ----------
+            tolerance : float
+                Tolerance with the radius between the mass center to the
+                furthest atom
+        """
+
+        max_distance_cm = 0.0
+
+        self._sphere_center = Molecule(self.atoms).center_of_mass
+
+        for xyz in self.coordinates:
+
+            temp_r = np.linalg.norm(
+                np.asarray(self._sphere_center) - np.asarray(xyz)
+            )
+            if temp_r > max_distance_cm:
+                max_distance_cm = temp_r
+
+        self._sphere_radius = max_distance_cm + tolerance  # A
+
     @staticmethod
     def overlapping(
         first_coordinates: list,

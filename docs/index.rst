@@ -10,7 +10,7 @@
    :alt: Atomic and Molecular Cluster Energy Surface Sample (AMCESS)
    :align: center
 
-	
+
 Atomic and Molecular Cluster Energy Surface Sample (AMCESS)
 ============================================================
 
