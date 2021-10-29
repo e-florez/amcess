@@ -22,7 +22,7 @@ sys.path.insert(0, os.path.abspath(".."))
 
 project = "AMCESS"
 copyright = "2021, Edison Florez"
-author = "Edison Florez"
+author = "Edison Florez, Andy Zapata"
 
 # The short X.Y version
 version = ""
