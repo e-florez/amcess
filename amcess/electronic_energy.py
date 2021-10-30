@@ -1,12 +1,11 @@
 import numpy as np
 from pyscf import gto, scf
 
-import amcess.search_configuration as SC
 from amcess.base_molecule import Cluster
 
 
 class ElectronicEnergy:
-    def __init__(self, object_system) -> None:
+    def __init__(self, object_system, sphere_center, sphere_radius) -> None:
         """
         Class to calculate electronic energy
 
@@ -19,6 +18,8 @@ class ElectronicEnergy:
         self._object_system_initial = object_system
         self._object_system_before = object_system
         self._object_system_current = object_system
+        self._sphere_center = sphere_center
+        self._sphere_radius = sphere_radius
 
     # ===============================================================
     # PROPERTIES
@@ -86,66 +87,25 @@ def build_input_pyscf(x_random, obj_ee, type_search):
     """
 
     system_object = obj_ee._object_system_current
-    if type_search == 1:
-        # #! dual_annealing combinado con la propuesta
-        # #! de juan para bounds y restando el centro
-        # #!de masa al parecer evita que se alejen las
-        # #! las moleculas
-
-        mass_centers = np.zeros(
-            (system_object.total_molecules, 3), dtype=float
-        )
-
-        for i in range(system_object.total_molecules):
-            mass_centers[i] = system_object.get_molecule(i).center_of_mass
-
-        # #! Es para que black no me dañe el formato 0: a 0 :
-        # fmt: off
-        r_random = (
-            x_random[0: system_object.total_molecules * 3]
-            - mass_centers.reshape((system_object.total_molecules * 3))
-        )
-
-        theta_random = x_random[
-            system_object.total_molecules
-            * 3: system_object.total_molecules * 6
-        ]
-        # fmt: on
-
-        x_random = np.concatenate((r_random, theta_random))
 
     new_geom = dict()
+    # Rotate and translate
     for i in range(system_object.total_molecules):
-        if (len(system_object.get_molecule(i).symbols)) > 1:
-            # Rotate and translate
-            new_geom[i] = {
-                "atoms": system_object.rotate(
-                    i,
+        new_geom[i] = {
+            "atoms": system_object.move_molecules(
+                i,
+                (x_random[i * 3], x_random[i * 3 + 1], x_random[i * 3 + 2]),
+                (
                     x_random[(i + system_object.total_molecules) * 3],
                     x_random[(i + system_object.total_molecules) * 3 + 1],
                     x_random[(i + system_object.total_molecules) * 3 + 2],
-                )
-                .translate(
-                    i,
-                    x_random[i * 3],
-                    x_random[i * 3 + 1],
-                    x_random[i * 3 + 2],
-                )
-                .get_molecule(i)
-                .atoms
-            }
-        else:
-            # Translate
-            new_geom[i] = {
-                "atoms": system_object.get_molecule(i)
-                .translate(
-                    0,
-                    x_random[i * 3],
-                    x_random[i * 3 + 1],
-                    x_random[i * 3 + 2],
-                )
-                .atoms
-            }
+                ),
+                obj_ee._sphere_radius,
+                obj_ee._sphere_center,
+            )
+            .get_molecule(i)
+            .atoms
+        }
 
     system_object = Cluster(*new_geom.values()).initialize_cluster()
 

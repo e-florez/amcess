@@ -1,11 +1,12 @@
 import random
 import sys
 
+import numpy as np
 import scipy
 from scipy.optimize import shgo
 
 from amcess.electronic_energy import ElectronicEnergy, hf_pyscf
-from amcess.base_molecule import Cluster
+from amcess.base_molecule import Molecule, Cluster
 from amcess.m_dual_annealing import solve_dual_annealing
 
 
@@ -122,12 +123,12 @@ class SearchConfig:
 
         # Build bounds, format for scipy functions
         if system_object._sphere_radius is None:
-            system_object.spherical_contour_cluster(tolerance_contour_radius)
+            self.spherical_contour_cluster(tolerance_contour_radius)
 
         bound_translate = [
-            (-system_object.sphere_radius, system_object.sphere_radius),
-            (-system_object.sphere_radius, system_object.sphere_radius),
-            (-system_object.sphere_radius, system_object.sphere_radius),
+            (-self._sphere_radius, self._sphere_radius),
+            (-self._sphere_radius, self._sphere_radius),
+            (-self._sphere_radius, self._sphere_radius),
         ]
         bound_rotate = [(0, scipy.pi), (0, scipy.pi), (0, scipy.pi)]
         bound_translate = bound_translate * self._system_object.total_molecules
@@ -138,7 +139,9 @@ class SearchConfig:
             self._program_calculate_cost_function
         )
 
-        self._obj_ee = ElectronicEnergy(self._system_object)
+        self._obj_ee = ElectronicEnergy(
+            self._system_object, self._sphere_center, self._sphere_radius
+        )
 
     # ===============================================================
     # PROPERTIES
@@ -218,6 +221,35 @@ class SearchConfig:
         self._tolerance_contour_radius = new_tol_radius
 
     @property
+    def sphere_center(self) -> tuple:
+        return self._sphere_center
+
+    @sphere_center.setter
+    def sphere_center(self, new_center: tuple) -> None:
+        if len(new_center) != 3:
+            raise ValueError(
+                "\n\nThe Sphere center must be a tuple with three elements: "
+                "(float, float, float)"
+                f"\nplease, check: '{new_center}'\n"
+            )
+
+        self._sphere_center = new_center
+
+    @property
+    def sphere_radius(self) -> float:
+        return self._sphere_radius
+
+    @sphere_radius.setter
+    def sphere_radius(self, new_radius: float) -> None:
+        if not isinstance(new_radius, (int, float)) or new_radius < 0.9:
+            raise ValueError(
+                "\n\nThe Sphere  Radius must be larger than 1 Angstrom"
+                f"\nplease, check: '{new_radius}'\n"
+            )
+
+        self._sphere_radius = new_radius
+
+    @property
     def cost_function_ee(self):
         return self._func
 
@@ -244,6 +276,32 @@ class SearchConfig:
     # ===============================================================
     # Methods
     # ===============================================================
+
+    def spherical_contour_cluster(self, tolerance):
+        """
+        Define a spherical contour that it contains our cluster
+
+        Parameters
+        ----------
+            tolerance : float
+                Tolerance with the radius between the mass center to the
+                furthest atom
+        """
+
+        max_distance_cm = 0.0
+
+        obj_mol = Molecule(self._system_object.atoms)
+        self._sphere_center = obj_mol.center_of_mass
+
+        for xyz in self._system_object.coordinates:
+
+            temp_r = np.linalg.norm(
+                np.asarray(self._sphere_center) - np.asarray(xyz)
+            )
+            if temp_r > max_distance_cm:
+                max_distance_cm = temp_r
+
+        self._sphere_radius = max_distance_cm + tolerance  # A
 
     def program_cost_function(self, _program_calculate_cost_function):
         """

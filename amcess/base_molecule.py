@@ -452,8 +452,6 @@ class Cluster(Molecule):
 
         # fixing molecule to NOT move or rotate
         self._freeze_molecule = freeze_molecule
-
-        # boundary conditions
         self._sphere_radius = sphere_radius
         self._sphere_center = sphere_center
 
@@ -601,31 +599,6 @@ class Cluster(Molecule):
     # ===============================================================
     # METHODS
     # ===============================================================
-    def spherical_contour_cluster(self, tolerance):
-        """
-        Define a spherical contour that it contains our cluster
-
-        Parameters
-        ----------
-            tolerance : float
-                Tolerance with the radius between the mass center to the
-                furthest atom
-        """
-
-        max_distance_cm = 0.0
-
-        self._sphere_center = Molecule(self.atoms).center_of_mass
-
-        for xyz in self.coordinates:
-
-            temp_r = np.linalg.norm(
-                np.asarray(self._sphere_center) - np.asarray(xyz)
-            )
-            if temp_r > max_distance_cm:
-                max_distance_cm = temp_r
-
-        self._sphere_radius = max_distance_cm + tolerance  # A
-
     @staticmethod
     def overlapping(
         first_coordinates: list,
@@ -744,10 +717,10 @@ class Cluster(Molecule):
     def move_molecule(
         self,
         molecule: int = 0,
-        max_closeness: int = 1.0,
-        seed: int = None,
         max_step: float = None,
         max_rotation: float = None,
+        max_closeness: int = 1.0,
+        seed: int = None,
     ) -> object:
         """Moving (translating and rotating) randomly without overlapping
         any atom
@@ -824,6 +797,150 @@ class Cluster(Molecule):
                 rotation_y,
                 rotation_z,
             )
+
+            molecule_coordinates: list = new_molecule.coordinates
+
+            overlap: bool = Cluster.overlapping(
+                molecule_coordinates,
+                cluster_coordinates,
+                max_closeness=max_closeness,
+            )
+
+            if not overlap:
+                break
+
+        cluster_dict: dict = deepcopy(self.cluster_dictionary)
+        cluster_dict[molecule] = new_molecule
+
+        new_cluster = Cluster(
+            *cluster_dict.values(),
+            freeze_molecule=self.freeze_molecule,
+            sphere_radius=self.sphere_radius,
+            sphere_center=self.sphere_center,
+        )
+
+        if count < max_overlap_cycle - 1:
+            return new_cluster
+        else:
+            raise AttributeError(
+                "\n\n *** Overlapping Error ***"
+                "\nat least one atom is overlapped with a distance"
+                f" less than '{max_closeness}' Angstroms"
+                "\nfor a cluster into a sphere of radius"
+                f" '{self.sphere_radius}' Angstroms"
+                f"\nPlease, check: \n\n{new_cluster.xyz}"
+            )
+
+    def move_molecules(
+        self,
+        molecule: int = 0,
+        steps: tuple = None,
+        rotations: tuple = None,
+        sphere_radius: float = None,
+        sphere_center: tuple = None,
+        max_closeness: int = 1.0,
+        seed: int = None,
+    ) -> object:
+        """Moving (translating and rotating) randomly without overlapping
+        any atom
+
+        Parameters
+        ----------
+        molecule : int, optional
+            molecule to move randomly, by default molecule with index zero (0)
+        steps : tuple
+            values for translation in different rectangular directions
+        rotations : float, optional
+            angle for rotation in different rectangular directions
+        max_closeness : float
+            maximun closeness between any pair of atoms, by default 1.0 A
+        seed : int, optional
+            seed to initialize the random generator function, by default None
+
+        Returns
+        -------
+        object : Cluster
+            returns a Cluster object whit a molecule moved to a random place
+            without overlapping any other
+
+        Raises
+        ------
+        AttributeError : OverlappingError
+            After serching for max_overlap_cycle and no place found for the
+            molecule without overlapping any other
+        """
+        if not isinstance(max_closeness, (int, float)) or max_closeness < 0.1:
+            raise ValueError(
+                "\n\n Maximun closeness between any pair of atom must be"
+                f" larger than '0.1' Angstrom\nPlease, check '{max_closeness}'"
+            )
+
+        if not steps or not isinstance(steps, (tuple)):
+            raise ValueError(
+                "\n\n It is not define x, y, z for translation"
+                "or it is not tuple"
+                f"Please, check '{steps}'"
+            )
+
+        if not rotations or not isinstance(rotations, tuple):
+            raise ValueError(
+                "\n\n It is not define x, y, z for translation"
+                "or it is not tuple"
+                f"Please, check '{rotations}'"
+            )
+
+        molecule_to_move: Cluster = self.get_molecule(molecule)
+
+        cluster_without_molecule: Cluster = self.remove_molecule(molecule)
+        cluster_coordinates: Cluster = cluster_without_molecule.coordinates
+
+        random_gen = np.random.default_rng(seed)
+        max_overlap_cycle: int = 1000
+
+        for count in range(max_overlap_cycle):
+            if count == 0:
+                # angle between [0, max_rotation) degrees
+                rotation_x = rotations[0]
+                rotation_y = rotations[1]
+                rotation_z = rotations[2]
+
+                # moving between [-max_step, +max_step] Angstrom
+                translation_x = steps[0]
+                translation_y = steps[1]
+                translation_z = steps[2]
+            else:
+                rotation_x = random_gen.uniform() * rotations[0]
+                rotation_y = random_gen.uniform() * rotations[1]
+                rotation_z = random_gen.uniform() * rotations[2]
+
+                translation_x = random_gen.uniform() * steps[0]
+                translation_y = random_gen.uniform() * steps[1]
+                translation_z = random_gen.uniform() * steps[2]
+
+            new_molecule: Cluster = molecule_to_move.translate(
+                0,
+                translation_x,
+                translation_y,
+                translation_z,
+            )
+            vector_xyz = new_molecule.center_of_mass
+            distance = np.linalg.norm(
+                np.asarray(sphere_center) - np.asarray(vector_xyz)
+            )
+            if distance > sphere_radius:
+                new_molecule: Cluster = molecule_to_move.rotate(
+                    0,
+                    rotation_x,
+                    rotation_y,
+                    rotation_z,
+                )
+            else:
+                new_molecule.rotate(
+                    0,
+                    rotation_x,
+                    rotation_y,
+                    rotation_z,
+                )
 
             molecule_coordinates: list = new_molecule.coordinates
 
