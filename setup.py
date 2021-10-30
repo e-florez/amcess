@@ -36,8 +36,8 @@ with open("README.md", "r") as readme:
 setup(
     name="amcess",
     version="0.1.0",
-    author="Edison Florez",
-    author_email="edisonffhc@gmail.com",
+    author="Edison Florez, Andy Zapata",
+    author_email="edisonffhc@gmail.com, danianescobarv@gmail.com",
     packages=["amcess"],
     scripts=["main.py"],
     url="http://pypi.python.org/pypi/amcess/",
