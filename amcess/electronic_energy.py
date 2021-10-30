@@ -13,6 +13,10 @@ class ElectronicEnergy:
         ----------
             molecule_object : object
                 Object initialized with Molecule or Cluster class
+            sphere_center : list
+                Center of the sphere where evolve the system
+            sphere_radius : float
+                Radius of the sphere where should evolve the system
         """
 
         self._object_system_initial = object_system
@@ -53,19 +57,6 @@ class ElectronicEnergy:
     def object_system_current(self, new_object_system):
         self._object_system_before = self._object_system_current
         self._object_system_current = new_object_system
-
-    def beforeatoms(self, system):
-        """
-        Store attribute of before object made with Molecule
-
-        Args:
-            system ([type]): [description]
-
-        Returns:
-            [type]: [description]
-        """
-        self.beforeatoms.system = system or self.beforeatoms.system
-        return self.beforeatoms.system
 
 
 def build_input_pyscf(x_random, obj_ee, type_search):

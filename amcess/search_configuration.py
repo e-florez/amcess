@@ -6,57 +6,8 @@ import scipy
 from scipy.optimize import shgo
 
 from amcess.electronic_energy import ElectronicEnergy, hf_pyscf
-from amcess.base_molecule import Molecule, Cluster
+from amcess.base_molecule import Molecule
 from amcess.m_dual_annealing import solve_dual_annealing
-
-
-def overlaping(_system_object):
-    """
-    Confirm that the molecules aren't overlaping
-
-    Parameters
-    ----------
-        _system_object : object
-            Cluster object
-
-    Returns
-    -------
-        fragments : dictionary
-            Input for Cluster class
-
-    Print warning when there is overlaping
-    """
-    import warnings  # !Falta definir el tipo de warning
-
-    fragments = dict()
-    for i in range(_system_object.total_molecules - 1):
-        for j in range(i + 1, _system_object.total_molecules):
-            fragments[i] = _system_object.get_molecule(i)
-            equal_arrays = (
-                _system_object.get_molecule(i).center_of_mass
-                == _system_object.get_molecule(j).center_of_mass
-            )
-            if equal_arrays:
-                r = random.random()
-                fragments[j] = (
-                    Cluster(_system_object.get_molecule(j))
-                    .translate(0, r, r, r)
-                    .rotate(0, r, r, r)
-                ).get_molecule(0)
-                message = (
-                    "Center of Mass of the fragments "
-                    + str(i)
-                    + " and "
-                    + str(j)
-                    + " are overlapping. Then "
-                    + str(j)
-                    + " is move "
-                    + str(r)
-                )
-                warnings.warn(message)
-            else:
-                fragments[j] = _system_object.get_molecule(j)
-    return fragments
 
 
 class SearchConfig:
