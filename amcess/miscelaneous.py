@@ -1,1 +1,1 @@
-from .math_cost_function import Himmelblau
+from .math_cost_function import Himmelblau # noqa

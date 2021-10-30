@@ -1,8 +1,6 @@
 import pytest
 import numpy as np
-import amcess.m_GPyOpt
-# import sys
-# sys.path.append("../amcess")
+from amcess.minimization import solve_gaussian_processes
 
 
 @pytest.mark.parametrize(
@@ -39,10 +37,10 @@ def test_solve_gaussian_processes(cost_function,
                                   expected_minima):
     """Test for a function to find root using Gaussian Processes
     """
-    seed = np.random.seed(666)
+    seed = 666
     gp_params = {'initer': initer, 'maxiter': maxiter}
-    opt = amcess.m_GPyOpt.solve_gaussian_processes(cost_function,
-                                                   bounds,
-                                                   seed,
-                                                   gp_params)
+    opt = solve_gaussian_processes(cost_function,
+                                   bounds,
+                                   seed=seed,
+                                   gp_params=gp_params)
     assert (opt.fun - expected_minima) < 1e-6

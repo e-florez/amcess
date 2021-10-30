@@ -67,16 +67,9 @@ def solve_gaussian_processes(func,
             Bounds for variables. (min, max) pairs for each element in x,
             defining bounds for the objective function parameter.
 
-        seed : None, int, numpy.random.Generator,
+        iseed : None, int
 
-            numpy.random.RandomState}, optional
-            If seed is None (or np.random), the numpy.random.RandomState
-            singleton is used. If seed is an int, a new RandomState instance
-            is used, seeded with seed. If seed is already a Generator or
-            RandomState instance then that instance is used. Specify seed
-            for repeatable minimizations. The random numbers generated
-            with this seed only affect the visiting distribution function
-            and new coordinates generation.
+            If seed is None ...
 
         gp_params : dictionary
 
@@ -95,6 +88,8 @@ def solve_gaussian_processes(func,
 
     if not bounds:
         raise Exception("\n\n *** ERROR: No 'bounds' founds\n")
+    if seed is None:
+        seed = np.random.seed(1)
 
     lu = list(zip(*bounds))
     lower, upper = np.array(lu[0]), np.array(lu[1])
@@ -132,24 +127,27 @@ def solve_gaussian_processes(func,
     # Define run_optimization parameters
     run_optimization_args = define_run_optimization_args(gp_params)
 
-    # Initialization of random Generator for reproducible runs if seed provided
-    check_random_state(seed)
-
     # Define search space
     xbounds = GPyOpt_formatted_bounds(bounds)
     space = GPyOpt.Design_space(
                         space=xbounds
                         )
-    acquisition_opt = GPyOpt.optimization.AcquisitionOptimizer(
-                        space
-                        )
+
+    # Define function to be minimized
     objective = GPyOpt.core.task.SingleObjective(func)
+
+    # Define initial evaluations (random seed must be fixed before)
+    np.random.seed(seed)
     initial_design = GPyOpt.experiment_design.initial_design(
                         gp_params['initial_design'],
                         space,
                         gp_params['initer']
                         )
+
     # define model and acquisition function
+    acquisition_opt = GPyOpt.optimization.AcquisitionOptimizer(
+                        space
+                        )
     if gp_params['MCMC']:
         model = GPyOpt.models.GPModel_MCMC(
                         exact_feval=True,
@@ -203,11 +201,7 @@ def solve_gaussian_processes(func,
     optimize_res.nfev = gp_params['maxiter']
     optimize_res.update({'X': opt.X,
                          'Y': opt.Y,
-                         'plot_acquisition': opt.plot_acquisition, 
+                         'plot_acquisition': opt.plot_acquisition,
                          'plot_convergence': opt.plot_convergence})
 
     return optimize_res
-
-
-    def plot_optimization(optimize_res):
-        pass
