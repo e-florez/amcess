@@ -5,7 +5,12 @@ from amcess.base_molecule import Cluster
 
 class ElectronicEnergy:
     def __init__(
-        self, object_system, sphere_center, sphere_radius, max_closeness, seed
+        self,
+        object_system: object,
+        sphere_center: tuple,
+        sphere_radius: float,
+        max_closeness: float = 1.0,
+        seed: int = None,
     ) -> None:
         """
         Class to calculate electronic energy
