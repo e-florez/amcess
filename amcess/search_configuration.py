@@ -308,12 +308,7 @@ class SearchConfig:
                 self._func,
                 self._bounds,
                 self._system_object,
-                args=(
-                    self._bases,
-                    self._obj_ee,
-                    outxyz,
-                    self._search_methodology,
-                ),
+                args=(self._bases, self._obj_ee, outxyz),
                 **kwargs,
             )
 
@@ -336,11 +331,6 @@ class SearchConfig:
                 self._func,
                 bounds=self._bounds,
                 sampling_method="sobol",
-                args=(
-                    self._bases,
-                    self._obj_ee,
-                    outxyz,
-                    self._search_methodology,
-                ),
+                args=(self._bases, self._obj_ee, outxyz),
                 **kwargs,
             )

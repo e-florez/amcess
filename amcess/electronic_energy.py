@@ -64,7 +64,7 @@ class ElectronicEnergy:
         self._object_system_current = new_object_system
 
 
-def build_input_pyscf(x_random, obj_ee, type_search):
+def build_input_pyscf(x_random, obj_ee):
     """
     Build input to pyscf
 
@@ -134,8 +134,7 @@ def hf_pyscf(x, *args, ncall=[0]):
             Possible new positions and angles
         shgo #?
         args : list
-            basis set, Object of Molecule, name output xyz,
-            type optimizaiton
+            basis set, Object of Molecule, name output xyz
 
     Returns
     -------
@@ -144,7 +143,7 @@ def hf_pyscf(x, *args, ncall=[0]):
 
     """
 
-    input_pyscf, new_object = build_input_pyscf(x, args[1], args[3])
+    input_pyscf, new_object = build_input_pyscf(x, args[1])
 
     mol = gto.M(
         atom=input_pyscf,
