@@ -1,6 +1,5 @@
 import GPyOpt
 import numpy as np
-from scipy._lib._util import check_random_state
 from scipy.optimize import OptimizeResult
 
 
