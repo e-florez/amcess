@@ -40,10 +40,9 @@ def test_solve_gaussian_processes(cost_function,
     """Test for a function to find root using Gaussian Processes
     """
     seed = np.random.seed(666)
-    gp_params = {'initer': initer}
+    gp_params = {'initer': initer, 'maxiter': maxiter}
     opt = amcess.m_GPyOpt.solve_gaussian_processes(cost_function,
                                                    bounds,
-                                                   maxiter,
                                                    seed,
                                                    gp_params)
     assert (opt.fun - expected_minima) < 1e-6

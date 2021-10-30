@@ -5,14 +5,17 @@ from scipy.optimize import OptimizeResult
 
 
 def GPyOpt_formatted_bounds(bounds):
-    """ Create dictionary with GPyOpt format for bounds """
+    """
+    Create dictionary with GPyOpt format for bounds
+    """
     return [dict(zip(['name', 'type', 'domain', 'dimensionality'],
                      ['x' + str(i), 'continuous', bound, 1]))
             for i, bound in enumerate(bounds)]
 
 
 def define_run_optimization_args(gp_params):
-    """Define arguments for run_optimization method. If no values are
+    """
+    Define arguments for run_optimization method. If no values are
     given by user, it returns default values.
 
     Parameters
@@ -41,11 +44,11 @@ def define_run_optimization_args(gp_params):
 
 def solve_gaussian_processes(func,
                              bounds,
-                             NT,
                              seed=None,
                              gp_params={},
                              ):
-    """Find the global minimum of a function using Bayesian Optimization
+    """
+    Find the global minimum of a function using Bayesian Optimization
     with Gaussian Processes [1].
 
             Example:
@@ -64,7 +67,7 @@ def solve_gaussian_processes(func,
             Bounds for variables. (min, max) pairs for each element in x,
             defining bounds for the objective function parameter.
 
-        seed : {None, int, numpy.random.Generator,
+        seed : None, int, numpy.random.Generator,
 
             numpy.random.RandomState}, optional
             If seed is None (or np.random), the numpy.random.RandomState
@@ -75,23 +78,23 @@ def solve_gaussian_processes(func,
             with this seed only affect the visiting distribution function
             and new coordinates generation.
 
-        NT : int, optional
-            The maximum number of global search iterations. Default value
-            is 1000.
+        gp_params : dictionary
+
+            Dictionary with Gaussian process parameters
+             - initer : Number of initial evaluations (prior)
+             - maxiter : Maximum number of iterations
+            For more specific parameters, see [2]
 
         Returns
         -------
     [1] "Gaussian Processes for Machine Learning" C. E. Rasmussen and
     C. K. I. Williams. MIT Press, 2006.
 
-    Check https://sheffieldml.github.io/GPyOpt/ official documentation
-"""
+    [2] GPyOpt official documentation: https://sheffieldml.github.io/GPyOpt/
+    """
 
     if not bounds:
         raise Exception("\n\n *** ERROR: No 'bounds' founds\n")
-
-    if not NT:
-        NT = 10*len(bounds)
 
     lu = list(zip(*bounds))
     lower, upper = np.array(lu[0]), np.array(lu[1])
@@ -115,6 +118,8 @@ def solve_gaussian_processes(func,
     gpyopt_keys = gp_params.keys()
     if 'initer' not in gpyopt_keys:
         gp_params['initer'] = 3*len(bounds)
+    if 'maxiter' not in gpyopt_keys:
+        gp_params['maxiter'] = 10*len(bounds)
     if 'initial_design' not in gpyopt_keys:
         gp_params['initial_design'] = 'latin'
     if 'optimize_restarts' not in gpyopt_keys:
@@ -172,9 +177,6 @@ def solve_gaussian_processes(func,
                         acquisition
                         )
 
-    # OptimizeResult object to be returned
-    optimize_res = OptimizeResult()
-
     opt = GPyOpt.methods.ModularBayesianOptimization(
                         model,
                         space,
@@ -184,15 +186,28 @@ def solve_gaussian_processes(func,
                         initial_design
                         )
     opt.run_optimization(
-                        max_iter=NT,
+                        max_iter=gp_params['maxiter'],
                         **run_optimization_args
                         )
 
     # Setting the OptimizeResult values
+    optimize_res = OptimizeResult()
+    optimize_res.setdefault('X', None)
+    optimize_res.setdefault('Y', None)
+    optimize_res.setdefault('plot_acquisition', None)
+    optimize_res.setdefault('plot_convergence]', None)
     optimize_res.success = True
     optimize_res.status = 0
     optimize_res.x = opt.x_opt
     optimize_res.fun = opt.fx_opt
-    optimize_res.nfev = NT
+    optimize_res.nfev = gp_params['maxiter']
+    optimize_res.update({'X': opt.X,
+                         'Y': opt.Y,
+                         'plot_acquisition': opt.plot_acquisition, 
+                         'plot_convergence': opt.plot_convergence})
 
     return optimize_res
+
+
+    def plot_optimization(optimize_res):
+        pass
