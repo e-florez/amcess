@@ -1,5 +1,4 @@
 import pytest
-import numpy as np
 from amcess.minimization import solve_gaussian_processes
 
 
