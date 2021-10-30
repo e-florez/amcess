@@ -87,3 +87,26 @@ def test_search_conf_basis_default(cluster1, cluster2, expected_bases):
     """
     search_config = SearchConfig(Cluster(cluster1, cluster2))
     assert search_config._bases == expected_bases
+
+
+@pytest.mark.parametrize(
+    "cluster_1, cluster_2, tolerance_radius, expecteted_contour_value",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            1.0,
+            ((0.7407005820230608, 0.0, 0.5), 1.8936651230798374),
+        ),
+    ],
+)
+def test_spherical_contour(
+    cluster_1, cluster_2, tolerance_radius, expecteted_contour_value
+):
+    """
+    Test spherical contour cluster method in Cluster clase
+    """
+    obj = SearchConfig(Cluster(cluster_1, cluster_2))
+    obj.spherical_contour_cluster(tolerance_radius)
+
+    assert obj.sphere_center, obj.sphere_radius == expecteted_contour_value

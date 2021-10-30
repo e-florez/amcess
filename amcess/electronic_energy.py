@@ -1,11 +1,12 @@
-import numpy as np
 from pyscf import gto, scf
 
 from amcess.base_molecule import Cluster
 
 
 class ElectronicEnergy:
-    def __init__(self, object_system, sphere_center, sphere_radius) -> None:
+    def __init__(
+        self, object_system, sphere_center, sphere_radius, max_closeness, seed
+    ) -> None:
         """
         Class to calculate electronic energy
 
@@ -22,8 +23,12 @@ class ElectronicEnergy:
         self._object_system_initial = object_system
         self._object_system_before = object_system
         self._object_system_current = object_system
+
         self._sphere_center = sphere_center
         self._sphere_radius = sphere_radius
+
+        self._max_closeness = max_closeness
+        self._move_seed = seed
 
     # ===============================================================
     # PROPERTIES
@@ -93,6 +98,8 @@ def build_input_pyscf(x_random, obj_ee, type_search):
                 ),
                 obj_ee._sphere_radius,
                 obj_ee._sphere_center,
+                obj_ee._max_closeness,
+                obj_ee._move_seed,
             )
             .get_molecule(i)
             .atoms
