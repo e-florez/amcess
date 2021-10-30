@@ -4,7 +4,7 @@ import sys
 import scipy
 from scipy.optimize import shgo
 
-import amcess.electronic_energy as ee
+from amcess.electronic_energy import ElectronicEnergy, hf_pyscf
 from amcess.base_molecule import Cluster
 from amcess.m_dual_annealing import solve_dual_annealing
 
@@ -94,12 +94,14 @@ class SearchConfig:
     ) -> None:
 
         if system_object is None:
-            sys.exit(
-                "AttributeError system_object isn't a object of Molecule.\
-                It's None"
+            raise ValueError(
+                "AttributeError system_object isn't difinite\n" "It's None"
             )
-
-        if system_object.total_molecules == 1:
+        elif not isinstance(system_object, object):
+            raise ValueError(
+                "AttributeError system_object isn't difinite\n" "It's None"
+            )
+        elif system_object.total_molecules == 1:
             raise ValueError(
                 "System of study most have AT LEAST TWO FRAGMENTS"
             )
@@ -110,14 +112,15 @@ class SearchConfig:
 
         self._bases = bases
         self._program_calculate_cost_function = program_electronic_structure
-        self._func = self.program_cost_function(
-            self._program_calculate_cost_function
-        )
 
         self._tolerance_contour_radius = tolerance_contour_radius
 
         self._outxyz = outxyz
 
+        # Check Overlaping
+        self._system_object.initialize_cluster()
+
+        # Build bounds, format for scipy functions
         if system_object._sphere_radius is None:
             system_object.spherical_contour_cluster(tolerance_contour_radius)
 
@@ -131,10 +134,11 @@ class SearchConfig:
         bound_rotate = bound_rotate * self._system_object.total_molecules
         self._bounds = bound_translate + bound_rotate
 
-        # verificar superposición de las moleculas
-        self._system_object = Cluster(
-            *overlaping(self._system_object).values()
+        self._func = self.program_cost_function(
+            self._program_calculate_cost_function
         )
+
+        self._obj_ee = ElectronicEnergy(self._system_object)
 
     # ===============================================================
     # PROPERTIES
@@ -213,6 +217,30 @@ class SearchConfig:
 
         self._tolerance_contour_radius = new_tol_radius
 
+    @property
+    def cost_function_ee(self):
+        return self._func
+
+    @property
+    def cost_function_number(self):
+        return self._program_calculate_cost_function
+
+    @cost_function_number.setter
+    def cost_function_number(self, new_func):
+        if not isinstance(new_func, int):
+            raise TypeError(
+                "\n\nThe new cost function is not a integer"
+                f"\nplease, check: '{type(new_func)}'\n"
+            )
+        elif new_func > 1:
+            raise ValueError(
+                "\n\nThe new cost function is not implemeted "
+                "\n 1 -> Hartree Fock into pyscf"
+                f"\nplease, check: '{type(new_func)}'\n"
+            )
+
+        self._func = self.program_cost_function(new_func)
+
     # ===============================================================
     # Methods
     # ===============================================================
@@ -235,10 +263,23 @@ class SearchConfig:
 
         """
         if _program_calculate_cost_function == 1:
-            return ee.hf_pyscf
+            print(
+                "\n\n"
+                "*** Cost function is Hartree--Fock implemented into pyscf ***"
+                "\n\n"
+            )
+            return hf_pyscf
 
     def run(self, **kwargs):
-        """ """
+        """
+        Alternative to execute the searching methodologies
+
+        Parameters
+        ----------
+            **kwargs : dict
+                Dictionary with the parameters to be used in the
+                search methodologies
+        """
         if self._search_methodology == 1:
             self.da(**kwargs)
         if self._search_methodology == 2:
@@ -248,6 +289,12 @@ class SearchConfig:
         """
         Execute solve dual annealing to search candidate structure
         and open output file
+
+        Parameters
+        ----------
+            **kwargs : dict
+                Dictionary with the parameters to be used in the
+                dual annealing methodology
         """
         print("*** Minimization: Dual Annealing ***")
         with open(self._outxyz, "w") as outxyz:
@@ -257,7 +304,7 @@ class SearchConfig:
                 self._system_object,
                 args=(
                     self._bases,
-                    self._system_object,
+                    self._obj_ee,
                     outxyz,
                     self._search_methodology,
                 ),
@@ -268,6 +315,12 @@ class SearchConfig:
         """
         Execute solve shgo to search candidate structure
         and open output file
+
+        Parameters
+        ----------
+            **kwargs : dict
+                Dictionary with the parameters to be used in the
+                shgo methodology
         """
         print("*** Minimization: SHGO from Scipy ***")
         with open(self._outxyz, "w") as outxyz:
@@ -279,7 +332,7 @@ class SearchConfig:
                 sampling_method="sobol",
                 args=(
                     self._bases,
-                    self._system_object,
+                    self._obj_ee,
                     outxyz,
                     self._search_methodology,
                 ),
