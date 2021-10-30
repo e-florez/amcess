@@ -44,9 +44,15 @@ class ElectronicEnergy:
 
     @object_system_initial.setter
     def object_system_initial(self, new_object_system):
-        self._object_system_inital = new_object_system
-        self._object_system_before = new_object_system
-        self._object_system_current = new_object_system
+        (
+            self._object_system_initial,
+            self._object_system_before,
+            self._object_system_current,
+        ) = (
+            new_object_system,
+            new_object_system,
+            new_object_system,
+        )
 
     @property
     def object_system_before(self):
@@ -64,9 +70,6 @@ class ElectronicEnergy:
     # ===============================================================
     # Methods
     # ===============================================================
-    def object_system_current(self, new_object_system):
-        self._object_system_before = self._object_system_current
-        self._object_system_current = new_object_system
 
 
 def build_input_pyscf(x_random, obj_ee):
@@ -112,7 +115,7 @@ def build_input_pyscf(x_random, obj_ee):
 
     system_object = Cluster(*new_geom.values()).initialize_cluster()
 
-    obj_ee.object_system_current(system_object)
+    obj_ee.object_system_current = system_object
 
     # Build input to pyscf
     symbols = system_object.symbols
