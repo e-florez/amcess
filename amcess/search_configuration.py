@@ -38,7 +38,7 @@ class SearchConfig:
         search_methodology=1,
         basis="sto-3g",
         program_electronic_structure=1,
-        tolerance_contour_radius=1,
+        tolerance_contour_radius=1.0,
         outxyz="configurations.xyz",
     ) -> None:
 
@@ -175,7 +175,7 @@ class SearchConfig:
     def radius_contour(self, new_tol_radius):
         if not isinstance(new_tol_radius, float):
             raise TypeError(
-                "\n\nThe new tolerance for contour radius is not a float"
+                "\n\nThe new tolerance radius is not a float"
                 f"\nplease, check: '{type(new_tol_radius)}'\n"
             )
 
@@ -349,8 +349,6 @@ class SearchConfig:
         """
         print("*** Minimization: SHGO from Scipy ***")
         with open(self._output_name, "w") as outxyz:
-            self._search_methodology = 2
-
             self._search = shgo(
                 self._func,
                 bounds=self._bounds,

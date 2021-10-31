@@ -1,7 +1,9 @@
-import scipy
+import os
 
 import pytest
-from amcess.base_molecule import Molecule, Cluster
+import scipy
+
+from amcess.base_molecule import Cluster, Molecule
 from amcess.electronic_energy import hf_pyscf
 from amcess.search_configuration import SearchConfig
 
@@ -524,6 +526,25 @@ def test_SC_basis_set_set(molecule1, molecule2):
 
 
 @pytest.mark.parametrize(
+    "molecule1, molecule2, new_sphere_center",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            (2.0, 0.0, 1.0),
+        ),
+    ],
+)
+def test_SC_new_sphere_center_set(molecule1, molecule2, new_sphere_center):
+    """
+    Test new sphere center @sphere_center.setter
+    """
+    obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+    obj_sc.sphere_center = new_sphere_center
+    assert obj_sc.sphere_center == new_sphere_center
+
+
+@pytest.mark.parametrize(
     "molecule1, molecule2",
     [
         (
@@ -623,6 +644,25 @@ def test_SC_sphere_center_VE_set(molecule1, molecule2):
         "(float, float, float)"
         f"\nplease, check: '{(1.0,1.0,1.0,1.0,)}'\n"
     )
+
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2, new_radius",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            2.5,
+        ),
+    ],
+)
+def test_SC_new_sphere_radius_set(molecule1, molecule2, new_radius):
+    """
+    Test new spehre radius  @sphere_radius.setter
+    """
+    obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+    obj_sc.sphere_radius = new_radius
+    assert obj_sc.sphere_radius == new_radius
 
 
 @pytest.mark.parametrize(
@@ -769,6 +809,40 @@ def test_SC_cost_function_VE_init(molecule1, molecule2, program_ee):
 
 
 @pytest.mark.parametrize(
+    "molecule1, molecule2",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+        ),
+    ],
+)
+def test_SC_cost_function_grep(molecule1, molecule2):
+    """
+    Test default cost_function_ee @property
+    """
+    obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+    assert obj_sc.cost_function_ee == hf_pyscf
+
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+        ),
+    ],
+)
+def test_SC_cost_function_number_grep(molecule1, molecule2):
+    """
+    Test default cost_function_number @property
+    """
+    obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+    assert obj_sc.cost_function_number == 1
+
+
+@pytest.mark.parametrize(
     "molecule1, molecule2, program_ee",
     [
         (
@@ -784,5 +858,130 @@ def test_SC_new_cost_function(molecule1, molecule2, program_ee):
     """
     obj_sc = SearchConfig(Cluster(molecule1, molecule2))
     obj_sc.cost_function_number = program_ee
-    print(obj_sc._func)
     assert obj_sc._func == hf_pyscf
+
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2, default_tolerance_radius",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            1.0,
+        ),
+    ],
+)
+def test_SC_tolerance_radius_grep(
+    molecule1, molecule2, default_tolerance_radius
+):
+    """
+    Test ask tolerance radius
+    """
+    assert (
+        SearchConfig(Cluster(molecule1, molecule2)).radius_contour
+        == default_tolerance_radius
+    )
+
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2, new_tolerance_radius",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            2.0,
+        ),
+    ],
+)
+def test_SC_new_tolerance_radius_set(
+    molecule1, molecule2, new_tolerance_radius
+):
+    """
+    Test TypeError @radius_contour.setter
+    """
+    obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+    obj_sc.radius_contour = new_tolerance_radius
+    assert obj_sc.radius_contour == new_tolerance_radius
+
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+        ),
+    ],
+)
+def test_SC_tolerance_radius_TE_set(molecule1, molecule2):
+    """
+    Test TypeError @radius_contour.setter
+    """
+    with pytest.raises(TypeError) as e:
+        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+        obj_sc.radius_contour = 1
+    assert (
+        str(e.value) == "\n\nThe new tolerance radius is not a float"
+        f"\nplease, check: '{type(1)}'\n"
+    )
+    with pytest.raises(TypeError) as e:
+        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+        obj_sc.radius_contour = "1.0"
+    assert (
+        str(e.value) == "\n\nThe new tolerance radius is not a float"
+        f"\nplease, check: '{type('1.0')}'\n"
+    )
+    with pytest.raises(TypeError) as e:
+        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+        obj_sc.radius_contour = [1.0]
+    assert (
+        str(e.value) == "\n\nThe new tolerance radius is not a float"
+        f"\nplease, check: '{type([1.0])}'\n"
+    )
+    with pytest.raises(TypeError) as e:
+        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+        obj_sc.radius_contour = (1.0,)
+    assert (
+        str(e.value) == "\n\nThe new tolerance radius is not a float"
+        f"\nplease, check: '{type((1.0,))}'\n"
+    )
+
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+        ),
+    ],
+)
+def test_SC_run_method(molecule1, molecule2):
+    """
+    Test SC.run method
+    """
+    SearchConfig(Cluster(molecule1, molecule2)).run(NT=1, mxcycle=1)
+    with open("configurations.xyz", "r") as f:
+        readl = f.readline()
+    os.remove("configurations.xyz")
+    assert readl == "4\n"
+
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+        ),
+    ],
+)
+def test_SC_da_method(molecule1, molecule2):
+    """
+    Test SC.da method
+    """
+    SearchConfig(Cluster(molecule1, molecule2)).da(NT=1, mxcycle=1)
+    with open("configurations.xyz", "r") as f:
+        readl = f.readline()
+    os.remove("configurations.xyz")
+    assert readl == "4\n"
