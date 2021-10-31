@@ -346,7 +346,6 @@ class SearchConfig:
             self._search = shgo(
                 self._func,
                 bounds=self._bounds,
-                sampling_method="sobol",
                 args=(self._basis_set, self._obj_ee, outxyz),
                 **kwargs,
             )

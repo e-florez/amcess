@@ -145,31 +145,36 @@ def test_SC_init_second_value_error(molecule1):
         SearchConfig(1.0)
     assert (
         str(e.value) == "AttributeError system_object isn't difinite\n"
-        "as an object Cluster"
+        "as an object Cluster\n"
+        f"please, check:\n'{1.0}'"
     )
     with pytest.raises(TypeError) as e:
         SearchConfig(1)
     assert (
         str(e.value) == "AttributeError system_object isn't difinite\n"
-        "as an object Cluster"
+        "as an object Cluster\n"
+        f"please, check:\n'{1}'"
     )
     with pytest.raises(TypeError) as e:
-        SearchConfig(1.0)
+        SearchConfig((1.0,))
     assert (
         str(e.value) == "AttributeError system_object isn't difinite\n"
-        "as an object Cluster"
+        "as an object Cluster\n"
+        f"please, check:\n'{(1.0,)}'"
     )
     with pytest.raises(TypeError) as e:
         SearchConfig([1.0])
     assert (
         str(e.value) == "AttributeError system_object isn't difinite\n"
-        "as an object Cluster"
+        "as an object Cluster\n"
+        f"please, check:\n'{[1.0]}'"
     )
     with pytest.raises(TypeError) as e:
         SearchConfig(Molecule(molecule1))
     assert (
         str(e.value) == "AttributeError system_object isn't difinite\n"
-        "as an object Cluster"
+        "as an object Cluster\n"
+        f"please, check:\n'{Molecule(molecule1)}'"
     )
 
 
@@ -907,9 +912,9 @@ def test_SC_tolerance_radius_TE_set(molecule1, molecule2):
         ),
     ],
 )
-def test_SC_run_method(molecule1, molecule2):
+def test_SC_run_da_method(molecule1, molecule2):
     """
-    Test SC.run method
+    Test SC.run method for dual annealing
     """
     SearchConfig(Cluster(molecule1, molecule2)).run(NT=1, mxcycle=1)
     with open("configurations.xyz", "r") as f:
@@ -932,6 +937,52 @@ def test_SC_da_method(molecule1, molecule2):
     Test SC.da method
     """
     SearchConfig(Cluster(molecule1, molecule2)).da(NT=1, mxcycle=1)
+    with open("configurations.xyz", "r") as f:
+        readl = f.readline()
+    os.remove("configurations.xyz")
+    assert readl == "4\n"
+
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2, search_meth",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            2,
+        ),
+    ],
+)
+def test_SC_run_shgo_method(molecule1, molecule2, search_meth):
+    """
+    Test SC.run method for shgo
+    """
+    SearchConfig(
+        Cluster(molecule1, molecule2), search_methodology=search_meth
+    ).run(sampling_method="sobol", n=1)
+    with open("configurations.xyz", "r") as f:
+        readl = f.readline()
+    os.remove("configurations.xyz")
+    assert readl == "4\n"
+
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2, search_meth",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            2,
+        ),
+    ],
+)
+def test_SC_hgo_method(molecule1, molecule2, search_meth):
+    """
+    Test SC.run method for shgo
+    """
+    SearchConfig(
+        Cluster(molecule1, molecule2), search_methodology=search_meth
+    ).shgo(sampling_method="sobol", n=1)
     with open("configurations.xyz", "r") as f:
         readl = f.readline()
     os.remove("configurations.xyz")
