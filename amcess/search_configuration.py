@@ -18,8 +18,8 @@ class SearchConfig:
             Object made with the Cluster class
         search_methodology : int
             Integer associated with type of searching
-        bases : string
-            Label of bases set
+        basis : string
+            Label of basis set
         program_electronic_structure : int
             Integer associated with the program to make the
             electronic structure calculations
@@ -36,7 +36,7 @@ class SearchConfig:
         self,
         system_object=None,
         search_methodology=1,
-        bases="sto-3g",
+        basis="sto-3g",
         program_electronic_structure=1,
         tolerance_contour_radius=1,
         outxyz="configurations.xyz",
@@ -55,9 +55,20 @@ class SearchConfig:
         self._system_object = system_object
 
         self._search_methodology = search_methodology
-
-        self._bases_set = bases
+        if self._search_methodology > 3:
+            raise ValueError(
+                "ValueError search_methodology is an integer\n"
+                "between 1 and 3\n"
+                f"\nplease, check: '{self._search_methodology}'\n"
+            )
+        self._basis_set = basis
         self._program_calculate_cost_function = program_electronic_structure
+        if self._program_calculate_cost_function > 1:
+            raise ValueError(
+                "ValueError, only implemeted an option for\n"
+                "electronic structure\n"
+                f"\nplease, check: '{self._program_calculate_cost_function}'\n"
+            )
 
         self._tolerance_contour_radius = tolerance_contour_radius
 
@@ -143,18 +154,18 @@ class SearchConfig:
         self._search_methodology = change_search_methodology
 
     @property
-    def bases_set(self):
-        return self._bases_set
+    def basis_set(self):
+        return self._basis_set
 
-    @bases_set.setter
-    def bases_set(self, new_bases_set):
-        if not isinstance(new_bases_set, str):
+    @basis_set.setter
+    def basis_set(self, new_basis_set):
+        if not isinstance(new_basis_set, str):
             raise TypeError(
                 "\n\nThe new name to output is not a string"
-                f"\nplease, check: '{type(new_bases_set)}'\n"
+                f"\nplease, check: '{type(new_basis_set)}'\n"
             )
 
-        self._bases_set = new_bases_set
+        self._basis_set = new_basis_set
 
     @property
     def radius_contour(self):
@@ -176,6 +187,12 @@ class SearchConfig:
 
     @sphere_center.setter
     def sphere_center(self, new_center: tuple) -> None:
+        if not isinstance(new_center, tuple):
+            raise TypeError(
+                "\n\nThe Sphere center must be a tuple with three elements: "
+                "(float, float, float)"
+                f"\nplease, check: '{type(new_center)}'\n"
+            )
         if len(new_center) != 3:
             raise ValueError(
                 "\n\nThe Sphere center must be a tuple with three elements: "
@@ -191,7 +208,12 @@ class SearchConfig:
 
     @sphere_radius.setter
     def sphere_radius(self, new_radius: float) -> None:
-        if not isinstance(new_radius, (int, float)) or new_radius < 0.9:
+        if not isinstance(new_radius, (int, float)):
+            raise TypeError(
+                "\n\nThe Sphere  Radius must be a float or int"
+                f"\nplease, check: '{type(new_radius)}'\n"
+            )
+        if new_radius <= 0.9:
             raise ValueError(
                 "\n\nThe Sphere  Radius must be larger than 1 Angstrom"
                 f"\nplease, check: '{new_radius}'\n"
@@ -218,7 +240,7 @@ class SearchConfig:
             raise ValueError(
                 "\n\nThe new cost function is not implemeted "
                 "\n 1 -> Hartree Fock into pyscf"
-                f"\nplease, check: '{type(new_func)}'\n"
+                f"\nplease, check: '{new_func}'\n"
             )
 
         self._func = self.program_cost_function(new_func)
@@ -229,7 +251,7 @@ class SearchConfig:
 
     def spherical_contour_cluster(self, tolerance):
         """
-        Define a spherical contour that it contains our cluster
+        Define a spherical outline that contains our cluster
 
         Parameters
         ----------
@@ -310,7 +332,7 @@ class SearchConfig:
                 self._func,
                 self._bounds,
                 self._system_object,
-                args=(self._bases_set, self._obj_ee, outxyz),
+                args=(self._basis_set, self._obj_ee, outxyz),
                 **kwargs,
             )
 
@@ -333,6 +355,6 @@ class SearchConfig:
                 self._func,
                 bounds=self._bounds,
                 sampling_method="sobol",
-                args=(self._bases_set, self._obj_ee, outxyz),
+                args=(self._basis_set, self._obj_ee, outxyz),
                 **kwargs,
             )
