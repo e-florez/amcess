@@ -34,12 +34,12 @@ class SearchConfig:
 
     def __init__(
         self,
-        system_object=None,
-        search_methodology=1,
-        basis="sto-3g",
-        program_electronic_structure=1,
-        tolerance_contour_radius=1.0,
-        outxyz="configurations.xyz",
+        system_object: Cluster = None,
+        search_methodology: int = 1,
+        basis: str = "sto-3g",
+        program_electronic_structure: int = 1,
+        tolerance_contour_radius: float = 1.0,
+        outxyz: str = "configurations.xyz",
     ) -> None:
 
         if system_object is None:
@@ -49,30 +49,24 @@ class SearchConfig:
         if not isinstance(system_object, Cluster):
             raise TypeError(
                 "AttributeError system_object isn't difinite\n"
-                "as an object Cluster"
+                "as an object Cluster\n"
+                f"please, check:\n'{system_object}'"
             )
-
         self._system_object = system_object
 
+        # Verfication of variables (type, value)
+        self.search_type = search_methodology
+        self.basis_set = basis
+        self.cost_function_number = program_electronic_structure
+        self.output_name = outxyz
+        self.radius_contour_tolerance = tolerance_contour_radius
+
+        # Assignment of variables
         self._search_methodology = search_methodology
-        if self._search_methodology > 3:
-            raise ValueError(
-                "ValueError search_methodology is an integer\n"
-                "between 1 and 3\n"
-                f"\nplease, check: '{self._search_methodology}'\n"
-            )
         self._basis_set = basis
         self._program_calculate_cost_function = program_electronic_structure
-        if self._program_calculate_cost_function > 1:
-            raise ValueError(
-                "ValueError, only implemeted an option for\n"
-                "electronic structure\n"
-                f"\nplease, check: '{self._program_calculate_cost_function}'\n"
-            )
-
-        self._tolerance_contour_radius = tolerance_contour_radius
-
         self._output_name = outxyz
+        self._tolerance_contour_radius = tolerance_contour_radius
 
         # Check Overlaping
         self._system_object.initialize_cluster()
@@ -161,18 +155,18 @@ class SearchConfig:
     def basis_set(self, new_basis_set):
         if not isinstance(new_basis_set, str):
             raise TypeError(
-                "\n\nThe new name to output is not a string"
+                "\n\nThe new name to basis set is not a string"
                 f"\nplease, check: '{type(new_basis_set)}'\n"
             )
 
         self._basis_set = new_basis_set
 
     @property
-    def radius_contour(self):
+    def radius_contour_tolerance(self):
         return self._tolerance_contour_radius
 
-    @radius_contour.setter
-    def radius_contour(self, new_tol_radius):
+    @radius_contour_tolerance.setter
+    def radius_contour_tolerance(self, new_tol_radius):
         if not isinstance(new_tol_radius, float):
             raise TypeError(
                 "\n\nThe new tolerance radius is not a float"

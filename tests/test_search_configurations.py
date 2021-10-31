@@ -409,29 +409,6 @@ def test_SC_search_type_TP_set(molecule1, molecule2):
         ),
     ],
 )
-def test_SC_search_type_TE(molecule1, molecule2, search_methodology):
-    """
-    Test ValueError associated with search methodology into __init__
-    """
-    with pytest.raises(ValueError) as e:
-        SearchConfig(Cluster(molecule1, molecule2), search_methodology)
-    assert (
-        str(e.value) == "ValueError search_methodology is an integer\n"
-        "between 1 and 3\n"
-        f"\nplease, check: '{search_methodology}'\n"
-    )
-
-
-@pytest.mark.parametrize(
-    "molecule1, molecule2, search_methodology",
-    [
-        (
-            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-            4,
-        ),
-    ],
-)
 def test_SC_search_type_TE_set(molecule1, molecule2, search_methodology):
     """
     Test ValueError @property associated with search methodology type
@@ -506,21 +483,21 @@ def test_SC_basis_set_set(molecule1, molecule2):
         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
         obj_sc.basis_set = 1.0
     assert (
-        str(e.value) == "\n\nThe new name to output is not a string"
+        str(e.value) == "\n\nThe new name to basis set is not a string"
         f"\nplease, check: '{type(1.0)}'\n"
     )
     with pytest.raises(TypeError) as e:
         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
         obj_sc.basis_set = (1.0,)
     assert (
-        str(e.value) == "\n\nThe new name to output is not a string"
+        str(e.value) == "\n\nThe new name to basis set is not a string"
         f"\nplease, check: '{type((1.0,))}'\n"
     )
     with pytest.raises(TypeError) as e:
         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
         obj_sc.basis_set = 1
     assert (
-        str(e.value) == "\n\nThe new name to output is not a string"
+        str(e.value) == "\n\nThe new name to basis set is not a string"
         f"\nplease, check: '{type(1)}'\n"
     )
 
@@ -783,32 +760,6 @@ def test_SC_cost_function_VE_set(molecule1, molecule2):
 
 
 @pytest.mark.parametrize(
-    "molecule1, molecule2, program_ee",
-    [
-        (
-            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-            2,
-        ),
-    ],
-)
-def test_SC_cost_function_VE_init(molecule1, molecule2, program_ee):
-    """
-    Test ValueError associated cost function into __init__
-    """
-    with pytest.raises(ValueError) as e:
-        SearchConfig(
-            Cluster(molecule1, molecule2),
-            program_electronic_structure=program_ee,
-        )
-    assert (
-        str(e.value) == "ValueError, only implemeted an option for\n"
-        "electronic structure\n"
-        f"\nplease, check: '{program_ee}'\n"
-    )
-
-
-@pytest.mark.parametrize(
     "molecule1, molecule2",
     [
         (
@@ -878,7 +829,7 @@ def test_SC_tolerance_radius_grep(
     Test ask tolerance radius
     """
     assert (
-        SearchConfig(Cluster(molecule1, molecule2)).radius_contour
+        SearchConfig(Cluster(molecule1, molecule2)).radius_contour_tolerance
         == default_tolerance_radius
     )
 
@@ -900,8 +851,8 @@ def test_SC_new_tolerance_radius_set(
     Test TypeError @radius_contour.setter
     """
     obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-    obj_sc.radius_contour = new_tolerance_radius
-    assert obj_sc.radius_contour == new_tolerance_radius
+    obj_sc.radius_contour_tolerance = new_tolerance_radius
+    assert obj_sc.radius_contour_tolerance == new_tolerance_radius
 
 
 @pytest.mark.parametrize(
@@ -919,28 +870,28 @@ def test_SC_tolerance_radius_TE_set(molecule1, molecule2):
     """
     with pytest.raises(TypeError) as e:
         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-        obj_sc.radius_contour = 1
+        obj_sc.radius_contour_tolerance = 1
     assert (
         str(e.value) == "\n\nThe new tolerance radius is not a float"
         f"\nplease, check: '{type(1)}'\n"
     )
     with pytest.raises(TypeError) as e:
         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-        obj_sc.radius_contour = "1.0"
+        obj_sc.radius_contour_tolerance = "1.0"
     assert (
         str(e.value) == "\n\nThe new tolerance radius is not a float"
         f"\nplease, check: '{type('1.0')}'\n"
     )
     with pytest.raises(TypeError) as e:
         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-        obj_sc.radius_contour = [1.0]
+        obj_sc.radius_contour_tolerance = [1.0]
     assert (
         str(e.value) == "\n\nThe new tolerance radius is not a float"
         f"\nplease, check: '{type([1.0])}'\n"
     )
     with pytest.raises(TypeError) as e:
         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-        obj_sc.radius_contour = (1.0,)
+        obj_sc.radius_contour_tolerance = (1.0,)
     assert (
         str(e.value) == "\n\nThe new tolerance radius is not a float"
         f"\nplease, check: '{type((1.0,))}'\n"
