@@ -2,7 +2,7 @@ import numpy as np
 import scipy
 from scipy.optimize import shgo
 
-from amcess.base_molecule import Molecule
+from amcess.base_molecule import Cluster, Molecule
 from amcess.electronic_energy import ElectronicEnergy, hf_pyscf
 from amcess.m_dual_annealing import solve_dual_annealing
 
@@ -43,28 +43,25 @@ class SearchConfig:
     ) -> None:
 
         if system_object is None:
-            raise ValueError(
-                "AttributeError system_object isn't difinite\n" "It's None"
+            raise TypeError(
+                "AttributeError system_object isn't difinite\n" "It's NoneType"
             )
-        elif not isinstance(system_object, object):
-            raise ValueError(
-                "AttributeError system_object isn't difinite\n" "It's None"
-            )
-        elif system_object.total_molecules == 1:
-            raise ValueError(
-                "System of study most have AT LEAST TWO FRAGMENTS"
+        if not isinstance(system_object, Cluster):
+            raise TypeError(
+                "AttributeError system_object isn't difinite\n"
+                "as an object Cluster"
             )
 
         self._system_object = system_object
 
         self._search_methodology = search_methodology
 
-        self._bases = bases
+        self._bases_set = bases
         self._program_calculate_cost_function = program_electronic_structure
 
         self._tolerance_contour_radius = tolerance_contour_radius
 
-        self._outxyz = outxyz
+        self._output_name = outxyz
 
         # Check Overlaping
         self._system_object.initialize_cluster()
@@ -121,16 +118,21 @@ class SearchConfig:
                 f"\nplease, check: '{type(new_name_output)}'\n"
             )
 
-        self._outxyz = new_name_output
+        self._output_name = new_name_output
 
     @property
-    def search_name(self):
+    def search_type(self):
         return self._search_methodology
 
-    @search_name.setter
-    def search_name(self, change_search_methodology):
+    @search_type.setter
+    def search_type(self, change_search_methodology):
         if not isinstance(change_search_methodology, int):
             raise TypeError(
+                "\n\nThe new search methodology is not an integer"
+                f"\nplease, check: '{type(change_search_methodology)}'\n"
+            )
+        if change_search_methodology > 3:
+            raise ValueError(
                 "\n\nThe search methodology is associated with a integer \n"
                 "1 -> Dual Annealing \n"
                 "2 -> SHGO \n"
@@ -303,12 +305,12 @@ class SearchConfig:
                 dual annealing methodology
         """
         print("*** Minimization: Dual Annealing ***")
-        with open(self._outxyz, "w") as outxyz:
+        with open(self._output_name, "w") as outxyz:
             self._search = solve_dual_annealing(
                 self._func,
                 self._bounds,
                 self._system_object,
-                args=(self._bases, self._obj_ee, outxyz),
+                args=(self._bases_set, self._obj_ee, outxyz),
                 **kwargs,
             )
 
@@ -324,13 +326,13 @@ class SearchConfig:
                 shgo methodology
         """
         print("*** Minimization: SHGO from Scipy ***")
-        with open(self._outxyz, "w") as outxyz:
+        with open(self._output_name, "w") as outxyz:
             self._search_methodology = 2
 
             self._search = shgo(
                 self._func,
                 bounds=self._bounds,
                 sampling_method="sobol",
-                args=(self._bases, self._obj_ee, outxyz),
+                args=(self._bases_set, self._obj_ee, outxyz),
                 **kwargs,
             )
