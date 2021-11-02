@@ -124,10 +124,7 @@ def test_SC_init_first_value_error():
     """
     with pytest.raises(TypeError) as e:
         SearchConfig()
-    assert (
-        str(e.value) == "AttributeError system_object isn't difinite\n"
-        "It's NoneType"
-    )
+    assert str(e.value) == "System_object isn't difinite\n" "It's NoneType"
 
 
 @pytest.mark.parametrize(
@@ -144,36 +141,31 @@ def test_SC_init_second_value_error(molecule1):
     with pytest.raises(TypeError) as e:
         SearchConfig(1.0)
     assert (
-        str(e.value) == "AttributeError system_object isn't difinite\n"
-        "as an object Cluster\n"
+        str(e.value) == "System_object isn't difinite as an object Cluster\n"
         f"please, check:\n'{1.0}'"
     )
     with pytest.raises(TypeError) as e:
         SearchConfig(1)
     assert (
-        str(e.value) == "AttributeError system_object isn't difinite\n"
-        "as an object Cluster\n"
+        str(e.value) == "System_object isn't difinite as an object Cluster\n"
         f"please, check:\n'{1}'"
     )
     with pytest.raises(TypeError) as e:
         SearchConfig((1.0,))
     assert (
-        str(e.value) == "AttributeError system_object isn't difinite\n"
-        "as an object Cluster\n"
+        str(e.value) == "System_object isn't difinite as an object Cluster\n"
         f"please, check:\n'{(1.0,)}'"
     )
     with pytest.raises(TypeError) as e:
         SearchConfig([1.0])
     assert (
-        str(e.value) == "AttributeError system_object isn't difinite\n"
-        "as an object Cluster\n"
+        str(e.value) == "System_object isn't difinite as an object Cluster\n"
         f"please, check:\n'{[1.0]}'"
     )
     with pytest.raises(TypeError) as e:
         SearchConfig(Molecule(molecule1))
     assert (
-        str(e.value) == "AttributeError system_object isn't difinite\n"
-        "as an object Cluster\n"
+        str(e.value) == "System_object isn't difinite as an object Cluster\n"
         f"please, check:\n'{Molecule(molecule1)}'"
     )
 

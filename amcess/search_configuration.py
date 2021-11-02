@@ -53,8 +53,7 @@ class SearchConfig:
             raise TypeError("System_object isn't difinite\n" "It's NoneType")
         if not isinstance(system_object, Cluster):
             raise TypeError(
-                "AttributeError system_object isn't difinite\n"
-                "as an object Cluster\n"
+                "System_object isn't difinite as an object Cluster\n"
                 f"please, check:\n'{system_object}'"
             )
         self._system_object = system_object
