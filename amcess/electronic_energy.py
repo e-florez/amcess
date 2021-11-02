@@ -1,3 +1,4 @@
+import numpy
 from pyscf import gto, scf
 
 from amcess.base_molecule import Cluster
@@ -87,7 +88,10 @@ def build_input_pyscf(x_random, obj_ee):
 
     Returns
     -------
-        [type]: [description]
+        imput_mol: list
+            list of atoms and coordinates
+        system_object: Cluster
+            Cluster objects
     """
 
     system_object = obj_ee._object_system_current
@@ -104,8 +108,6 @@ def build_input_pyscf(x_random, obj_ee):
                     x_random[(i + system_object.total_molecules) * 3 + 1],
                     x_random[(i + system_object.total_molecules) * 3 + 2],
                 ),
-                obj_ee._sphere_radius,
-                obj_ee._sphere_center,
                 obj_ee._max_closeness,
                 obj_ee._move_seed,
             )
@@ -113,7 +115,11 @@ def build_input_pyscf(x_random, obj_ee):
             .atoms
         }
 
-    system_object = Cluster(*new_geom.values()).initialize_cluster()
+    system_object = Cluster(
+        *new_geom.values(),
+        sphere_radius=obj_ee._sphere_radius,
+        sphere_center=obj_ee._sphere_center
+    ).initialize_cluster()
 
     obj_ee.object_system_current = system_object
 
@@ -142,7 +148,7 @@ def hf_pyscf(x, *args, ncall=[0]):
             Possible new positions and angles
         shgo #?
         args : list
-            basis set, Object of Molecule, name output xyz
+            basis set, Cluster Object, name output xyz
 
     Returns
     -------
@@ -158,7 +164,12 @@ def hf_pyscf(x, *args, ncall=[0]):
         basis=args[0],
     )
 
-    e = scf.HF(mol).kernel()
+    try:
+        e = scf.HF(mol).kernel()
+    except (UserWarning, numpy.linalg.LinAlgError):
+        print("Error in pyscf")
+        e = float("inf")
+
     args[2].write(str(new_object.total_atoms) + "\n")
     args[2].write("Energy: " + str(e) + "\n")
     l: int = 0

@@ -836,8 +836,6 @@ class Cluster(Molecule):
         molecule: int = 0,
         steps: tuple = None,
         rotations: tuple = None,
-        sphere_radius: float = None,
-        sphere_center: tuple = None,
         max_closeness: int = 1.0,
         seed: int = None,
     ) -> object:
@@ -865,9 +863,11 @@ class Cluster(Molecule):
 
         Raises
         ------
-        AttributeError : OverlappingError
-            After serching for max_overlap_cycle and no place found for the
-            molecule without overlapping any other
+        ValueError :
+            Maximun closeness between any pair of atom must be larger than
+            0.1 Angstrom
+            It is not define x, y, z for translation or it is not tuple
+            It is not define x, y, z for translation or it is not tuple
         """
         if not isinstance(max_closeness, (int, float)) or max_closeness < 0.1:
             raise ValueError(
@@ -922,25 +922,12 @@ class Cluster(Molecule):
                 translation_x,
                 translation_y,
                 translation_z,
+            ).rotate(
+                0,
+                rotation_x,
+                rotation_y,
+                rotation_z,
             )
-            vector_xyz = new_molecule.center_of_mass
-            distance = np.linalg.norm(
-                np.asarray(sphere_center) - np.asarray(vector_xyz)
-            )
-            if distance > sphere_radius:
-                new_molecule: Cluster = molecule_to_move.rotate(
-                    0,
-                    rotation_x,
-                    rotation_y,
-                    rotation_z,
-                )
-            else:
-                new_molecule.rotate(
-                    0,
-                    rotation_x,
-                    rotation_y,
-                    rotation_z,
-                )
 
             molecule_coordinates: list = new_molecule.coordinates
 

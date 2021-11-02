@@ -30,6 +30,13 @@ class SearchConfig:
     Returns
     -------
         Output xyz with coordinates and electronic structure
+
+    Raises
+    ------
+        TypeError
+            System_object isn't difinite
+            AttributeError system_object isn't difinite as
+            an object Cluster
     """
 
     def __init__(
@@ -43,9 +50,7 @@ class SearchConfig:
     ) -> None:
 
         if system_object is None:
-            raise TypeError(
-                "AttributeError system_object isn't difinite\n" "It's NoneType"
-            )
+            raise TypeError("System_object isn't difinite\n" "It's NoneType")
         if not isinstance(system_object, Cluster):
             raise TypeError(
                 "AttributeError system_object isn't difinite\n"
@@ -277,13 +282,15 @@ class SearchConfig:
 
         Parameters
         ----------
-            _program_calculate_cost_function ([type]): [description]
+            _program_calculate_cost_function : int
+                Integer associated with the program to calculate the cost
+                and methodology (Hamiltonian, Functional, etc)
 
         Returns
         -------
             called
             name of the function cost which associated with a specify
-            program
+            program and methodology (Hamiltonian, Functional, etc)
 
         """
         if _program_calculate_cost_function == 1:
