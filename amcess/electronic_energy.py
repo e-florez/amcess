@@ -96,17 +96,18 @@ def build_input_pyscf(x_random, obj_ee):
 
     system_object = obj_ee._object_system_current
 
-    new_geom = dict()
     # Rotate and translate
-    for i in range(system_object.total_molecules):
-        new_geom[i] = {
+    new_geom = dict()
+    new_geom[0] = {"atoms": system_object.get_molecule(0).atoms}
+    for i in range(system_object.total_molecules - 1):
+        new_geom[i + 1] = {
             "atoms": system_object.move_molecules(
-                i,
+                i + 1,
                 (x_random[i * 3], x_random[i * 3 + 1], x_random[i * 3 + 2]),
                 (
-                    x_random[(i + system_object.total_molecules) * 3],
-                    x_random[(i + system_object.total_molecules) * 3 + 1],
-                    x_random[(i + system_object.total_molecules) * 3 + 2],
+                    x_random[(i + system_object.total_molecules - 1) * 3],
+                    x_random[(i + system_object.total_molecules - 1) * 3 + 1],
+                    x_random[(i + system_object.total_molecules - 1) * 3 + 2],
                 ),
                 obj_ee._max_closeness,
                 obj_ee._move_seed,
@@ -120,7 +121,6 @@ def build_input_pyscf(x_random, obj_ee):
         sphere_radius=obj_ee._sphere_radius,
         sphere_center=obj_ee._sphere_center
     ).initialize_cluster()
-
     obj_ee.object_system_current = system_object
 
     # Build input to pyscf

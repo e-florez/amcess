@@ -177,15 +177,9 @@ def test_SC_init_second_value_error(molecule1):
             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
             [
-                (-1.6341135544995076, 1.6341135544995076),
-                (-1.6341135544995076, 1.6341135544995076),
-                (-1.6341135544995076, 1.6341135544995076),
-                (-1.6341135544995076, 1.6341135544995076),
-                (-1.6341135544995076, 1.6341135544995076),
-                (-1.6341135544995076, 1.6341135544995076),
-                (0, scipy.pi),
-                (0, scipy.pi),
-                (0, scipy.pi),
+                (-2.07335921293852, 2.07335921293852),
+                (-2.07335921293852, 2.07335921293852),
+                (-2.07335921293852, 2.07335921293852),
                 (0, scipy.pi),
                 (0, scipy.pi),
                 (0, scipy.pi),
@@ -212,12 +206,6 @@ def test_SC_bounds_grep(molecule1, molecule2, expected_bounds):
                 (-2.6341135544995076, 1.6341135544995076),
                 (-2.6341135544995076, 1.6341135544995076),
                 (-2.6341135544995076, 1.6341135544995076),
-                (-2.6341135544995076, 1.6341135544995076),
-                (-2.6341135544995076, 1.6341135544995076),
-                (-2.6341135544995076, 1.6341135544995076),
-                (0, 3.16),
-                (0, 3.16),
-                (0, 3.16),
                 (0, 3.16),
                 (0, 3.16),
                 (0, 3.16),
@@ -260,7 +248,7 @@ def test_SC_bounds_set_TypeError(molecule1, molecule2, new_bounds):
         SearchConfig(Cluster(molecule1, molecule2)).bounds = new_bounds
     assert (
         str(e.value) == "\n\nArray dimensions insufficient: "
-        f"\ndimensions of old bounds: '{12}'\n"
+        f"\ndimensions of old bounds: '{6}'\n"
         f"\ndimensions of new bounds: '{len(new_bounds)}'\n"
     )
 
@@ -621,22 +609,25 @@ def test_SC_sphere_center_VE_set(molecule1, molecule2):
 
 
 @pytest.mark.parametrize(
-    "molecule1, molecule2, new_radius",
+    "molecule1, molecule2, new_radius, expected_radius_more_tol",
     [
         (
             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
             2.5,
+            3.5,
         ),
     ],
 )
-def test_SC_new_sphere_radius_set(molecule1, molecule2, new_radius):
+def test_SC_new_sphere_radius_set(
+    molecule1, molecule2, new_radius, expected_radius_more_tol
+):
     """
     Test new spehre radius  @sphere_radius.setter
     """
     obj_sc = SearchConfig(Cluster(molecule1, molecule2))
     obj_sc.sphere_radius = new_radius
-    assert obj_sc.sphere_radius == new_radius
+    assert obj_sc.sphere_radius == expected_radius_more_tol
 
 
 @pytest.mark.parametrize(
@@ -652,27 +643,16 @@ def test_SC_sphere_radius_TE_set(molecule1, molecule2):
     """
     Test TypeError @sphere_radius.setter
     """
-    with pytest.raises(TypeError) as e:
+    # due to decorator for new bounds is avoid the assert
+    with pytest.raises(TypeError):
         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
         obj_sc.sphere_radius = "1.0"
-    assert (
-        str(e.value) == "\n\nThe Sphere  Radius must be a float or int"
-        f"\nplease, check: '{type('1.0')}'\n"
-    )
-    with pytest.raises(TypeError) as e:
+    with pytest.raises(TypeError):
         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
         obj_sc.sphere_radius = [1.0]
-    assert (
-        str(e.value) == "\n\nThe Sphere  Radius must be a float or int"
-        f"\nplease, check: '{type([1.0])}'\n"
-    )
-    with pytest.raises(TypeError) as e:
+    with pytest.raises(TypeError):
         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
         obj_sc.sphere_radius = (1.0,)
-    assert (
-        str(e.value) == "\n\nThe Sphere  Radius must be a float or int"
-        f"\nplease, check: '{type((1.0,))}'\n"
-    )
 
 
 @pytest.mark.parametrize(
@@ -688,13 +668,10 @@ def test_SC_sphere_radius_VE_set(molecule1, molecule2):
     """
     Test ValueError @sphere_radius.setter
     """
-    with pytest.raises(ValueError) as e:
+    # due to decorator for new bounds is avoid the assert
+    with pytest.raises(ValueError):
         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-        obj_sc.sphere_radius = 0.8
-    assert (
-        str(e.value) == "\n\nThe Sphere  Radius must be larger than 1 Angstrom"
-        f"\nplease, check: '{0.8}'\n"
-    )
+        obj_sc.sphere_radius = 0.0
 
 
 @pytest.mark.parametrize(
@@ -826,7 +803,7 @@ def test_SC_tolerance_radius_grep(
     Test ask tolerance radius
     """
     assert (
-        SearchConfig(Cluster(molecule1, molecule2)).radius_contour_tolerance
+        SearchConfig(Cluster(molecule1, molecule2)).tolerance_contour_radius
         == default_tolerance_radius
     )
 
@@ -848,8 +825,8 @@ def test_SC_new_tolerance_radius_set(
     Test TypeError @radius_contour.setter
     """
     obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-    obj_sc.radius_contour_tolerance = new_tolerance_radius
-    assert obj_sc.radius_contour_tolerance == new_tolerance_radius
+    obj_sc.tolerance_contour_radius = new_tolerance_radius
+    assert obj_sc.tolerance_contour_radius == new_tolerance_radius
 
 
 @pytest.mark.parametrize(
@@ -867,28 +844,28 @@ def test_SC_tolerance_radius_TE_set(molecule1, molecule2):
     """
     with pytest.raises(TypeError) as e:
         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-        obj_sc.radius_contour_tolerance = 1
+        obj_sc.tolerance_contour_radius = 1
     assert (
         str(e.value) == "\n\nThe new tolerance radius is not a float"
         f"\nplease, check: '{type(1)}'\n"
     )
     with pytest.raises(TypeError) as e:
         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-        obj_sc.radius_contour_tolerance = "1.0"
+        obj_sc.tolerance_contour_radius = "1.0"
     assert (
         str(e.value) == "\n\nThe new tolerance radius is not a float"
         f"\nplease, check: '{type('1.0')}'\n"
     )
     with pytest.raises(TypeError) as e:
         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-        obj_sc.radius_contour_tolerance = [1.0]
+        obj_sc.tolerance_contour_radius = [1.0]
     assert (
         str(e.value) == "\n\nThe new tolerance radius is not a float"
         f"\nplease, check: '{type([1.0])}'\n"
     )
     with pytest.raises(TypeError) as e:
         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-        obj_sc.radius_contour_tolerance = (1.0,)
+        obj_sc.tolerance_contour_radius = (1.0,)
     assert (
         str(e.value) == "\n\nThe new tolerance radius is not a float"
         f"\nplease, check: '{type((1.0,))}'\n"

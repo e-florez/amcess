@@ -2,7 +2,7 @@ import numpy as np
 import scipy
 from scipy.optimize import shgo
 
-from amcess.base_molecule import Cluster, Molecule
+from amcess.base_molecule import Cluster
 from amcess.electronic_energy import ElectronicEnergy, hf_pyscf
 from amcess.m_dual_annealing import solve_dual_annealing
 
@@ -63,31 +63,21 @@ class SearchConfig:
         self.basis_set = basis
         self.cost_function_number = program_electronic_structure
         self.output_name = outxyz
-        self.radius_contour_tolerance = tolerance_contour_radius
+        self.tolerance_contour_radius = tolerance_contour_radius
 
         # Assignment of variables
         self._search_methodology = search_methodology
         self._basis_set = basis
         self._program_calculate_cost_function = program_electronic_structure
         self._output_name = outxyz
-        self._tolerance_contour_radius = tolerance_contour_radius
+        # self._tolerance_contour_radius = tolerance_contour_radius
 
         # Check Overlaping
         self._system_object.initialize_cluster()
 
         # Build bounds, format for scipy functions
         if system_object._sphere_radius is None:
-            self.spherical_contour_cluster(tolerance_contour_radius)
-
-        bound_translate = [
-            (-self._sphere_radius, self._sphere_radius),
-            (-self._sphere_radius, self._sphere_radius),
-            (-self._sphere_radius, self._sphere_radius),
-        ]
-        bound_rotate = [(0, scipy.pi), (0, scipy.pi), (0, scipy.pi)]
-        bound_translate = bound_translate * self._system_object.total_molecules
-        bound_rotate = bound_rotate * self._system_object.total_molecules
-        self._bounds = bound_translate + bound_rotate
+            self.spherical_contour_cluster()
 
         self._func = self.program_cost_function(
             self._program_calculate_cost_function
@@ -96,6 +86,41 @@ class SearchConfig:
         self._obj_ee = ElectronicEnergy(
             self._system_object, self._sphere_center, self._sphere_radius
         )
+
+    # ===============================================================
+    # Decorators
+    # ===============================================================
+    def bounds_sphere_change(function_change_radius):
+        def new_bounds(self, new_radius):
+            """
+            Define the bounds for the optimization algorithm
+
+            Returns
+            -------
+                bounds : list
+                    Bounds for the optimization algorithm
+            """
+            new_radius_t = self._tolerance_contour_radius + new_radius
+
+            bound_translate = [
+                (-new_radius_t, new_radius_t),
+                (-new_radius_t, new_radius_t),
+                (-new_radius_t, new_radius_t),
+            ]
+            bound_rotate = [(0, scipy.pi), (0, scipy.pi), (0, scipy.pi)]
+
+            bound_translate = bound_translate * (
+                self._system_object.total_molecules - 1
+            )
+            bound_rotate = bound_rotate * (
+                self._system_object.total_molecules - 1
+            )
+
+            self._bounds = bound_translate + bound_rotate
+
+            return function_change_radius(self, new_radius)
+
+        return new_bounds
 
     # ===============================================================
     # PROPERTIES
@@ -166,17 +191,16 @@ class SearchConfig:
         self._basis_set = new_basis_set
 
     @property
-    def radius_contour_tolerance(self):
+    def tolerance_contour_radius(self):
         return self._tolerance_contour_radius
 
-    @radius_contour_tolerance.setter
-    def radius_contour_tolerance(self, new_tol_radius):
+    @tolerance_contour_radius.setter
+    def tolerance_contour_radius(self, new_tol_radius: float):
         if not isinstance(new_tol_radius, float):
             raise TypeError(
                 "\n\nThe new tolerance radius is not a float"
                 f"\nplease, check: '{type(new_tol_radius)}'\n"
             )
-
         self._tolerance_contour_radius = new_tol_radius
 
     @property
@@ -205,19 +229,19 @@ class SearchConfig:
         return self._sphere_radius
 
     @sphere_radius.setter
+    @bounds_sphere_change
     def sphere_radius(self, new_radius: float) -> None:
         if not isinstance(new_radius, (int, float)):
             raise TypeError(
                 "\n\nThe Sphere  Radius must be a float or int"
                 f"\nplease, check: '{type(new_radius)}'\n"
             )
-        if new_radius <= 0.9:
+        self._sphere_radius = new_radius + self._tolerance_contour_radius
+        if self._sphere_radius <= self._tolerance_contour_radius:
             raise ValueError(
-                "\n\nThe Sphere  Radius must be larger than 1 Angstrom"
+                "\n\nThe Sphere Radius more tolerance must be larger than 1 A"
                 f"\nplease, check: '{new_radius}'\n"
             )
-
-        self._sphere_radius = new_radius
 
     @property
     def cost_function_ee(self):
@@ -247,7 +271,7 @@ class SearchConfig:
     # Methods
     # ===============================================================
 
-    def spherical_contour_cluster(self, tolerance):
+    def spherical_contour_cluster(self, new_tol: float = None):
         """
         Define a spherical outline that contains our cluster
 
@@ -256,22 +280,57 @@ class SearchConfig:
             tolerance : float
                 Tolerance with the radius between the mass center to the
                 furthest atom
+
+        Returns
+        -------
+            sphere_center : tuple
+                Mass center of the biggest molecule
+            sphere_radius : float
+                Radius between the sphere center to the furthest atom
+
         """
+        if new_tol is not None:
+            self._tolerance_contour_radius = new_tol
 
         max_distance_cm = 0.0
+        molecule = 0
+        max_atoms = 0
 
-        obj_mol = Molecule(self._system_object.atoms)
-        self._sphere_center = obj_mol.center_of_mass
+        # The biggest molecule
+        for i in range(self._system_object.total_molecules):
+            if self._system_object.get_molecule(i).total_atoms > max_atoms:
+                max_atoms = self._system_object.get_molecule(i).total_atoms
+                molecule = i
 
+        self._sphere_center = self._system_object.get_molecule(
+            molecule
+        ).center_of_mass
+
+        # Move the biggest molecule to initio in the cluster object,
+        # if is necessary
+        if molecule != 0:
+            new_geom = dict()
+            for i in range(self._system_object.total_molecules):
+                if i == 0:
+                    new_geom[i] = self._system_object.get_molecule(molecule)
+                elif i == molecule:
+                    new_geom[i] = self._system_object.get_molecule(0)
+                else:
+                    new_geom[i] = self._system_object.get_molecule(i)
+
+            self._system_object = Cluster(
+                *new_geom.values(), sphere_center=self._sphere_center
+            )
+
+        # Radius between the sphere center to the furthest atom
         for xyz in self._system_object.coordinates:
-
             temp_r = np.linalg.norm(
                 np.asarray(self._sphere_center) - np.asarray(xyz)
             )
             if temp_r > max_distance_cm:
                 max_distance_cm = temp_r
 
-        self._sphere_radius = max_distance_cm + tolerance  # A
+        self.sphere_radius = max_distance_cm
 
     def program_cost_function(self, _program_calculate_cost_function):
         """
