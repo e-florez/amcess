@@ -1,25 +1,79 @@
-import numpy as np
+import numpy
 from pyscf import gto, scf
 
-import amcess.search_configuration as SC
 from amcess.base_molecule import Cluster
 
 
-def beforeatoms(system):
-    """
-    Store attribute of before object made with Molecule
+class ElectronicEnergy:
+    def __init__(
+        self,
+        object_system: object,
+        sphere_center: tuple,
+        sphere_radius: float,
+        max_closeness: float = 1.0,
+        seed: int = None,
+    ) -> None:
+        """
+        Class to calculate electronic energy
 
-    Args:
-        system ([type]): [description]
+        Attributes
+        ----------
+            molecule_object : object
+                Object initialized with Molecule or Cluster class
+            sphere_center : list
+                Center of the sphere where evolve the system
+            sphere_radius : float
+                Radius of the sphere where should evolve the system
+        """
 
-    Returns:
-        [type]: [description]
-    """
-    beforeatoms.system = system or beforeatoms.system
-    return beforeatoms.system
+        self._object_system_initial = object_system
+        self._object_system_before = object_system
+        self._object_system_current = object_system
+
+        self._sphere_center = sphere_center
+        self._sphere_radius = sphere_radius
+
+        self._max_closeness = max_closeness
+        self._move_seed = seed
+
+    # ===============================================================
+    # PROPERTIES
+    # ===============================================================
+    @property
+    def object_system_initial(self):
+        return self._object_system_initial
+
+    @object_system_initial.setter
+    def object_system_initial(self, new_object_system):
+        (
+            self._object_system_initial,
+            self._object_system_before,
+            self._object_system_current,
+        ) = (
+            new_object_system,
+            new_object_system,
+            new_object_system,
+        )
+
+    @property
+    def object_system_before(self):
+        return self._object_system_before
+
+    @property
+    def object_system_current(self):
+        return self._object_system_current
+
+    @object_system_current.setter
+    def object_system_current(self, new_object_system):
+        self._object_system_before = self._object_system_current
+        self._object_system_current = new_object_system
+
+    # ===============================================================
+    # Methods
+    # ===============================================================
 
 
-def build_input_pyscf(x, molecule_object, type_search, ncall=[0]):
+def build_input_pyscf(x_random, obj_ee):
     """
     Build input to pyscf
 
@@ -28,94 +82,48 @@ def build_input_pyscf(x, molecule_object, type_search, ncall=[0]):
         x : array 1D
             possible new positions and angles.
         system_object : object
-            ([type]): [description]
-        icall ([type]): [description]
+            Object initialized with Molecule or Cluster class
+        icall : integer
+            number of call
 
     Returns
     -------
-        [type]: [description]
+        imput_mol: list
+            list of atoms and coordinates
+        system_object: Cluster
+            Cluster objects
     """
-    x_random = np.zeros((len(x[:])), dtype=float)
-    if ncall[0] == 0:
-        system_object = molecule_object
-    else:
-        system_object = beforeatoms.system
-        if type_search == 1:
-            # #! dual_annealing combinado con la propuesta
-            # #! de juan para bounds y restando el centro
-            # #!de masa al parecer evita que se alejen las
-            # #! las moleculas
 
-            mass_centers = np.zeros(
-                (system_object.total_molecules, 3), dtype=float
-            )
+    system_object = obj_ee._object_system_current
 
-            for i in range(system_object.total_molecules):
-                mass_centers[i] = system_object.get_molecule(i).center_of_mass
-
-            # #! Es para que black no me dañe el formato 0: a 0 :
-            # fmt: off
-            r_random = (
-                x[0: system_object.total_molecules * 3]
-                - mass_centers.reshape((system_object.total_molecules * 3))
-            )
-
-            theta_random = x[
-                system_object.total_molecules
-                * 3: system_object.total_molecules * 6
-            ]
-            # fmt: on
-
-            x_random = np.concatenate((r_random, theta_random))
-        elif type_search == 2:
-            # #! SHGO sobrepone las geometrías cuando resto el centor de
-            # #! masas
-            x_random = x
-
+    # Rotate and translate
     new_geom = dict()
-    for i in range(system_object.total_molecules):
-        if (len(system_object.get_molecule(i).symbols)) > 1:
-            # Rotate and translate
-            new_geom[i] = {
-                "atoms": system_object.rotate(
-                    i,
-                    x_random[(i + system_object.total_molecules) * 3],
-                    x_random[(i + system_object.total_molecules) * 3 + 1],
-                    x_random[(i + system_object.total_molecules) * 3 + 2],
-                )
-                .translate(
-                    i,
-                    x_random[i * 3],
-                    x_random[i * 3 + 1],
-                    x_random[i * 3 + 2],
-                )
-                .get_molecule(i)
-                .atoms
-            }
-        else:
-            # Translate
-            new_geom[i] = {
-                "atoms": system_object.get_molecule(i)
-                .translate(
-                    0,
-                    x_random[i * 3],
-                    x_random[i * 3 + 1],
-                    x_random[i * 3 + 2],
-                )
-                .atoms
-            }
+    new_geom[0] = {"atoms": system_object.get_molecule(0).atoms}
+    for i in range(system_object.total_molecules - 1):
+        new_geom[i + 1] = {
+            "atoms": system_object.move_molecules(
+                i + 1,
+                (x_random[i * 3], x_random[i * 3 + 1], x_random[i * 3 + 2]),
+                (
+                    x_random[(i + system_object.total_molecules - 1) * 3],
+                    x_random[(i + system_object.total_molecules - 1) * 3 + 1],
+                    x_random[(i + system_object.total_molecules - 1) * 3 + 2],
+                ),
+                obj_ee._max_closeness,
+                obj_ee._move_seed,
+            )
+            .get_molecule(i)
+            .atoms
+        }
 
-    system_object = Cluster(*new_geom.values())
+    system_object = Cluster(
+        *new_geom.values(),
+        sphere_radius=obj_ee._sphere_radius,
+        sphere_center=obj_ee._sphere_center
+    ).initialize_cluster()
+    obj_ee.object_system_current = system_object
 
-    # Controla que no este superpuestas las moleculas,
-    # para evitar exit con pyscf y SHGO
-    # En el caso que este superpuestas
-    # una molecula se translada una longitud aleatoria
-    # y un angulo aleatorio entre 0 a 1 en las 3 direcciones
-    system_object = Cluster(*SC.overlaping(system_object).values())
-
-    beforeatoms(system_object)
-    ###
+    # Build input to pyscf
     symbols = system_object.symbols
     input_mol = "'"
     for i in range(system_object.total_atoms):
@@ -126,11 +134,11 @@ def build_input_pyscf(x, molecule_object, type_search, ncall=[0]):
             input_mol += "; "
         else:
             input_mol += " '"
-    ncall[0] += 1  # count calls
+
     return input_mol, system_object
 
 
-def hf_pyscf(x, *args):
+def hf_pyscf(x, *args, ncall=[0]):
     """
     Calculate of electronic energy with pyscf
 
@@ -140,8 +148,7 @@ def hf_pyscf(x, *args):
             Possible new positions and angles
         shgo #?
         args : list
-            basis set, Object of Molecule, name output xyz,
-            type optimizaiton
+            basis set, Cluster Object, name output xyz
 
     Returns
     -------
@@ -150,14 +157,19 @@ def hf_pyscf(x, *args):
 
     """
 
-    input_pyscf, new_object = build_input_pyscf(x, args[1], args[3])
+    input_pyscf, new_object = build_input_pyscf(x, args[1])
 
     mol = gto.M(
         atom=input_pyscf,
         basis=args[0],
     )
 
-    e = scf.HF(mol).kernel()
+    try:
+        e = scf.HF(mol).kernel()
+    except (UserWarning, numpy.linalg.LinAlgError):
+        print("Error in pyscf")
+        e = float("inf")
+
     args[2].write(str(new_object.total_atoms) + "\n")
     args[2].write("Energy: " + str(e) + "\n")
     l: int = 0
@@ -176,4 +188,5 @@ def hf_pyscf(x, *args):
         )
         l: int = l + 1
 
+    ncall[0] += 1  # count calls
     return e
