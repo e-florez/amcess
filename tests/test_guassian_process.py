@@ -1,5 +1,5 @@
 import pytest
-from amcess.minimization import solve_gaussian_processes
+from amcess.gaussian_process import solve_gaussian_processes
 
 
 @pytest.mark.parametrize(
@@ -22,6 +22,6 @@ def test_solve_gaussian_processes(
     seed = 666
     gp_params = {"initer": initer, "maxiter": maxiter}
     opt = solve_gaussian_processes(
-        cost_function, bounds, seed=seed, gp_params=gp_params
+        cost_function, bounds, args=(), seed=seed, gp_params=gp_params
     )
     assert (opt.fun - expected_minima) < 1e-6
