@@ -58,19 +58,13 @@ class SearchConfig:
             )
         self._system_object = system_object
 
-        # Verfication of variables (type, value)
+        # Verfication and assigment of variables (type, value)
         self.search_type = search_methodology
         self.basis_set = basis
         self.cost_function_number = program_electronic_structure
         self.output_name = outxyz
         self.tolerance_contour_radius = tolerance_contour_radius
-
-        # Assignment of variables
-        self._search_methodology = search_methodology
-        self._basis_set = basis
-        self._program_calculate_cost_function = program_electronic_structure
-        self._output_name = outxyz
-        # self._tolerance_contour_radius = tolerance_contour_radius
+        self.cost_function_number = program_electronic_structure
 
         # Check Overlaping
         self._system_object.initialize_cluster()
@@ -265,6 +259,7 @@ class SearchConfig:
                 f"\nplease, check: '{new_func}'\n"
             )
 
+        self._program_calculate_cost_function = new_func
         self._func = self.program_cost_function(new_func)
 
     # ===============================================================
