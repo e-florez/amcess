@@ -5,6 +5,7 @@ from scipy.optimize import shgo
 from amcess.base_molecule import Cluster
 from amcess.electronic_energy import ElectronicEnergy, hf_pyscf
 from amcess.m_dual_annealing import solve_dual_annealing
+from amcess.gaussian_process import solve_gaussian_processes
 
 
 class SearchConfig:
@@ -368,6 +369,8 @@ class SearchConfig:
             self.da(**kwargs)
         if self._search_methodology == 2:
             self.shgo(**kwargs)
+        if self._search_methodology == 3:
+            self.bayesian(**kwargs)
 
     def da(self, **kwargs):
         """
@@ -404,6 +407,26 @@ class SearchConfig:
         print("*** Minimization: SHGO from Scipy ***")
         with open(self._output_name, "w") as outxyz:
             self._search = shgo(
+                self._func,
+                bounds=self._bounds,
+                args=(self._basis_set, self._obj_ee, outxyz),
+                **kwargs,
+            )
+
+    def bayesian(self, **kwargs):
+        """
+        Execute solve Bayesian to search candidate structure
+        and open output file
+
+        Parameters
+        ----------
+            **kwargs : dict
+                Dictionary with the parameters to be used in the
+                Bayesian methodology
+        """
+        print("*** Minimization: Bayesian ***")
+        with open(self._output_name, "w") as outxyz:
+            self._search = solve_gaussian_processes(
                 self._func,
                 bounds=self._bounds,
                 args=(self._basis_set, self._obj_ee, outxyz),
