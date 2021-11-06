@@ -740,9 +740,9 @@ def test_cluster_setting_frozen_molecule():
     """
     w = Cluster([("H1", 0, 0, 0), ("H2", 0, 0, 0)])
 
-    w.frozen_molecule = 0
+    w.freeze_molecule = 0
 
-    assert w.frozen_molecule == [0]
+    assert w.freeze_molecule == [0]
 
 
 def test_cluster_setting_frozen_molecule_list():
@@ -751,9 +751,9 @@ def test_cluster_setting_frozen_molecule_list():
     """
     w = Cluster([("H1", 0, 0, 0), ("H2", 0, 0, 0)])
 
-    w.frozen_molecule = [0, 1]
+    w.freeze_molecule = [0, 1]
 
-    assert w.frozen_molecule == [0, 1]
+    assert w.freeze_molecule == [0, 1]
 
 
 def test_cluster_setting_sphere_center():
@@ -1047,7 +1047,7 @@ def test_cluster_rotate_frozen_molecule():
 
     mol = Cluster(dummy, [("H", 0, 0, 0)])
 
-    mol.frozen_molecule = 0
+    mol.freeze_molecule = 0
     mol_rotated = mol.rotate(0, x=90)
 
     assert mol.atoms == mol_rotated.atoms
@@ -1129,7 +1129,7 @@ def test_cluster_translate_frozen_molecule():
 
     mol = Cluster(dummy, [("H", 0, 0, 0)])
 
-    mol.frozen_molecule = 1
+    mol.freeze_molecule = 1
     mol_rotated = mol.translate(1, x=90)
 
     assert mol.atoms == mol_rotated.atoms

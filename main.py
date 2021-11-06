@@ -7,6 +7,7 @@ from data.molecules_coordinates import (
     hydrogen_fluoride,
     nano_boy,
     metal_complex,
+    ibuprofen,
 )
 
 
@@ -334,8 +335,8 @@ def test_cluster():
     # )
     # print(b.xyz)
 
-    ca = Cluster(2 * Molecule.from_dict(water))
-    print(ca.xyz)
+    # ca = Cluster(2 * Molecule.from_dict(water))
+    # print(ca.xyz)
     # # print("+--" * 30)
 
     # # print("sphere None: ", ca.sphere_center)
@@ -348,22 +349,31 @@ def test_cluster():
         ("H", -0.58708, 0.75754, 0),
     ]
 
-    w2 = Cluster(water_molecule, water_molecule)
+    w = Cluster(water_molecule)
 
-    # let's move any molecule randomly to avoid averlaping
-    new_w2 = w2.move_molecule(1)
-    # print(new_w2.xyz)
+    print(w.xyz)
 
-    ca = 3 * w2
+    for i in range(3):
+        #     print(w.move_molecule(0).xyz)
+        new_w = w.move_molecule(0)
+        print(new_w.xyz)
 
-    # let's define the spherical boundary conditions
-    ca.sphere_center = 0, 0, 0
-    # w2.sphere_center = 10, 10, 10
-    ca.sphere_radius = 20
+    # new_w2.freeze_molecule = 0
 
-    ini = ca.initialize_cluster(max_closeness=10)
+    # for i in range(5):
+    #     new_w2 = new_w2.move_molecule(1, max_closeness=2)
+    #     print(new_w2.xyz)
 
-    print(ini.xyz)
+    # ca = 3 * w2
+
+    # # let's define the spherical boundary conditions
+    # ca.sphere_center = 0, 0, 0
+    # # w2.sphere_center = 10, 10, 10
+    # ca.sphere_radius = 20
+
+    # ini = ca.initialize_cluster(max_closeness=10)
+
+    # print(ini.xyz)
 
 
 def old_molecule_class():
