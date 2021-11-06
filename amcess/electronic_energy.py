@@ -146,7 +146,6 @@ def hf_pyscf(x, *args, ncall=[0]):
     ----------
         x : array 1D
             Possible new positions and angles
-        shgo #?
         args : list
             basis set, Cluster Object, name output xyz
 

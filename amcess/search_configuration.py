@@ -4,8 +4,8 @@ from scipy.optimize import shgo
 
 from amcess.base_molecule import Cluster
 from amcess.electronic_energy import ElectronicEnergy, hf_pyscf
-from amcess.m_dual_annealing import solve_dual_annealing
 from amcess.gaussian_process import solve_gaussian_processes
+from amcess.m_dual_annealing import solve_dual_annealing
 
 
 class SearchConfig:

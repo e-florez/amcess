@@ -1,5 +1,8 @@
+import time
+
 import GPyOpt
 import numpy as np
+from GPyOpt.util.general import spawn
 from scipy.optimize import OptimizeResult
 
 
@@ -49,6 +52,122 @@ def define_run_optimization_args(gp_params):
     return runopt_args
 
 
+# #! Classes copied from GPyOpt/core/objective.py to can pass the
+# #! electronic energy object in the energy evaluation
+class Objective(object):
+    """
+    General class to handle the objective function internally.
+    """
+
+    def evaluate(self, x):
+        raise NotImplementedError()
+
+
+class SingleObjective_Edited(Objective):
+    """
+    Class to handle problems with one single objective function.
+
+    param func: objective function.
+    param batch_size: size of the batches (default, 1)
+    param num_cores: number of cores to use in the process of evaluating
+    the objective (default, 1).
+    param objective_name: name of the objective function.
+    param batch_type: Type of batch used. Only 'synchronous' evaluations
+    are possible at the moment.
+    param space: Not in use.
+
+    .. Note:: the objective function should take 2-dimensional numpy arrays
+    as input and outputs. Each row should contain a location (in the case of
+    the inputs) or a function evaluation (in the case of the outputs).
+    """
+
+    def __init__(
+        self,
+        func,
+        args,
+        num_cores=1,
+        objective_name="no_name",
+        batch_type="synchronous",
+        space=None,
+    ):
+        self.func = func
+        self.args = args
+        self.n_procs = num_cores
+        self.num_evaluations = 0
+        self.space = space
+        self.objective_name = objective_name
+
+    def evaluate(self, x):
+        """
+        Performs the evaluation of the objective at x.
+        """
+
+        if self.n_procs == 1:
+            f_evals, cost_evals = self._eval_func(x)
+        else:
+            try:
+                f_evals, cost_evals = self._syncronous_batch_evaluation(x)
+            # #! it is add E722 to avoid the error by :: to tox.init for flake8
+            except:
+                if not hasattr(self, "parallel_error"):
+                    print(
+                        "Error in parallel computation.\n"
+                        "Fall back to single process!"
+                    )
+                else:
+                    self.parallel_error = True
+                f_evals, cost_evals = self._eval_func(x)
+
+        return f_evals, cost_evals
+
+    def _eval_func(self, x):
+        """
+        Performs sequential evaluations of the function at x (single
+        location or batch). The computing time of each evaluation is
+        also provided.
+        """
+        cost_evals = []
+        f_evals = np.empty(shape=[0, 1])
+
+        for i in range(x.shape[0]):
+            st_time = time.time()
+            # rlt = self.func(np.atleast_2d(x[i]), self.args)
+            rlt = self.func(np.ravel(x[i]), *self.args)
+            f_evals = np.vstack([f_evals, rlt])
+            cost_evals += [time.time() - st_time]
+        return f_evals, cost_evals
+
+    def _syncronous_batch_evaluation(self, x):
+        """
+        Evaluates the function a x, where x can be a single location
+        or a batch. The evaluation is performed in parallel according
+        to the number of accessible cores.
+        """
+
+        from multiprocessing import Pipe, Process
+
+        # --- parallel evaluation of the function
+        # #! it is add E203 to avoid the error by :: to tox.init for flake8
+        divided_samples = [x[i :: self.n_procs] for i in range(self.n_procs)]
+        pipe = [Pipe() for i in range(self.n_procs)]
+        proc = [
+            Process(target=spawn(self._eval_func), args=(c, k))
+            for k, (p, c) in zip(divided_samples, pipe)
+        ]
+        [p.start() for p in proc]
+        [p.join() for p in proc]
+
+        # --- time of evaluation is set to constant (=1).
+        # This is one of the hypothesis of synchronous batch methods.
+        f_evals = np.zeros((x.shape[0], 1))
+        cost_evals = np.ones((x.shape[0], 1))
+        i = 0
+        for (p, c) in pipe:
+            f_evals[i :: self.n_procs] = p.recv()[0]  # throw away costs
+            i += 1
+        return f_evals, cost_evals
+
+
 def solve_gaussian_processes(
     func,
     bounds,
@@ -77,8 +196,7 @@ def solve_gaussian_processes(
             defining bounds for the objective function parameter.
 
         args : tuple
-            basis set, Cluster object, and name of output file to save
-            accepted structures
+            Basis set, Cluster object, and name output file.
 
         iseed : None, int
 
@@ -145,7 +263,9 @@ def solve_gaussian_processes(
     space = GPyOpt.Design_space(space=xbounds)
 
     # Define function to be minimized
-    objective = GPyOpt.core.task.SingleObjective(func)
+    # objective = GPyOpt.core.task.SingleObjective(func)
+
+    objective = SingleObjective_Edited(func, args)
 
     # Define initial evaluations (random seed must be fixed before)
     np.random.seed(seed)

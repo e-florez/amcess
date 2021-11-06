@@ -13,14 +13,6 @@ from amcess.minimization import solve_gaussian_processes
             10,
             [0],
         ),
-        # (
-        #     lambda x: (x[0,0] ** 2 + x[0,1] - 11) ** 2
-        #     + (x[0,0] + x[0,1] ** 2 - 7) ** 2,
-        #     [(-5, 5), (-5, 5)],
-        #     30,
-        #     50,
-        #     [0],
-        # ),
     ],
 )
 def test_solve_gaussian_processes(
