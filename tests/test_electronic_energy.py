@@ -6,7 +6,7 @@ from amcess.electronic_energy import ElectronicEnergy, hf_pyscf
 
 
 @pytest.mark.parametrize(
-    "x0, bases, cluster1, cluster2, output, sphere_center, sphere_radius,"
+    "x0, basis, cluster1, cluster2, output, sphere_center, sphere_radius,"
     "expected_energy",
     [
         (
@@ -23,7 +23,7 @@ from amcess.electronic_energy import ElectronicEnergy, hf_pyscf
 )
 def test_electronic_energy_with_hf_pyscf(
     x0,
-    bases,
+    basis,
     cluster1,
     cluster2,
     output,
@@ -38,8 +38,8 @@ def test_electronic_energy_with_hf_pyscf(
     ----------
         x0: array 1D
             Values to translate and rotate each molecule
-        bases: string
-            Label of the bases set
+        basis: string
+            Label of the basis set
         cluster1 : dict
             Dictionary with symbols and coordinates of the
             first molecule
@@ -59,11 +59,11 @@ def test_electronic_energy_with_hf_pyscf(
     with open(output, "w") as outxyz:
         e = hf_pyscf(
             x0,
-            bases,
             ElectronicEnergy(
                 Cluster(cluster1, cluster2),
                 sphere_center,
                 sphere_radius,
+                basis,
             ),
             outxyz,
         )
@@ -72,13 +72,14 @@ def test_electronic_energy_with_hf_pyscf(
 
 
 @pytest.mark.parametrize(
-    "cluster1, cluster2, sphere_center, sphere_radius",
+    "cluster1, cluster2, sphere_center, sphere_radius, basis",
     [
         (
             [("H", 1, 1, 1), ("H", 1.74, 1, 1)],
             [("H", 0, 0, 0), ("H", 0.74, 0, 0)],
             (0.0, 0.0, 0.0),
             1.0,
+            "sto-3g",
         ),
     ],
 )
@@ -87,6 +88,7 @@ def test_ElectronicEnergy_object_system_initial_grep(
     cluster2,
     sphere_center,
     sphere_radius,
+    basis,
 ):
     """
     Test for electronic energy object save inital object system
@@ -107,19 +109,22 @@ def test_ElectronicEnergy_object_system_initial_grep(
             Center mass of clusters
         sphere_radius : float
             Radius of the sphere centered in the cluster center mass
+        basis : string
+            Label of the basis set
     """
     assert (
         ElectronicEnergy(
             Cluster(cluster1, cluster2),
             sphere_center,
             sphere_radius,
+            basis,
         )._object_system_initial
         == Cluster(cluster1, cluster2)
     )
 
 
 @pytest.mark.parametrize(
-    "cluster1, cluster2, cluster3, sphere_center, sphere_radius",
+    "cluster1, cluster2, cluster3, sphere_center, sphere_radius, basis",
     [
         (
             [("H", 1, 1, 1), ("H", 1.74, 1, 1)],
@@ -127,6 +132,7 @@ def test_ElectronicEnergy_object_system_initial_grep(
             [("H", 2, 2, 2), ("H", 2.74, 2, 2)],
             (0.0, 0.0, 0.0),
             1.0,
+            "sto-3g",
         ),
     ],
 )
@@ -136,6 +142,7 @@ def test_ElectronicEnergy_object_system_initial_set(
     cluster3,
     sphere_center,
     sphere_radius,
+    basis,
 ):
     """
     Test for electronic energy object overwite before, initial
@@ -160,12 +167,15 @@ def test_ElectronicEnergy_object_system_initial_set(
             Center mass of clusters
         sphere_radius : float
             Radius of the sphere centered in the cluster center mass
+        basis : string
+            Label of the basis set
 
     """
     new_obj_ee = ElectronicEnergy(
         Cluster(cluster1, cluster2),
         sphere_center,
         sphere_radius,
+        basis,
     )
     new_obj_ee.object_system_initial = Cluster(cluster3, cluster2)
     assert (
@@ -180,13 +190,14 @@ def test_ElectronicEnergy_object_system_initial_set(
 
 
 @pytest.mark.parametrize(
-    "cluster1, cluster2, sphere_center, sphere_radius",
+    "cluster1, cluster2, sphere_center, sphere_radius, basis",
     [
         (
             [("H", 1, 1, 1), ("H", 1.74, 1, 1)],
             [("H", 0, 0, 0), ("H", 0.74, 0, 0)],
             (0.0, 0.0, 0.0),
             1.0,
+            "sto-3g",
         ),
     ],
 )
@@ -195,6 +206,7 @@ def test_ElectronicEnergy_object_system_before_grep(
     cluster2,
     sphere_center,
     sphere_radius,
+    basis,
 ):
     """
     Test for electronic energy object save before object system
@@ -215,25 +227,29 @@ def test_ElectronicEnergy_object_system_before_grep(
             Center mass of clusters
         sphere_radius : float
             Radius of the sphere centered in the cluster center mass
+        basis   : string
+            Label of the basis set
     """
     assert (
         ElectronicEnergy(
             Cluster(cluster1, cluster2),
             sphere_center,
             sphere_radius,
+            basis,
         )._object_system_before
         == Cluster(cluster1, cluster2)
     )
 
 
 @pytest.mark.parametrize(
-    "cluster1, cluster2, sphere_center, sphere_radius",
+    "cluster1, cluster2, sphere_center, sphere_radius, basis",
     [
         (
             [("H", 1, 1, 1), ("H", 1.74, 1, 1)],
             [("H", 0, 0, 0), ("H", 0.74, 0, 0)],
             (0.0, 0.0, 0.0),
             1.0,
+            "sto-3g",
         ),
     ],
 )
@@ -242,6 +258,7 @@ def test_ElectronicEnergy_object_system_current_grep(
     cluster2,
     sphere_center,
     sphere_radius,
+    basis,
 ):
     """
     Test for electronic energy object save current object system
@@ -262,19 +279,22 @@ def test_ElectronicEnergy_object_system_current_grep(
             Center mass of clusters
         sphere_radius : float
             Radius of the sphere centered in the cluster center mass
+        basis : string
+            Basis set used to calculate the electronic energy
     """
     assert (
         ElectronicEnergy(
             Cluster(cluster1, cluster2),
             sphere_center,
             sphere_radius,
+            basis,
         )._object_system_current
         == Cluster(cluster1, cluster2)
     )
 
 
 @pytest.mark.parametrize(
-    "cluster1, cluster2, cluster3, sphere_center, sphere_radius",
+    "cluster1, cluster2, cluster3, sphere_center, sphere_radius, basis",
     [
         (
             [("H", 1, 1, 1), ("H", 1.74, 1, 1)],
@@ -282,6 +302,7 @@ def test_ElectronicEnergy_object_system_current_grep(
             [("H", 2, 2, 2), ("H", 2.74, 2, 2)],
             (0.0, 0.0, 0.0),
             1.0,
+            "sto-3g",
         ),
     ],
 )
@@ -291,6 +312,7 @@ def test_ElectronicEnergy_object_system_current_set(
     cluster3,
     sphere_center,
     sphere_radius,
+    basis,
 ):
     """
     Test for electronic energy object overwite before and
@@ -315,12 +337,15 @@ def test_ElectronicEnergy_object_system_current_set(
             Center mass of clusters
         sphere_radius : float
             Radius of the sphere centered in the cluster center mass
+        basis : string
+            Basis set used to calculate the electronic energy
 
     """
     new_obj_ee = ElectronicEnergy(
         Cluster(cluster1, cluster2),
         sphere_center,
         sphere_radius,
+        basis,
     )
     new_obj_ee.object_system_current = Cluster(cluster3, cluster2)
     assert (

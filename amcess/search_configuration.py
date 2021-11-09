@@ -79,7 +79,10 @@ class SearchConfig:
         )
 
         self._obj_ee = ElectronicEnergy(
-            self._system_object, self._sphere_center, self._sphere_radius
+            self._system_object,
+            self._sphere_center,
+            self._sphere_radius,
+            self._basis_set,
         )
 
     # ===============================================================
@@ -389,7 +392,7 @@ class SearchConfig:
                 self._func,
                 self._bounds,
                 self._system_object,
-                args=(self._basis_set, self._obj_ee, outxyz),
+                args=(self._obj_ee, outxyz),
                 **kwargs,
             )
 
@@ -409,7 +412,7 @@ class SearchConfig:
             self._search = shgo(
                 self._func,
                 bounds=self._bounds,
-                args=(self._basis_set, self._obj_ee, outxyz),
+                args=(self._obj_ee, outxyz),
                 **kwargs,
             )
 
@@ -429,6 +432,6 @@ class SearchConfig:
             self._search = solve_gaussian_processes(
                 self._func,
                 bounds=self._bounds,
-                args=(self._basis_set, self._obj_ee, outxyz),
+                args=(self._obj_ee, outxyz),
                 **kwargs,
             )

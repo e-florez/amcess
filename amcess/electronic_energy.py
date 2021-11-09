@@ -10,6 +10,7 @@ class ElectronicEnergy:
         object_system: object,
         sphere_center: tuple,
         sphere_radius: float,
+        basis_set: str,
         max_closeness: float = 1.0,
         seed: int = None,
     ) -> None:
@@ -33,8 +34,90 @@ class ElectronicEnergy:
         self._sphere_center = sphere_center
         self._sphere_radius = sphere_radius
 
+        self._basis_set = basis_set
+
         self._max_closeness = max_closeness
         self._move_seed = seed
+
+    # ===============================================================
+    # Decorators
+    # ===============================================================
+    def build_input_pyscf(func_energy):
+        def new_input(self, x_random, *args, ncall=[0]):
+            """
+            Build input to pyscf
+
+            Parameters
+            ----------
+                x : array 1D
+                    possible new positions and angles.
+                system_object : object
+                    Object initialized with Molecule or Cluster class
+                icall : integer
+                    number of call
+
+            Returns
+            -------
+                imput_mol: list
+                    list of atoms and coordinates
+                system_object: Cluster
+                    Cluster objects
+            """
+            system_object = self._object_system_current
+            # Rotate and translate
+            new_geom = dict()
+            new_geom[0] = {"atoms": system_object.get_molecule(0).atoms}
+            for i in range(system_object.total_molecules - 1):
+                new_geom[i + 1] = {
+                    "atoms": system_object.move_molecules(
+                        i + 1,
+                        (
+                            x_random[i * 3],
+                            x_random[i * 3 + 1],
+                            x_random[i * 3 + 2],
+                        ),
+                        (
+                            x_random[
+                                (i + system_object.total_molecules - 1) * 3
+                            ],
+                            x_random[
+                                (i + system_object.total_molecules - 1) * 3 + 1
+                            ],
+                            x_random[
+                                (i + system_object.total_molecules - 1) * 3 + 2
+                            ],
+                        ),
+                        self._max_closeness,
+                        self._move_seed,
+                    )
+                    .get_molecule(i)
+                    .atoms
+                }
+
+            self.object_system_current = Cluster(
+                *new_geom.values(),
+                sphere_radius=self._sphere_radius,
+                sphere_center=self._sphere_center
+            ).initialize_cluster()
+
+            # Build input to pyscf
+            symbols = self._object_system_current.symbols
+            input_mol = "'"
+            for i in range(self._object_system_current.total_atoms):
+                input_mol += str(symbols[i])
+                for j in range(3):
+                    input_mol += "  " + str(
+                        self._object_system_current.coordinates[i][j]
+                    )
+                if i < self._object_system_current.total_atoms - 1:
+                    input_mol += "; "
+                else:
+                    input_mol += " '"
+
+            args = (args[0], args[1], input_mol, system_object)
+            return func_energy(self, x_random, *args, ncall=[0])
+
+        return new_input
 
     # ===============================================================
     # PROPERTIES
@@ -71,87 +154,60 @@ class ElectronicEnergy:
     # ===============================================================
     # Methods
     # ===============================================================
-
-
-def build_input_pyscf(func_energy):
-    def new_input(x_random, *args, ncall=[0]):
+    @build_input_pyscf
+    def energy_hf_pyscf(self, x, *args, ncall=[0]):
         """
-        Build input to pyscf
+        Calculate of electronic energy with pyscf
 
         Parameters
         ----------
             x : array 1D
-                possible new positions and angles.
-            system_object : object
-                Object initialized with Molecule or Cluster class
-            icall : integer
-                number of call
+                Possible new positions and angles
+            args : list
+                basis set, Cluster Object, name output xyz
 
         Returns
         -------
-            imput_mol: list
-                list of atoms and coordinates
-            system_object: Cluster
-                Cluster objects
+            e : float
+                electronic energy
+
         """
-        obj_ee = args[1]
-        system_object = obj_ee._object_system_current
-
-        # Rotate and translate
-        new_geom = dict()
-        new_geom[0] = {"atoms": system_object.get_molecule(0).atoms}
-        for i in range(system_object.total_molecules - 1):
-            new_geom[i + 1] = {
-                "atoms": system_object.move_molecules(
-                    i + 1,
-                    (
-                        x_random[i * 3],
-                        x_random[i * 3 + 1],
-                        x_random[i * 3 + 2],
-                    ),
-                    (
-                        x_random[(i + system_object.total_molecules - 1) * 3],
-                        x_random[
-                            (i + system_object.total_molecules - 1) * 3 + 1
-                        ],
-                        x_random[
-                            (i + system_object.total_molecules - 1) * 3 + 2
-                        ],
-                    ),
-                    obj_ee._max_closeness,
-                    obj_ee._move_seed,
-                )
-                .get_molecule(i)
-                .atoms
-            }
-
-        system_object = Cluster(
-            *new_geom.values(),
-            sphere_radius=obj_ee._sphere_radius,
-            sphere_center=obj_ee._sphere_center
-        ).initialize_cluster()
-        obj_ee.object_system_current = system_object
-
         # Build input to pyscf
-        symbols = system_object.symbols
-        input_mol = "'"
-        for i in range(system_object.total_atoms):
-            input_mol += str(symbols[i])
-            for j in range(3):
-                input_mol += "  " + str(system_object.coordinates[i][j])
-            if i < system_object.total_atoms - 1:
-                input_mol += "; "
-            else:
-                input_mol += " '"
+        mol = gto.M(
+            atom=args[2],
+            basis=self._basis_set,  # args[0],
+        )
 
-        args = (args[0], args[1], args[2], input_mol, system_object)
-        return func_energy(x_random, *args, ncall=[0])
+        try:
+            e = scf.HF(mol).kernel()
+        except (UserWarning, numpy.linalg.LinAlgError):
+            print("Error in pyscf")
+            e = float("inf")
 
-    return new_input
+        new_object = args[3]
+        args[1].write(str(new_object.total_atoms) + "\n")
+        args[1].write("Energy: " + str(e) + "\n")
+        l: int = 0
+        for symbols in new_object.symbols:
+            args[1].write(
+                str(symbols)
+                + "  "
+                +
+                # 1 A = 1.88973 Bohr
+                str(new_object.atoms[l][1] / 1.88973)
+                + "  "
+                + str(new_object.atoms[l][2] / 1.88973)
+                + "  "
+                + str(new_object.atoms[l][3] / 1.88973)
+                + "\n"
+            )
+            l: int = l + 1
+
+        ncall[0] += 1  # count calls
+        return e
 
 
-@build_input_pyscf
-def hf_pyscf(x, *args, ncall=[0]):
+def hf_pyscf(x, *args):
     """
     Calculate of electronic energy with pyscf
 
@@ -168,38 +224,4 @@ def hf_pyscf(x, *args, ncall=[0]):
             electronic energy
 
     """
-
-    # input_pyscf, new_object = build_input_pyscf(x, args[1])
-
-    mol = gto.M(
-        atom=args[3],  # kwargs["input"],  # input_mol,
-        basis=args[0],
-    )
-
-    try:
-        e = scf.HF(mol).kernel()
-    except (UserWarning, numpy.linalg.LinAlgError):
-        print("Error in pyscf")
-        e = float("inf")
-
-    new_object = args[4]  # kwargs["object"]  # system_object
-    args[2].write(str(new_object.total_atoms) + "\n")
-    args[2].write("Energy: " + str(e) + "\n")
-    l: int = 0
-    for symbols in new_object.symbols:
-        args[2].write(
-            str(symbols)
-            + "  "
-            +
-            # 1 A = 1.88973 Bohr
-            str(new_object.atoms[l][1] / 1.88973)
-            + "  "
-            + str(new_object.atoms[l][2] / 1.88973)
-            + "  "
-            + str(new_object.atoms[l][3] / 1.88973)
-            + "\n"
-        )
-        l: int = l + 1
-
-    ncall[0] += 1  # count calls
-    return e
+    return args[0].energy_hf_pyscf(x, *args, ncall=[0])
