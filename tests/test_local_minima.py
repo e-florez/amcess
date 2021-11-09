@@ -1,20 +1,19 @@
 import pytest
 from amcess.base_molecule import Cluster
 from amcess.local_minima import LocalMinima
-from amcess.electronic_energy_new import Electronic_energy
 
 
 @pytest.mark.parametrize(
-    "cluster1,cluster2, expected_energy", 
+    "cluster1,cluster2, expected_energy",
     [
         (
             [("O", 0, 0, 0), ("H", 0.58708, 0.75754, 0),
              ("H", -0.58708, 0.75754, 0)],
             [("O", 0, 0, 1), ("H", 0.58708, 0.75754, 1),
              ("H", -0.58708, 0.75754, 1)],
-            [148]
-        ) 
-    ]
+            [148],
+        )
+    ],
 )
 def test_local_minima(cluster1, cluster2, expected_energy):
     """
