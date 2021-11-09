@@ -175,7 +175,7 @@ class ElectronicEnergy:
         # Build input to pyscf
         mol = gto.M(
             atom=args[2],
-            basis=self._basis_set,  # args[0],
+            basis=self._basis_set,
         )
 
         try:

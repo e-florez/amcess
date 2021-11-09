@@ -352,3 +352,45 @@ def test_ElectronicEnergy_object_system_current_set(
         new_obj_ee.object_system_before,
         new_obj_ee.object_system_current,
     ) == (Cluster(cluster1, cluster2), Cluster(cluster3, cluster2))
+
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2, sphere_center, sphere_radius,"
+    "bases, max_closeness, bonds",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.00, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 0.11), ("H", 0.78, 0.0, 0.11)],
+            (0.0, 0.0, 0.0),
+            0.0,
+            "sto-3g",
+            0.11,
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ),
+    ],
+)
+def test_error_energy_hf_pyscf(
+    molecule1,
+    molecule2,
+    sphere_center,
+    sphere_radius,
+    bases,
+    max_closeness,
+    bonds,
+):
+    """
+    Test Error of pyscf
+    """
+    with pytest.warns(UserWarning) as w:
+        with open("configurations.xyz", "w") as outxyz:
+            obj_sc = ElectronicEnergy(
+                Cluster(molecule1),
+                sphere_center,
+                sphere_radius,
+                bases,
+                max_closeness,
+            )
+            args = (bases, outxyz)
+            obj_sc.energy_hf_pyscf(bonds, *args)
+    os.remove("configurations.xyz")
+    assert str(w) == "WarningsChecker(record=True)"
