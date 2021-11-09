@@ -73,71 +73,84 @@ class ElectronicEnergy:
     # ===============================================================
 
 
-def build_input_pyscf(x_random, obj_ee):
-    """
-    Build input to pyscf
+def build_input_pyscf(func_energy):
+    def new_input(x_random, *args, ncall=[0]):
+        """
+        Build input to pyscf
 
-    Parameters
-    ----------
-        x : array 1D
-            possible new positions and angles.
-        system_object : object
-            Object initialized with Molecule or Cluster class
-        icall : integer
-            number of call
+        Parameters
+        ----------
+            x : array 1D
+                possible new positions and angles.
+            system_object : object
+                Object initialized with Molecule or Cluster class
+            icall : integer
+                number of call
 
-    Returns
-    -------
-        imput_mol: list
-            list of atoms and coordinates
-        system_object: Cluster
-            Cluster objects
-    """
+        Returns
+        -------
+            imput_mol: list
+                list of atoms and coordinates
+            system_object: Cluster
+                Cluster objects
+        """
+        obj_ee = args[1]
+        system_object = obj_ee._object_system_current
 
-    system_object = obj_ee._object_system_current
+        # Rotate and translate
+        new_geom = dict()
+        new_geom[0] = {"atoms": system_object.get_molecule(0).atoms}
+        for i in range(system_object.total_molecules - 1):
+            new_geom[i + 1] = {
+                "atoms": system_object.move_molecules(
+                    i + 1,
+                    (
+                        x_random[i * 3],
+                        x_random[i * 3 + 1],
+                        x_random[i * 3 + 2],
+                    ),
+                    (
+                        x_random[(i + system_object.total_molecules - 1) * 3],
+                        x_random[
+                            (i + system_object.total_molecules - 1) * 3 + 1
+                        ],
+                        x_random[
+                            (i + system_object.total_molecules - 1) * 3 + 2
+                        ],
+                    ),
+                    obj_ee._max_closeness,
+                    obj_ee._move_seed,
+                )
+                .get_molecule(i)
+                .atoms
+            }
 
-    # Rotate and translate
-    new_geom = dict()
-    new_geom[0] = {"atoms": system_object.get_molecule(0).atoms}
-    for i in range(system_object.total_molecules - 1):
-        new_geom[i + 1] = {
-            "atoms": system_object.move_molecules(
-                i + 1,
-                (x_random[i * 3], x_random[i * 3 + 1], x_random[i * 3 + 2]),
-                (
-                    x_random[(i + system_object.total_molecules - 1) * 3],
-                    x_random[(i + system_object.total_molecules - 1) * 3 + 1],
-                    x_random[(i + system_object.total_molecules - 1) * 3 + 2],
-                ),
-                obj_ee._max_closeness,
-                obj_ee._move_seed,
-            )
-            .get_molecule(i)
-            .atoms
-        }
+        system_object = Cluster(
+            *new_geom.values(),
+            sphere_radius=obj_ee._sphere_radius,
+            sphere_center=obj_ee._sphere_center
+        ).initialize_cluster()
+        obj_ee.object_system_current = system_object
 
-    system_object = Cluster(
-        *new_geom.values(),
-        sphere_radius=obj_ee._sphere_radius,
-        sphere_center=obj_ee._sphere_center
-    ).initialize_cluster()
-    obj_ee.object_system_current = system_object
+        # Build input to pyscf
+        symbols = system_object.symbols
+        input_mol = "'"
+        for i in range(system_object.total_atoms):
+            input_mol += str(symbols[i])
+            for j in range(3):
+                input_mol += "  " + str(system_object.coordinates[i][j])
+            if i < system_object.total_atoms - 1:
+                input_mol += "; "
+            else:
+                input_mol += " '"
 
-    # Build input to pyscf
-    symbols = system_object.symbols
-    input_mol = "'"
-    for i in range(system_object.total_atoms):
-        input_mol += str(symbols[i])
-        for j in range(3):
-            input_mol += "  " + str(system_object.coordinates[i][j])
-        if i < system_object.total_atoms - 1:
-            input_mol += "; "
-        else:
-            input_mol += " '"
+        args = (args[0], args[1], args[2], input_mol, system_object)
+        return func_energy(x_random, *args, ncall=[0])
 
-    return input_mol, system_object
+    return new_input
 
 
+@build_input_pyscf
 def hf_pyscf(x, *args, ncall=[0]):
     """
     Calculate of electronic energy with pyscf
@@ -156,10 +169,10 @@ def hf_pyscf(x, *args, ncall=[0]):
 
     """
 
-    input_pyscf, new_object = build_input_pyscf(x, args[1])
+    # input_pyscf, new_object = build_input_pyscf(x, args[1])
 
     mol = gto.M(
-        atom=input_pyscf,
+        atom=args[3],  # kwargs["input"],  # input_mol,
         basis=args[0],
     )
 
@@ -169,6 +182,7 @@ def hf_pyscf(x, *args, ncall=[0]):
         print("Error in pyscf")
         e = float("inf")
 
+    new_object = args[4]  # kwargs["object"]  # system_object
     args[2].write(str(new_object.total_atoms) + "\n")
     args[2].write("Energy: " + str(e) + "\n")
     l: int = 0
