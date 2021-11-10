@@ -50,16 +50,8 @@ class SearchConfig:
         outxyz: str = "configurations.xyz",
     ) -> None:
 
-        if system_object is None:
-            raise TypeError("System_object isn't difinite\n" "It's NoneType")
-        if not isinstance(system_object, Cluster):
-            raise TypeError(
-                "System_object isn't difinite as an object Cluster\n"
-                f"please, check:\n'{system_object}'"
-            )
-        self._system_object = system_object
-
         # Verfication and assigment of variables (type, value)
+        self.system_object = system_object
         self.search_type = search_methodology
         self.basis_set = basis
         self.cost_function_number = program_electronic_structure
@@ -123,6 +115,21 @@ class SearchConfig:
     # ===============================================================
     # PROPERTIES
     # ===============================================================
+    @property
+    def system_object(self):
+        return self._system_object
+
+    @system_object.setter
+    def system_object(self, new_object):
+        if new_object is None:
+            raise TypeError("System_object isn't difinite\n" "It's NoneType")
+        if not isinstance(new_object, Cluster):
+            raise TypeError(
+                "System_object isn't difinite as an object Cluster\n"
+                f"please, check:\n'{new_object}'"
+            )
+        self._system_object = new_object
+
     @property
     def bounds(self):
         return self._bounds
@@ -317,7 +324,7 @@ class SearchConfig:
                 else:
                     new_geom[i] = self._system_object.get_molecule(i)
 
-            self._system_object = Cluster(
+            self.system_object = Cluster(
                 *new_geom.values(), sphere_center=self._sphere_center
             )
 

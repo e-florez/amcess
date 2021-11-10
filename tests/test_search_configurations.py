@@ -897,7 +897,7 @@ def test_SC_run_da_method(molecule1, molecule2):
     [
         (
             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-            [("H", 0.0, 0.0, 2.0), ("H", 0.78, 0.0, 2.0)],
+            [("H", 0.0, 0.0, 3.0), ("H", 0.78, 0.0, 3.0)],
         ),
     ],
 )
@@ -952,6 +952,98 @@ def test_SC_hgo_method(molecule1, molecule2, search_meth):
     SearchConfig(
         Cluster(molecule1, molecule2), search_methodology=search_meth
     ).shgo(sampling_method="sobol", n=1)
+    with open("configurations.xyz", "r") as f:
+        readl = f.readline()
+    os.remove("configurations.xyz")
+    assert readl == "4\n"
+
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+        ),
+    ],
+)
+def test_SC_sphere_radius_TE_set(molecule1, molecule2):
+    """
+    Test TypeError @sphere_radius.setter
+    """
+    with pytest.raises(TypeError) as e:
+        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+        obj_sc.sphere_radius = [1]
+
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+        ),
+    ],
+)
+def test_SC_the_biggest_to_initio(molecule1, molecule2):
+    """
+    Test of method spherical_contour_cluster, re--sort molecule
+    """
+    obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+    obj_sc.spherical_contour_cluster()
+    assert obj_sc.system_object.get_molecule(0).atoms == molecule2
+
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2, search_meth, initer, maxiter",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            3,
+            3,
+            3,
+        ),
+    ],
+)
+def test_SC_run_bayesian_method(
+    molecule1, molecule2, search_meth, initer, maxiter
+):
+    """
+    Test SC.run method for bayesian
+    """
+    gp_params = {"initer": initer, "maxiter": maxiter}
+    SearchConfig(
+        Cluster(molecule1, molecule2), search_methodology=search_meth
+    ).run(gp_params=gp_params)
+    with open("configurations.xyz", "r") as f:
+        readl = f.readline()
+    os.remove("configurations.xyz")
+    assert readl == "4\n"
+
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2, search_meth, initer, maxiter",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            3,
+            3,
+            3,
+        ),
+    ],
+)
+def test_SC_bayesian_method(
+    molecule1, molecule2, search_meth, initer, maxiter
+):
+    """
+    Test SC.bayesian method for bayessian
+    """
+    gp_params = {"initer": initer, "maxiter": maxiter}
+    SearchConfig(
+        Cluster(molecule1, molecule2), search_methodology=search_meth
+    ).bayesian(gp_params=gp_params)
     with open("configurations.xyz", "r") as f:
         readl = f.readline()
     os.remove("configurations.xyz")
