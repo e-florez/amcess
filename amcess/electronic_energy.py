@@ -90,7 +90,7 @@ class ElectronicEnergy:
                         self._max_closeness,
                         self._move_seed,
                     )
-                    .get_molecule(i)
+                    .get_molecule(i + 1)
                     .atoms
                 }
 
@@ -98,7 +98,7 @@ class ElectronicEnergy:
                 *new_geom.values(),
                 sphere_radius=self._sphere_radius,
                 sphere_center=self._sphere_center
-            ).initialize_cluster()
+            )
 
             # Build input to pyscf
             symbols = self._object_system_current.symbols
