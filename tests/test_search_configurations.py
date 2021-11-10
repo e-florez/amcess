@@ -967,29 +967,30 @@ def test_SC_hgo_method(molecule1, molecule2, search_meth):
         ),
     ],
 )
-def test_SC_sphere_radius_TE_set(molecule1, molecule2):
+def test_SC_sphere_radius_TE_a_set(molecule1, molecule2):
     """
     Test TypeError @sphere_radius.setter
     """
-    with pytest.raises(TypeError) as e:
+    with pytest.raises(TypeError):
         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
         obj_sc.sphere_radius = [1]
 
 
 @pytest.mark.parametrize(
-    "molecule1, molecule2",
+    "molecule1, molecule2, molecule3",
     [
         (
             [("H", 0.0, 0.0, 0.0)],
             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            [("H", 0.0, 0.0, 3.0), ("H", 0.78, 0.0, 3.0)],
         ),
     ],
 )
-def test_SC_the_biggest_to_initio(molecule1, molecule2):
+def test_SC_the_biggest_to_initio(molecule1, molecule2, molecule3):
     """
     Test of method spherical_contour_cluster, re--sort molecule
     """
-    obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+    obj_sc = SearchConfig(Cluster(molecule1, molecule2, molecule3))
     obj_sc.spherical_contour_cluster()
     assert obj_sc.system_object.get_molecule(0).atoms == molecule2
 
