@@ -2,6 +2,7 @@ import numpy as np
 import scipy
 from scipy.optimize import shgo
 
+from amcess.ascec_criterion import Ascec
 from amcess.base_molecule import Cluster
 from amcess.electronic_energy import ElectronicEnergy, hf_pyscf
 from amcess.gaussian_process import solve_gaussian_processes
@@ -442,3 +443,23 @@ class SearchConfig:
                 args=(self._obj_ee, outxyz),
                 **kwargs,
             )
+
+    def ascec(self):
+        """
+        Execute solve Bayesian to search candidate structure
+        and open output file
+
+        Parameters
+        ----------
+            **kwargs : dict
+                Dictionary with the parameters to be used in the
+                Bayesian methodology
+        """
+        print("*** Minimization: Ascec ***")
+        with open(self._output_name, "w") as outxyz:
+            self._search = Ascec(
+                self._func,
+                bounds=self._bounds,
+                args=(self._obj_ee, outxyz),
+            )
+            self._search.ascec_run()
