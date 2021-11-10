@@ -9,7 +9,6 @@ from scipy.optimize._dual_annealing import (EnergyState, LocalSearchWrapper,
                                             VisitingDistribution)
 
 # fmt: on
-from amcess.ascec_criterion import Ascec
 
 
 def solve_dual_annealing(
@@ -17,7 +16,6 @@ def solve_dual_annealing(
     bounds,
     system_object=None,
     there_is_molecule=0,
-    ascec_activation=False,
     seed=None,
     NT=1000,
     T0=5230.0,
@@ -189,8 +187,6 @@ def solve_dual_annealing(
     # Wrapper for the objective function
     func_wrapper = ObjectiveFunWrapper(func, mxcycle, *args)
 
-    # Wrapper ascec
-    ascec_wrapper = Ascec(ascec_activation)
     # Wrapper fot the minimizer
     minimizer_wrapper = LocalSearchWrapper(
         bounds, func_wrapper, **local_search_options
@@ -258,12 +254,6 @@ def solve_dual_annealing(
             )  # acá se llama a visit_dist.visiting
             # print("val, Temperature : ", energy_state.ebest,
             #      energy_state.current_energy, temperature)
-
-            # ASCEC
-            if ascec_wrapper.ascec is True:
-                e_before = energy_state.ebest
-                e_now = energy_state.current_energy
-                ascec_wrapper.ascec_criterion(e_before, e_now, temperature)
 
             if val is not None:
                 message.append(val)
