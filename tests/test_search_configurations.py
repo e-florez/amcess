@@ -1008,24 +1008,6 @@ def test_SC_shgo_method(molecule1, molecule2, search_meth):
 
 
 @pytest.mark.parametrize(
-    "molecule1, molecule2",
-    [
-        (
-            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-        ),
-    ],
-)
-def test_SC_sphere_radius_TE_a_set(molecule1, molecule2):
-    """
-    Test TypeError @sphere_radius.setter
-    """
-    with pytest.raises(TypeError):
-        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-        obj_sc.sphere_radius = [1]
-
-
-@pytest.mark.parametrize(
     "molecule1, molecule2, molecule3",
     [
         (
@@ -1098,3 +1080,27 @@ def test_SC_bayesian_method(
         readl = f.readline()
     os.remove("configurations.xyz")
     assert readl == "4\n"
+
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+        ),
+    ],
+)
+def test_SC_sphere_radius_TE_a_set(molecule1, molecule2):
+    """
+    Test TypeError @sphere_radius.setter
+    """
+    with pytest.raises(TypeError) as e:
+        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+        obj_sc.sphere_radius = [1]
+
+    print(e.value)
+    assert (
+        str(e.value)
+        == f"unsupported operand type(s) for +: '{'float'}' and '{'list'}'"
+    )
