@@ -3,8 +3,9 @@ import os
 import pytest
 import scipy
 
+from amcess.ascec_criterion import Ascec
 from amcess.base_molecule import Cluster, Molecule
-from amcess.electronic_energy import hf_pyscf
+from amcess.electronic_energy import ElectronicEnergy, hf_pyscf
 from amcess.search_configuration import SearchConfig
 
 
@@ -1104,3 +1105,33 @@ def test_SC_sphere_radius_TE_a_set(molecule1, molecule2):
         str(e.value) == "\n\nThe Sphere  Radius must be a float"
         f"\nplease, check: '{type(1)}'\n"
     )
+
+
+# This test is for ascec criterion
+@pytest.mark.parametrize(
+    "molecule1, molecule2",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 3.0), ("H", 0.78, 0.0, 3.0)],
+        ),
+    ],
+)
+def test_Ascec_ascec_method(molecule1, molecule2):
+    """
+    Test Ascec.criterion else
+    """
+    obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+    obj_ee = ElectronicEnergy(
+        obj_sc._system_object,
+        obj_sc._search_methodology,
+        obj_sc._sphere_center,
+        obj_sc._sphere_radius,
+        obj_sc._basis_set,
+    )
+    with open("configurations.xyz", "w") as outxyz:
+        ascec = Ascec(obj_sc._func, obj_sc._bounds, args=(obj_ee, outxyz))
+        ascec.e_before = -1.0
+        ascec.energy_current = 1.0
+        ascec.ascec_criterion(1.0)
+    os.remove("configurations.xyz")
