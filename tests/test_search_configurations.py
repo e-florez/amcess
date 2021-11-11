@@ -1097,10 +1097,10 @@ def test_SC_sphere_radius_TE_a_set(molecule1, molecule2):
     """
     with pytest.raises(TypeError) as e:
         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-        obj_sc.sphere_radius = [1]
+        obj_sc.sphere_radius = 1
 
     print(e.value)
     assert (
-        str(e.value)
-        == f"unsupported operand type(s) for +: '{'float'}' and '{'list'}'"
+        str(e.value) == "\n\nThe Sphere  Radius must be a float"
+        f"\nplease, check: '{type(1)}'\n"
     )

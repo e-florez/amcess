@@ -244,9 +244,9 @@ class SearchConfig:
     @sphere_radius.setter
     @bounds_sphere_change
     def sphere_radius(self, new_radius: float) -> None:
-        if not isinstance(new_radius, (int, float)):
+        if not isinstance(new_radius, float):
             raise TypeError(
-                "\n\nThe Sphere  Radius must be a float or int"
+                "\n\nThe Sphere  Radius must be a float"
                 f"\nplease, check: '{type(new_radius)}'\n"
             )
         self._sphere_radius = new_radius + self._tolerance_contour_radius
