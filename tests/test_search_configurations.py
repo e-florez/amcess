@@ -390,7 +390,7 @@ def test_SC_search_type_TP_set(molecule1, molecule2):
         (
             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-            4,
+            5,
         ),
     ],
 )
@@ -405,9 +405,10 @@ def test_SC_search_type_TE_set(molecule1, molecule2, search_methodology):
     assert (
         str(e.value)
         == "\n\nThe search methodology is associated with a integer \n"
-        "1 -> Dual Annealing \n"
-        "2 -> SHGO \n"
-        "3 -> Bayessiana \n"
+        "1 -> ASCEC \n"
+        "2 -> Dual Annealing \n"
+        "3 -> SHGO \n"
+        "4 -> Bayessiana \n"
         f"\nplease, check: '{type(search_methodology)}'\n"
     )
 
@@ -881,11 +882,12 @@ def test_SC_tolerance_radius_TE_set(molecule1, molecule2):
         ),
     ],
 )
-def test_SC_run_da_method(molecule1, molecule2):
+def test_SC_run_ascec_method(molecule1, molecule2):
     """
-    Test SC.run method for dual annealing
+    Test SC.run method for ascec
     """
-    SearchConfig(Cluster(molecule1, molecule2)).run(NT=1, mxcycle=1)
+    kwargs = {"nT": 1, "maxCycle": 10}
+    SearchConfig(Cluster(molecule1, molecule2)).run(**kwargs)
     with open("configurations.xyz", "r") as f:
         readl = f.readline()
     os.remove("configurations.xyz")
@@ -901,11 +903,58 @@ def test_SC_run_da_method(molecule1, molecule2):
         ),
     ],
 )
-def test_SC_da_method(molecule1, molecule2):
+def test_SC_ascec_method(molecule1, molecule2):
+    """
+    Test SC.ascec method
+    """
+    kwargs = {"nT": 1, "maxCycle": 10}
+    SearchConfig(Cluster(molecule1, molecule2)).ascec(**kwargs)
+    with open("configurations.xyz", "r") as f:
+        readl = f.readline()
+    os.remove("configurations.xyz")
+    assert readl == "4\n"
+
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2, method_min",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            2,
+        ),
+    ],
+)
+def test_SC_run_da_method(molecule1, molecule2, method_min):
+    """
+    Test SC.run method for dual annealing
+    """
+    SearchConfig(
+        Cluster(molecule1, molecule2), search_methodology=method_min
+    ).run(NT=1, mxcycle=1)
+    with open("configurations.xyz", "r") as f:
+        readl = f.readline()
+    os.remove("configurations.xyz")
+    assert readl == "4\n"
+
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2, method_min",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 3.0), ("H", 0.78, 0.0, 3.0)],
+            2,
+        ),
+    ],
+)
+def test_SC_da_method(molecule1, molecule2, method_min):
     """
     Test SC.da method
     """
-    SearchConfig(Cluster(molecule1, molecule2)).da(NT=1, mxcycle=1)
+    SearchConfig(
+        Cluster(molecule1, molecule2), search_methodology=method_min
+    ).da(NT=1, mxcycle=1)
     with open("configurations.xyz", "r") as f:
         readl = f.readline()
     os.remove("configurations.xyz")
@@ -918,7 +967,7 @@ def test_SC_da_method(molecule1, molecule2):
         (
             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-            2,
+            3,
         ),
     ],
 )
@@ -941,11 +990,11 @@ def test_SC_run_shgo_method(molecule1, molecule2, search_meth):
         (
             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-            2,
+            3,
         ),
     ],
 )
-def test_SC_hgo_method(molecule1, molecule2, search_meth):
+def test_SC_shgo_method(molecule1, molecule2, search_meth):
     """
     Test SC.run method for shgo
     """
@@ -1001,7 +1050,7 @@ def test_SC_the_biggest_to_initio(molecule1, molecule2, molecule3):
         (
             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
             [("H", 0.0, 0.0, 3.0), ("H", 0.78, 0.0, 3.0)],
-            3,
+            4,
             3,
             3,
         ),
@@ -1029,7 +1078,7 @@ def test_SC_run_bayesian_method(
         (
             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
             [("H", 0.0, 0.0, 3.0), ("H", 0.78, 0.0, 3.0)],
-            3,
+            4,
             3,
             3,
         ),

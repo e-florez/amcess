@@ -71,13 +71,6 @@ class SearchConfig:
             self._program_calculate_cost_function
         )
 
-        self._obj_ee = ElectronicEnergy(
-            self._system_object,
-            self._sphere_center,
-            self._sphere_radius,
-            self._basis_set,
-        )
-
     # ===============================================================
     # Decorators
     # ===============================================================
@@ -112,6 +105,19 @@ class SearchConfig:
             return function_change_radius(self, new_radius)
 
         return new_bounds
+
+    def init_electronic_energy(function_minimization):
+        def wrapper(self, **kwargs):
+            self._obj_ee = ElectronicEnergy(
+                self._system_object,
+                self._search_methodology,
+                self._sphere_center,
+                self._sphere_radius,
+                self._basis_set,
+            )
+            return function_minimization(self, **kwargs)
+
+        return wrapper
 
     # ===============================================================
     # PROPERTIES
@@ -171,12 +177,13 @@ class SearchConfig:
                 "\n\nThe new search methodology is not an integer"
                 f"\nplease, check: '{type(change_search_methodology)}'\n"
             )
-        if change_search_methodology > 3:
+        if change_search_methodology > 4:
             raise ValueError(
                 "\n\nThe search methodology is associated with a integer \n"
-                "1 -> Dual Annealing \n"
-                "2 -> SHGO \n"
-                "3 -> Bayessiana \n"
+                "1 -> ASCEC \n"
+                "2 -> Dual Annealing \n"
+                "3 -> SHGO \n"
+                "4 -> Bayessiana \n"
                 f"\nplease, check: '{type(change_search_methodology)}'\n"
             )
 
@@ -377,12 +384,15 @@ class SearchConfig:
                 search methodologies
         """
         if self._search_methodology == 1:
-            self.da(**kwargs)
+            self.ascec(**kwargs)
         if self._search_methodology == 2:
-            self.shgo(**kwargs)
+            self.da(**kwargs)
         if self._search_methodology == 3:
+            self.shgo(**kwargs)
+        if self._search_methodology == 4:
             self.bayesian(**kwargs)
 
+    @init_electronic_energy
     def da(self, **kwargs):
         """
         Execute solve dual annealing to search candidate structure
@@ -404,6 +414,7 @@ class SearchConfig:
                 **kwargs,
             )
 
+    @init_electronic_energy
     def shgo(self, **kwargs):
         """
         Execute solve shgo to search candidate structure
@@ -424,6 +435,7 @@ class SearchConfig:
                 **kwargs,
             )
 
+    @init_electronic_energy
     def bayesian(self, **kwargs):
         """
         Execute solve Bayesian to search candidate structure
@@ -444,7 +456,8 @@ class SearchConfig:
                 **kwargs,
             )
 
-    def ascec(self):
+    @init_electronic_energy
+    def ascec(self, **kwargs):
         """
         Execute solve Bayesian to search candidate structure
         and open output file
@@ -461,5 +474,6 @@ class SearchConfig:
                 self._func,
                 bounds=self._bounds,
                 args=(self._obj_ee, outxyz),
+                **kwargs,
             )
             self._search.ascec_run()

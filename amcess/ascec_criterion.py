@@ -14,7 +14,7 @@ class Ascec:
         T0: float = 1000.0,
         nT: int = 100,
         dT: float = 0.1,
-        maxCylce: int = 3000,
+        maxCycle: int = 3000,
         args: tuple = (),
     ):
         """
@@ -36,6 +36,7 @@ class Ascec:
                 Maximum number of cycles
             args : tuple
                 Any additional fixed parameters needed to completely specify
+                ElectronicEnergy Object, output file
         """
 
         self._bounds = bounds
@@ -44,10 +45,10 @@ class Ascec:
         self._T0 = T0
         self._nT = nT
         self._dT = dT
-        self._maxCylce = maxCylce
+        self._maxCylce = maxCycle
 
         self.args = args
-
+        print("TTTT ", nT, maxCycle)
         # initial energy
         self.electronic_e(np.zeros(len(bounds)))
         self._e0 = self.energy_current
@@ -94,7 +95,7 @@ class Ascec:
 
     def ascec_criterion(self, T):
         """[summary]
-        Evaluate ASCEC criterion for acceptance
+        ASCEC criterion for acceptance, based in Markov Chain Monte Carlo
 
         Parameters
         ----------
@@ -119,6 +120,29 @@ class Ascec:
                 print("DE < Boltzmann Poblation ", DE)
                 return True
 
+    def write_to_file(self):
+        """
+        Write the results to a file xyz, Coordinates and energy
+        """
+        new_object = self.args[0]._object_system_current
+        self.args[1].write(str(new_object.total_atoms) + "\n")
+        self.args[1].write("Energy: " + str(self.energy_current) + "\n")
+        l: int = 0
+        for symbols in new_object.symbols:
+            self.args[1].write(
+                str(symbols)
+                + "  "
+                +
+                # 1 A = 1.88973 Bohr
+                str(new_object.atoms[l][1] / 1.88973)
+                + "  "
+                + str(new_object.atoms[l][2] / 1.88973)
+                + "  "
+                + str(new_object.atoms[l][3] / 1.88973)
+                + "\n"
+            )
+            l: int = l + 1
+
     def ascec_run(self):
         """
         Run ASCEC algoritm
@@ -138,6 +162,7 @@ class Ascec:
                 if accept:
                     self.e_before = self.energy_current
                     count = self._maxCylce + 1
+                    self.write_to_file()
                     print("Accept in the Temperature ", T)
                 count += 1
             T = T - T * self._dT
