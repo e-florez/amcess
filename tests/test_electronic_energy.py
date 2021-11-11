@@ -427,3 +427,50 @@ def test_error_energy_hf_pyscf(
             obj_sc.energy_hf_pyscf(bonds, *args)
     os.remove("configurations.xyz")
     assert str(w) == "WarningsChecker(record=True)"
+
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2, method_min, sphere_center, sphere_radius,"
+    "bases, max_closeness, bonds",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.00, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 0.0), ("H", 0.00, 0.0, 0.0)],
+            1,
+            (0.0, 0.0, 0.0),
+            0.0,
+            "sto-3g",
+            0.11,
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ),
+    ],
+)
+def test_error_energy_hf_pyscf(
+    molecule1,
+    molecule2,
+    method_min,
+    sphere_center,
+    sphere_radius,
+    bases,
+    max_closeness,
+    bonds,
+):
+    """
+    Test Error of pyscf
+    """
+    with open("configurations.xyz", "w") as outxyz:
+        obj_sc = ElectronicEnergy(
+            Cluster(molecule1, molecule2),
+            method_min,
+            sphere_center,
+            sphere_radius,
+            bases,
+            max_closeness,
+        )
+        obj_sc.energy_current = 1.0
+        obj_sc.energy_before = 1.0
+        obj_sc.metropolis(outxyz)
+    with open("configurations.xyz", "r") as outxyz:
+        readl = outxyz.readline()
+    os.remove("configurations.xyz")
+    assert readl == "4\n"

@@ -177,7 +177,7 @@ class ElectronicEnergy:
         Parameters
         ----------
             filename: str
-                Name of the file
+                File name where is save structure and energy
         """
         new_object = self._object_system_current
         filename.write(str(new_object.total_atoms) + "\n")
@@ -218,6 +218,27 @@ class ElectronicEnergy:
             print("Error in pyscf")
             return float("inf")
 
+    def metropolis(self, filename):
+        """[summary]
+        Metroplois algorithm (symmetric proposal distribution).
+        If structure is accepted, it will add into file xyz
+
+        Parameters
+        ----------
+            filename: str
+                File name where is save structure and energy
+        """
+        if self.energy_current < self.energy_before:
+            print("Accept 1")
+            self.energy_before = self.energy_current
+            self.write_to_file(filename)
+        else:
+            RE = self.energy_current / self.energy_before
+            if np.random.random(1)[0] <= RE:
+                print("Accept 2")
+                self.energy_before = self.energy_current
+                self.write_to_file(filename)
+
     @build_input_pyscf
     def energy_hf_pyscf(self, x, *args):
         """
@@ -244,22 +265,13 @@ class ElectronicEnergy:
         )
 
         # Calculate electronic energy
-        e = self.calculate_electronic_e(mol)
+        self.energy_current = self.calculate_electronic_e(mol)
 
         if self._search_type > 1 and self._search_type < 5:
-            # Metroplis-Hastings
-            if e < self.energy_before:
-                print("Accept 1")
-                self.energy_before = e
-                self.write_to_file(args[1])
-            else:
-                RE = e / self.energy_before
-                if np.random.rand(0, 1) <= RE:
-                    print("Accept 2")
-                    self.energy_before = e
-                    self.write_to_file(args[1])
+            # Metroplis
+            self.metropolis(args[1])
 
-        return e
+        return self.energy_current
 
 
 def hf_pyscf(x, *args):

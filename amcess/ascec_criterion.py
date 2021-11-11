@@ -48,7 +48,6 @@ class Ascec:
         self._maxCylce = maxCycle
 
         self.args = args
-        print("TTTT ", nT, maxCycle)
         # initial energy
         self.electronic_e(np.zeros(len(bounds)))
         self._e0 = self.energy_current
