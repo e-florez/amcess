@@ -1,6 +1,8 @@
 import os
 
+from pyscf import gto
 import pytest
+
 from amcess.base_molecule import Cluster
 from amcess.electronic_energy import ElectronicEnergy, hf_pyscf
 
@@ -388,7 +390,7 @@ def test_ElectronicEnergy_object_system_current_set(
 
 @pytest.mark.parametrize(
     "molecule1, method_min, sphere_center, sphere_radius,"
-    "bases, max_closeness, bonds",
+    "bases, max_closeness, mol_atom_input",
     [
         (
             [("H", 0.0, 0.0, 0.0), ("H", 0.00, 0.0, 0.0)],
@@ -397,7 +399,7 @@ def test_ElectronicEnergy_object_system_current_set(
             0.0,
             "sto-3g",
             0.11,
-            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            "H 0 0 0; H 0 0 0",
         ),
     ],
 )
@@ -408,24 +410,26 @@ def test_error_energy_hf_pyscf(
     sphere_radius,
     bases,
     max_closeness,
-    bonds,
+    mol_atom_input,
 ):
     """
-    Test Error of pyscf
+    Test Warning of pyscf
     """
     with pytest.warns(UserWarning) as w:
-        with open("configurations.xyz", "w") as outxyz:
-            obj_sc = ElectronicEnergy(
-                Cluster(molecule1),
-                method_min,
-                sphere_center,
-                sphere_radius,
-                bases,
-                max_closeness,
-            )
-            args = (bases, outxyz)
-            obj_sc.energy_hf_pyscf(bonds, *args)
-    os.remove("configurations.xyz")
+        obj_sc = ElectronicEnergy(
+            Cluster(molecule1),
+            method_min,
+            sphere_center,
+            sphere_radius,
+            bases,
+            max_closeness,
+        )
+        mol = gto.M(
+            atom=mol_atom_input,
+            basis=bases,
+            verbose=False,
+        )
+        obj_sc.calculate_electronic_e(mol)
     assert str(w) == "WarningsChecker(record=True)"
 
 
@@ -445,7 +449,7 @@ def test_error_energy_hf_pyscf(
         ),
     ],
 )
-def test_error_energy_hf_pyscf(
+def test_metropolis_else(
     molecule1,
     molecule2,
     method_min,
