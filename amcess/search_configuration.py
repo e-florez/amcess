@@ -4,7 +4,7 @@ from scipy.optimize import shgo
 
 from amcess.ascec_criterion import Ascec
 from amcess.base_molecule import Cluster
-from amcess.electronic_energy import ElectronicEnergy, hf_pyscf
+from amcess.electronic_energy import ElectronicEnergy
 from amcess.gaussian_process import solve_gaussian_processes
 from amcess.m_dual_annealing import solve_dual_annealing
 
@@ -58,7 +58,6 @@ class SearchConfig:
         self.cost_function_number = program_electronic_structure
         self.output_name = outxyz
         self.tolerance_contour_radius = tolerance_contour_radius
-        self.cost_function_number = program_electronic_structure
 
         # Check Overlaping
         self._system_object.initialize_cluster()
@@ -67,13 +66,10 @@ class SearchConfig:
         if system_object._sphere_radius is None:
             self.spherical_contour_cluster()
 
-        self._func = self.program_cost_function(
-            self._program_calculate_cost_function
-        )
-
     # ===============================================================
     # Decorators
     # ===============================================================
+
     def bounds_sphere_change(function_change_radius):
         def new_bounds(self, new_radius):
             """
@@ -371,7 +367,7 @@ class SearchConfig:
                 "*** Cost function is Hartree--Fock implemented into pyscf ***"
                 "\n\n"
             )
-            return hf_pyscf
+            return ElectronicEnergy.hf_pyscf
 
     def run(self, **kwargs):
         """
@@ -459,16 +455,16 @@ class SearchConfig:
     @init_electronic_energy
     def ascec(self, **kwargs):
         """
-        Execute solve Bayesian to search candidate structure
+        Execute solve ASCEC to search candidate structure
         and open output file
 
         Parameters
         ----------
             **kwargs : dict
                 Dictionary with the parameters to be used in the
-                Bayesian methodology
+                ASCEC methodology
         """
-        print("*** Minimization: Ascec ***")
+        print("*** Minimization: ASCEC ***")
         with open(self._output_name, "w") as outxyz:
             self._search = Ascec(
                 self._func,

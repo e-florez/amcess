@@ -4,7 +4,7 @@ from pyscf import gto
 import pytest
 
 from amcess.base_molecule import Cluster
-from amcess.electronic_energy import ElectronicEnergy, hf_pyscf
+from amcess.electronic_energy import ElectronicEnergy
 
 
 @pytest.mark.parametrize(
@@ -63,7 +63,7 @@ def test_electronic_energy_with_hf_pyscf(
 
     """
     with open(output, "w") as outxyz:
-        e = hf_pyscf(
+        e = ElectronicEnergy.hf_pyscf(
             x0,
             ElectronicEnergy(
                 Cluster(cluster1, cluster2),

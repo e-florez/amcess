@@ -45,6 +45,7 @@ class ElectronicEnergy:
             mol = gto.M(
                 atom=self.input_atom_mol_pyscf(),
                 basis=self._basis_set,
+                verbose=False,
             )
             self._e0 = self.calculate_electronic_e(mol)
             self.energy_before = self._e0
@@ -53,7 +54,7 @@ class ElectronicEnergy:
     # Decorators
     # ===============================================================
     def build_input_pyscf(func_energy):
-        def new_input(self, x_random, *args):
+        def new_input(self, x, *args):
             """
             Build input to pyscf
 
@@ -76,26 +77,22 @@ class ElectronicEnergy:
             system_object = self._object_system_current
             # Rotate and translate
             new_geom = dict()
+            # ! Martin
+            # ! tener cuidado como indexo el diccionario
             new_geom[0] = {"atoms": system_object.get_molecule(0).atoms}
             for i in range(system_object.total_molecules - 1):
                 new_geom[i + 1] = {
                     "atoms": system_object.move_molecules(
                         i + 1,
                         (
-                            x_random[i * 3],
-                            x_random[i * 3 + 1],
-                            x_random[i * 3 + 2],
+                            x[i * 3],
+                            x[i * 3 + 1],
+                            x[i * 3 + 2],
                         ),
                         (
-                            x_random[
-                                (i + system_object.total_molecules - 1) * 3
-                            ],
-                            x_random[
-                                (i + system_object.total_molecules - 1) * 3 + 1
-                            ],
-                            x_random[
-                                (i + system_object.total_molecules - 1) * 3 + 2
-                            ],
+                            x[(i + system_object.total_molecules - 1) * 3],
+                            x[(i + system_object.total_molecules - 1) * 3 + 1],
+                            x[(i + system_object.total_molecules - 1) * 3 + 2],
                         ),
                         self._max_closeness,
                         self._move_seed,
@@ -112,7 +109,7 @@ class ElectronicEnergy:
 
             self.input_atom_mol_pyscf()
 
-            return func_energy(self, x_random, *args)
+            return func_energy(self, x, *args)
 
         return new_input
 
@@ -215,7 +212,7 @@ class ElectronicEnergy:
         try:
             return scf.HF(mol).kernel()
         except (UserWarning, np.linalg.LinAlgError):
-            print("Error in pyscf")
+            print("Error in pyscf")  # usar un warning
             return float("inf")
 
     def metropolis(self, filename):
@@ -273,22 +270,26 @@ class ElectronicEnergy:
 
         return self.energy_current
 
+    def hf_pyscf(x, *args):
+        """
+        Calculate of electronic energy with pyscf
 
-def hf_pyscf(x, *args):
-    """
-    Calculate of electronic energy with pyscf
+        Parameters
+        ----------
+            x : array 1D
+                Possible new positions and angles
+            args : list
+                basis set, Cluster Object, name output xyz
 
-    Parameters
-    ----------
-        x : array 1D
-            Possible new positions and angles
-        args : list
-            basis set, Cluster Object, name output xyz
+        Returns
+        -------
+            e : float
+                electronic energy
 
-    Returns
-    -------
-        e : float
-            electronic energy
+        """
+        return args[0].energy_hf_pyscf(x, *args)
 
-    """
-    return args[0].energy_hf_pyscf(x, *args)
+
+# ! Martin
+# ! hacer la visualización desde el archivo
+# ! evaluar lo métodos para almacenar los archivos
