@@ -41,7 +41,7 @@ class ElectronicEnergy:
         self._max_closeness = max_closeness
         self._move_seed = seed
 
-        if self._search_type > 1 and self._search_type < 5:
+        if self._search_type != "ASCEC ":
             mol = gto.M(
                 atom=self.input_atom_mol_pyscf(),
                 basis=self._basis_set,
@@ -264,7 +264,7 @@ class ElectronicEnergy:
         # Calculate electronic energy
         self.energy_current = self.calculate_electronic_e(mol)
 
-        if self._search_type > 1 and self._search_type < 5:
+        if self._search_type != "ASCEC":
             # Metroplis
             self.metropolis(args[1])
 

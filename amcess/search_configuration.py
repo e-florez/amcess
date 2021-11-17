@@ -8,6 +8,13 @@ from amcess.electronic_energy import ElectronicEnergy
 from amcess.gaussian_process import solve_gaussian_processes
 from amcess.m_dual_annealing import solve_dual_annealing
 
+METHODS = {
+    "ASCEC": Ascec,
+    "dual_annealing": solve_dual_annealing,
+    "SHGO": shgo,
+    "Bayesian": solve_gaussian_processes,
+}
+
 
 class SearchConfig:
     """
@@ -44,7 +51,7 @@ class SearchConfig:
     def __init__(
         self,
         system_object: Cluster = None,
-        search_methodology: int = 1,
+        search_methodology: str = "ASCEC",
         basis: str = "sto-3g",
         program_electronic_structure: int = 1,
         tolerance_contour_radius: float = 1.0,
@@ -168,20 +175,26 @@ class SearchConfig:
 
     @search_type.setter
     def search_type(self, change_search_methodology):
-        if not isinstance(change_search_methodology, int):
+        if not isinstance(change_search_methodology, str):
             raise TypeError(
-                "\n\nThe new search methodology is not an integer"
+                "\n\nThe new search methodology is not a string"
                 f"\nplease, check: '{type(change_search_methodology)}'\n"
             )
-        if change_search_methodology > 4:
-            raise ValueError(
-                "\n\nThe search methodology is associated with a integer \n"
-                "1 -> ASCEC \n"
-                "2 -> Dual Annealing \n"
-                "3 -> SHGO \n"
-                "4 -> Bayessiana \n"
-                f"\nplease, check: '{type(change_search_methodology)}'\n"
-            )
+        if change_search_methodology not in METHODS and not callable(
+            change_search_methodology
+        ):
+            available = list(METHODS.keys())
+            raise ValueError(f"Invalid value. options are: {available}")
+
+        # if change_search_methodology > 4:
+        #    raise ValueError(
+        #        "\n\nThe search methodology is associated with a integer \n"
+        #        "1 -> ASCEC \n"
+        #        "2 -> Dual Annealing \n"
+        #        "3 -> SHGO \n"
+        #        "4 -> Bayessiana \n"
+        #        f"\nplease, check: '{type(change_search_methodology)}'\n"
+        #    )
 
         self._search_methodology = change_search_methodology
 
@@ -369,9 +382,10 @@ class SearchConfig:
             )
             return ElectronicEnergy.hf_pyscf
 
+    @init_electronic_energy
     def run(self, **kwargs):
         """
-        Alternative to execute the searching methodologies
+        Alternative to execute the searching methodologies in METHODS
 
         Parameters
         ----------
@@ -379,97 +393,24 @@ class SearchConfig:
                 Dictionary with the parameters to be used in the
                 search methodologies
         """
-        if self._search_methodology == 1:
-            self.ascec(**kwargs)
-        if self._search_methodology == 2:
-            self.da(**kwargs)
-        if self._search_methodology == 3:
-            self.shgo(**kwargs)
-        if self._search_methodology == 4:
-            self.bayesian(**kwargs)
-
-    @init_electronic_energy
-    def da(self, **kwargs):
-        """
-        Execute solve dual annealing to search candidate structure
-        and open output file
-
-        Parameters
-        ----------
-            **kwargs : dict
-                Dictionary with the parameters to be used in the
-                dual annealing methodology
-        """
-        print("*** Minimization: Dual Annealing ***")
+        func = (
+            self._search_methodology
+            if callable(self._search_methodology)
+            else METHODS[self._search_methodology]
+        )
+        if self._search_methodology == "dual_annealing":
+            print("*** Minimization: Dual Annealing ***")
+        if self._search_methodology == "SHGO":
+            print("*** Minimization: SHGO from Scipy ***")
+        if self._search_methodology == "Bayesian":
+            print("*** Minimization: Bayesian ***")
         with open(self._output_name, "w") as outxyz:
-            self._search = solve_dual_annealing(
-                self._func,
-                self._bounds,
-                self._system_object,
-                args=(self._obj_ee, outxyz),
-                **kwargs,
-            )
-
-    @init_electronic_energy
-    def shgo(self, **kwargs):
-        """
-        Execute solve shgo to search candidate structure
-        and open output file
-
-        Parameters
-        ----------
-            **kwargs : dict
-                Dictionary with the parameters to be used in the
-                shgo methodology
-        """
-        print("*** Minimization: SHGO from Scipy ***")
-        with open(self._output_name, "w") as outxyz:
-            self._search = shgo(
+            self._search = func(
                 self._func,
                 bounds=self._bounds,
                 args=(self._obj_ee, outxyz),
                 **kwargs,
             )
-
-    @init_electronic_energy
-    def bayesian(self, **kwargs):
-        """
-        Execute solve Bayesian to search candidate structure
-        and open output file
-
-        Parameters
-        ----------
-            **kwargs : dict
-                Dictionary with the parameters to be used in the
-                Bayesian methodology
-        """
-        print("*** Minimization: Bayesian ***")
-        with open(self._output_name, "w") as outxyz:
-            self._search = solve_gaussian_processes(
-                self._func,
-                bounds=self._bounds,
-                args=(self._obj_ee, outxyz),
-                **kwargs,
-            )
-
-    @init_electronic_energy
-    def ascec(self, **kwargs):
-        """
-        Execute solve ASCEC to search candidate structure
-        and open output file
-
-        Parameters
-        ----------
-            **kwargs : dict
-                Dictionary with the parameters to be used in the
-                ASCEC methodology
-        """
-        print("*** Minimization: ASCEC ***")
-        with open(self._output_name, "w") as outxyz:
-            self._search = Ascec(
-                self._func,
-                bounds=self._bounds,
-                args=(self._obj_ee, outxyz),
-                **kwargs,
-            )
-            self._search.ascec_run()
+            if self._search_methodology == "ASCEC":
+                print("*** Minimization: ASCEC ***")
+                self._search.ascec_run()
