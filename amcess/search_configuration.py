@@ -119,6 +119,8 @@ class SearchConfig:
                     self._sphere_radius,
                     self._basis_set,
                 )
+                if self._program_calculate_cost_function == 1:
+                    self._func = self._obj_ee.hf_pyscf
             return function_minimization(self, **kwargs)
 
         return wrapper
@@ -257,10 +259,6 @@ class SearchConfig:
             )
 
     @property
-    def cost_function_ee(self):
-        return self._func
-
-    @property
     def cost_function_number(self):
         return self._program_calculate_cost_function
 
@@ -279,7 +277,6 @@ class SearchConfig:
             )
 
         self._program_calculate_cost_function = new_func
-        self._func = self.program_cost_function(new_func)
 
     # ===============================================================
     # Methods
@@ -358,12 +355,6 @@ class SearchConfig:
                 Integer associated with the program to calculate the cost
                 and methodology (Hamiltonian, Functional, etc)
 
-        Returns
-        -------
-            called
-            name of the function cost which associated with a specify
-            program and methodology (Hamiltonian, Functional, etc)
-
         """
         if _program_calculate_cost_function == 1:
             print(
@@ -371,8 +362,6 @@ class SearchConfig:
                 "*** Cost function is Hartree--Fock implemented into pyscf ***"
                 "\n\n"
             )
-            # return ElectronicEnergy.hf_pyscf
-            return ElectronicEnergy.hf_pyscf
 
     @init_electronic_energy
     def run(self, **kwargs):
@@ -413,7 +402,7 @@ class SearchConfig:
                 print("*** Minimization: Bayesian ***")
 
             self._search = func(
-                self._obj_ee.hf_pyscf,
+                self._func,
                 bounds=self._bounds,
                 **kwargs,
             )

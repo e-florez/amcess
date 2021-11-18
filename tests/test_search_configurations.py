@@ -5,7 +5,6 @@ import scipy
 
 from amcess.ascec_criterion import Ascec
 from amcess.base_molecule import Cluster, Molecule
-from amcess.electronic_energy import ElectronicEnergy
 from amcess.search_configuration import SearchConfig
 
 
@@ -745,23 +744,6 @@ def test_SC_cost_function_VE_set(molecule1, molecule2):
         ),
     ],
 )
-def test_SC_cost_function_grep(molecule1, molecule2):
-    """
-    Test default cost_function_ee @property
-    """
-    obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-    assert obj_sc.cost_function_ee == ElectronicEnergy.hf_pyscf
-
-
-@pytest.mark.parametrize(
-    "molecule1, molecule2",
-    [
-        (
-            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-        ),
-    ],
-)
 def test_SC_cost_function_number_grep(molecule1, molecule2):
     """
     Test default cost_function_number @property
@@ -771,7 +753,7 @@ def test_SC_cost_function_number_grep(molecule1, molecule2):
 
 
 @pytest.mark.parametrize(
-    "molecule1, molecule2, program_ee",
+    "molecule1, molecule2, expectation",
     [
         (
             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
@@ -780,13 +762,12 @@ def test_SC_cost_function_number_grep(molecule1, molecule2):
         ),
     ],
 )
-def test_SC_new_cost_function(molecule1, molecule2, program_ee):
+def test_SC_new_cost_function(molecule1, molecule2, expectation):
     """
     Test ValueError @sphere_radius.setter
     """
     obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-    obj_sc.cost_function_number = program_ee
-    assert obj_sc._func == ElectronicEnergy.hf_pyscf
+    assert obj_sc._program_calculate_cost_function == expectation
 
 
 @pytest.mark.parametrize(
