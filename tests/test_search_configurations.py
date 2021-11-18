@@ -912,7 +912,7 @@ def test_SC_run_da_method(molecule1, molecule2, method_min):
     """
     SearchConfig(
         Cluster(molecule1, molecule2), search_methodology=method_min
-    ).run(NT=1, mxcycle=1)
+    ).run(maxfun=1, maxiter=1)
     with open("configurations.xyz", "r") as f:
         readl = f.readline()
     os.remove("configurations.xyz")
@@ -1028,16 +1028,15 @@ def test_Ascec_ascec_method(molecule1, molecule2):
     Test Ascec.criterion else
     """
     obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-    obj_ee = ElectronicEnergy(
+    ascec = Ascec(
         obj_sc._system_object,
         obj_sc._search_methodology,
         obj_sc._sphere_center,
         obj_sc._sphere_radius,
         obj_sc._basis_set,
+        call_function=1,
+        bounds=obj_sc._bounds,
     )
-    with open("configurations.xyz", "w") as outxyz:
-        ascec = Ascec(obj_sc._func, obj_sc._bounds, args=(obj_ee, outxyz))
-        ascec.e_before = -1.0
-        ascec.energy_current = 1.0
-        ascec.ascec_criterion(1.0)
-    os.remove("configurations.xyz")
+    ascec.e_before = -1.0
+    ascec.energy_current = 1.0
+    ascec.ascec_criterion(1.0)

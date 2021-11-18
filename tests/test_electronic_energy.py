@@ -1,5 +1,3 @@
-import os
-
 from pyscf import gto
 import pytest
 
@@ -429,7 +427,7 @@ def test_error_energy_hf_pyscf(
 
 @pytest.mark.parametrize(
     "molecule1, molecule2, method_min, sphere_center, sphere_radius,"
-    "bases, max_closeness, bonds",
+    "bases, max_closeness",
     [
         (
             [("H", 0.0, 0.0, 0.0), ("H", 0.00, 0.0, 0.0)],
@@ -439,7 +437,6 @@ def test_error_energy_hf_pyscf(
             0.0,
             "sto-3g",
             0.11,
-            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         ),
     ],
 )
@@ -451,7 +448,6 @@ def test_metropolis_else(
     sphere_radius,
     bases,
     max_closeness,
-    bonds,
 ):
     """
     Test Error of pyscf
