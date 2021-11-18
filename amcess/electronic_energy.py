@@ -231,13 +231,13 @@ class ElectronicEnergy:
         if self.energy_current < self.energy_before:
             print("Accept 1")
             self.energy_before = self.energy_current
-            self.store_structure
+            self.store_structure()
         else:
             RE = self.energy_current / self.energy_before
             if np.random.random(1)[0] <= RE:
                 print("Accept 2")
                 self.energy_before = self.energy_current
-                self.store_structure
+                self.store_structure()
 
     @build_input_pyscf
     def hf_pyscf(self, x):

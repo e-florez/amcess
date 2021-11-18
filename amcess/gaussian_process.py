@@ -171,7 +171,7 @@ class SingleObjective_Edited(Objective):
 def solve_gaussian_processes(
     func,
     bounds,
-    args: tuple,
+    args: tuple = (),
     seed=None,
     gp_params={},
 ):

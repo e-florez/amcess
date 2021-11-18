@@ -15,6 +15,7 @@ REQUIREMENTS = [
     "scipy>=1.7",
     "numpy>=1.21",
     "pyscf>=1.7.6.post1",
+    "GPyOpt==1.2.6"
 ]
 
 with open(PATH / "amcess" / "__init__.py") as fp:
@@ -50,6 +51,7 @@ setup(
         "scipy>=1.7",
         "numpy>=1.21",
         "pyscf>=1.7.6.post1",
+    	"GPyOpt==1.2.6"
     ],
 )
 

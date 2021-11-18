@@ -1,16 +1,16 @@
 import numpy as np
 import scipy
 from scipy.optimize import shgo
+from scipy.optimize import dual_annealing
 
 from amcess.ascec_criterion import Ascec
 from amcess.base_molecule import Cluster
 from amcess.electronic_energy import ElectronicEnergy
 from amcess.gaussian_process import solve_gaussian_processes
-from amcess.m_dual_annealing import solve_dual_annealing
 
 METHODS = {
     "ASCEC": Ascec,
-    "dual_annealing": solve_dual_annealing,
+    "dual_annealing": dual_annealing,
     "SHGO": shgo,
     "Bayesian": solve_gaussian_processes,
 }
@@ -411,8 +411,10 @@ class SearchConfig:
                 print("*** Minimization: SHGO from Scipy ***")
             if self._search_methodology == "Bayesian":
                 print("*** Minimization: Bayesian ***")
+
             self._search = func(
                 self._obj_ee.hf_pyscf,
                 bounds=self._bounds,
                 **kwargs,
             )
+            self._obj_ee.write_to_file()
