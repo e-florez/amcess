@@ -130,29 +130,6 @@ class Ascec(ElectronicEnergy):
                 print("DE < Boltzmann Poblation ", DE)
                 return True
 
-    def write_to_file(self):
-        """
-        Write the results to a file xyz, Coordinates and energy
-        """
-        new_object = self.args[0]._object_system_current
-        self.args[1].write(str(new_object.total_atoms) + "\n")
-        self.args[1].write("Energy: " + str(self.energy_current) + "\n")
-        l: int = 0
-        for symbols in new_object.symbols:
-            self.args[1].write(
-                str(symbols)
-                + "  "
-                +
-                # 1 A = 1.88973 Bohr
-                str(new_object.atoms[l][1] / 1.88973)
-                + "  "
-                + str(new_object.atoms[l][2] / 1.88973)
-                + "  "
-                + str(new_object.atoms[l][3] / 1.88973)
-                + "\n"
-            )
-            l: int = l + 1
-
     def ascec_run(self):
         """
         Run ASCEC algoritm
@@ -162,7 +139,6 @@ class Ascec(ElectronicEnergy):
         while iT <= self._nT:
             count = 0
             while count <= self._maxCylce:
-                # print("Entroooooo2 ", count)
                 # 3 values to translate and another 3 to rotate
                 x = self.random_mov(len(self._bounds))
                 self.electronic_e(x)
@@ -176,3 +152,4 @@ class Ascec(ElectronicEnergy):
                 count += 1
             T = T - T * self._dT
             iT += 1
+        self.write_to_file()

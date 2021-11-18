@@ -169,7 +169,7 @@ class ElectronicEnergy:
                 self.input_mol += " '"
         return self.input_mol
 
-    def write_to_file(self, filename):
+    def write_to_file(self):
         """
         Write the current system to a file
 
@@ -178,34 +178,23 @@ class ElectronicEnergy:
             filename: str
                 File name where is save structure and energy
         """
-        new_object = self._object_system_current
-        filename.write(str(new_object.total_atoms) + "\n")
-        filename.write("Energy: " + str(self.energy_before) + "\n")
-        l: int = 0
-        for symbols in new_object.symbols:
-            filename.write(
-                str(symbols)
-                + "  "
-                +
-                # 1 A = 1.88973 Bohr
-                str(new_object.atoms[l][1] / 1.88973)
-                + "  "
-                + str(new_object.atoms[l][2] / 1.88973)
-                + "  "
-                + str(new_object.atoms[l][3] / 1.88973)
-                + "\n"
-            )
-            l: int = l + 1
+        n_atoms = len(self.store_structures[0]) - 1
+        with open("configurations.txt", "w") as f:
+            for system in self.store_structures:
+                f.write(str(n_atoms) + "\n")
+                f.write("Energy: " + str(system[0]) + "\n")
+                for terms in system[1:]:
+                    f.write(" ".join([str(x) for x in terms]) + "\n")
 
     def store_structure(self):
         """
-        Store the accept systems in a list of lists of tuples with
-        the coordinates more electronic energy
+        Store the accept systems in a list of lists of the energy more
+        a tuples with the coordinates
 
-            [[('X', 0., 0., 0.), ('Y', 1., 0., 0.), Energy], [ ... ], ...]
+            [[Energy, ('X', 0., 0., 0.), ('Y', 1., 0., 0.)], [ ... ], ...]
         """
         self.store_structures.append(
-            self._object_system_current.atoms + [self.energy_current]
+            [self.energy_current] + self._object_system_current.atoms
         )
         pass
 
