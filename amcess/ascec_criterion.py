@@ -1,21 +1,28 @@
 import numpy as np
 from scipy import constants
+from amcess.electronic_energy import ElectronicEnergy
 
 
-class Ascec:
+class Ascec(ElectronicEnergy):
     """
     ASCEC algorithm
     """
 
     def __init__(
         self,
-        call_function: callable,
-        bounds,
+        object_system: object,
+        search_type: str,
+        sphere_center: tuple,
+        sphere_radius: float,
+        basis_set: str,
+        call_function: int,
+        bounds: list,
+        max_closeness: float = 1.0,
+        seed: int = None,
         T0: float = 1000.0,
         nT: int = 100,
         dT: float = 0.1,
         maxCycle: int = 3000,
-        args: tuple = (),
     ):
         """
         Initialize the Ascec class
@@ -34,11 +41,17 @@ class Ascec:
                 Temperature step
             maxCylce : int
                 Maximum number of cycles
-            args : tuple
-                Any additional fixed parameters needed to completely specify
-                ElectronicEnergy Object, output file
         """
-
+        super().__init__(
+            object_system,
+            search_type,
+            sphere_center,
+            sphere_radius,
+            basis_set,
+            max_closeness,
+            seed,
+        )
+        self._object_system_current = object_system
         self._bounds = bounds
         self._call_function = call_function
 
@@ -47,7 +60,8 @@ class Ascec:
         self._dT = dT
         self._maxCylce = maxCycle
 
-        self.args = args
+        self.store_structures = []
+
         # initial energy
         self.electronic_e(np.zeros(len(bounds)))
         self._e0 = self.energy_current
@@ -69,11 +83,11 @@ class Ascec:
 
         Returns
         -------
-            Electronic energy of the new configuration into
+            Electronic energy of the new configuration in
             the attribute self.electronic_e
         """
-
-        self.energy_current = self._call_function(x, *self.args)
+        if self._call_function == 1:
+            self.energy_current = self.hf_pyscf(x)
 
     def random_mov(self, n):
         """
@@ -104,9 +118,6 @@ class Ascec:
             Value of the cost function
         T : float
             Annealing temperature
-        args :
-            Any additional fixed parameters needed to completely specify
-            the objective function.
         """
 
         if self.energy_current < self.e_before:
@@ -151,17 +162,16 @@ class Ascec:
         while iT <= self._nT:
             count = 0
             while count <= self._maxCylce:
+                # print("Entroooooo2 ", count)
                 # 3 values to translate and another 3 to rotate
-                x = self.random_mov(
-                    (self.args[0]._object_system_current.total_molecules - 1)
-                    * 6
-                )
+                x = self.random_mov(len(self._bounds))
                 self.electronic_e(x)
+                self.store_structure()
                 accept = self.ascec_criterion(T)
                 if accept:
                     self.e_before = self.energy_current
                     count = self._maxCylce + 1
-                    self.write_to_file()
+                    self.store_structure()
                     print("Accept in the Temperature ", T)
                 count += 1
             T = T - T * self._dT

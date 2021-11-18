@@ -8,7 +8,7 @@ class ElectronicEnergy:
     def __init__(
         self,
         object_system: object,
-        search_type: int,
+        search_type: str,
         sphere_center: tuple,
         sphere_radius: float,
         basis_set: str,
@@ -41,6 +41,8 @@ class ElectronicEnergy:
         self._max_closeness = max_closeness
         self._move_seed = seed
 
+        self.store_structures = []
+
         if self._search_type != "ASCEC ":
             mol = gto.M(
                 atom=self.input_atom_mol_pyscf(),
@@ -54,7 +56,7 @@ class ElectronicEnergy:
     # Decorators
     # ===============================================================
     def build_input_pyscf(func_energy):
-        def new_input(self, x, *args):
+        def new_input(self, x):
             """
             Build input to pyscf
 
@@ -109,7 +111,7 @@ class ElectronicEnergy:
 
             self.input_atom_mol_pyscf()
 
-            return func_energy(self, x, *args)
+            return func_energy(self, x)
 
         return new_input
 
@@ -195,6 +197,18 @@ class ElectronicEnergy:
             )
             l: int = l + 1
 
+    def store_structure(self):
+        """
+        Store the accept systems in a list of lists of tuples with
+        the coordinates more electronic energy
+
+            [[('X', 0., 0., 0.), ('Y', 1., 0., 0.), Energy], [ ... ], ...]
+        """
+        self.store_structures.append(
+            self._object_system_current.atoms + [self.energy_current]
+        )
+        pass
+
     def calculate_electronic_e(self, mol):
         """
         Calculate electronic energy
@@ -215,7 +229,7 @@ class ElectronicEnergy:
             print("Error in pyscf")  # usar un warning
             return float("inf")
 
-    def metropolis(self, filename):
+    def metropolis(self):
         """[summary]
         Metroplois algorithm (symmetric proposal distribution).
         If structure is accepted, it will add into file xyz
@@ -228,16 +242,16 @@ class ElectronicEnergy:
         if self.energy_current < self.energy_before:
             print("Accept 1")
             self.energy_before = self.energy_current
-            self.write_to_file(filename)
+            self.store_structure
         else:
             RE = self.energy_current / self.energy_before
             if np.random.random(1)[0] <= RE:
                 print("Accept 2")
                 self.energy_before = self.energy_current
-                self.write_to_file(filename)
+                self.store_structure
 
     @build_input_pyscf
-    def energy_hf_pyscf(self, x, *args):
+    def hf_pyscf(self, x):
         """
         Calculate of electronic energy with pyscf
 
@@ -266,28 +280,9 @@ class ElectronicEnergy:
 
         if self._search_type != "ASCEC":
             # Metroplis
-            self.metropolis(args[1])
+            self.metropolis()
 
         return self.energy_current
-
-    def hf_pyscf(x, *args):
-        """
-        Calculate of electronic energy with pyscf
-
-        Parameters
-        ----------
-            x : array 1D
-                Possible new positions and angles
-            args : list
-                basis set, Cluster Object, name output xyz
-
-        Returns
-        -------
-            e : float
-                electronic energy
-
-        """
-        return args[0].energy_hf_pyscf(x, *args)
 
 
 # ! Martin

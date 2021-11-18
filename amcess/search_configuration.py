@@ -111,13 +111,14 @@ class SearchConfig:
 
     def init_electronic_energy(function_minimization):
         def wrapper(self, **kwargs):
-            self._obj_ee = ElectronicEnergy(
-                self._system_object,
-                self._search_methodology,
-                self._sphere_center,
-                self._sphere_radius,
-                self._basis_set,
-            )
+            if self._search_methodology != "ASCEC":
+                self._obj_ee = ElectronicEnergy(
+                    self._system_object,
+                    self._search_methodology,
+                    self._sphere_center,
+                    self._sphere_radius,
+                    self._basis_set,
+                )
             return function_minimization(self, **kwargs)
 
         return wrapper
@@ -185,16 +186,6 @@ class SearchConfig:
         ):
             available = list(METHODS.keys())
             raise ValueError(f"Invalid value. options are: {available}")
-
-        # if change_search_methodology > 4:
-        #    raise ValueError(
-        #        "\n\nThe search methodology is associated with a integer \n"
-        #        "1 -> ASCEC \n"
-        #        "2 -> Dual Annealing \n"
-        #        "3 -> SHGO \n"
-        #        "4 -> Bayessiana \n"
-        #        f"\nplease, check: '{type(change_search_methodology)}'\n"
-        #    )
 
         self._search_methodology = change_search_methodology
 
@@ -380,6 +371,7 @@ class SearchConfig:
                 "*** Cost function is Hartree--Fock implemented into pyscf ***"
                 "\n\n"
             )
+            # return ElectronicEnergy.hf_pyscf
             return ElectronicEnergy.hf_pyscf
 
     @init_electronic_energy
@@ -398,19 +390,29 @@ class SearchConfig:
             if callable(self._search_methodology)
             else METHODS[self._search_methodology]
         )
-        if self._search_methodology == "dual_annealing":
-            print("*** Minimization: Dual Annealing ***")
-        if self._search_methodology == "SHGO":
-            print("*** Minimization: SHGO from Scipy ***")
-        if self._search_methodology == "Bayesian":
-            print("*** Minimization: Bayesian ***")
-        with open(self._output_name, "w") as outxyz:
+
+        if self._search_methodology == "ASCEC":
+            print("*** Minimization: ASCEC ***")
             self._search = func(
-                self._func,
+                object_system=self._system_object,
+                search_type=self._search_methodology,
+                sphere_center=self._sphere_center,
+                sphere_radius=self._sphere_radius,
+                basis_set=self._basis_set,
+                call_function=1,
                 bounds=self._bounds,
-                args=(self._obj_ee, outxyz),
                 **kwargs,
             )
-            if self._search_methodology == "ASCEC":
-                print("*** Minimization: ASCEC ***")
-                self._search.ascec_run()
+            self._search.ascec_run()
+        else:
+            if self._search_methodology == "dual_annealing":
+                print("*** Minimization: Dual Annealing ***")
+            if self._search_methodology == "SHGO":
+                print("*** Minimization: SHGO from Scipy ***")
+            if self._search_methodology == "Bayesian":
+                print("*** Minimization: Bayesian ***")
+            self._search = func(
+                self._obj_ee.hf_pyscf,
+                bounds=self._bounds,
+                **kwargs,
+            )
