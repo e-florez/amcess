@@ -16,7 +16,7 @@ from amcess.electronic_energy import ElectronicEnergy
             "sto-3g",
             [("H", 1, 1, 1), ("H", 1.74, 1, 1)],
             [("H", 0, 0, 0), ("H", 0.74, 0, 0)],
-            "output.xyz",
+            "configurations.xyz",
             1,
             (0.0, 0.0, 0.0),
             1.0,
@@ -62,19 +62,13 @@ def test_electronic_energy_with_hf_pyscf(
             Expected electronic energy
 
     """
-    with open(output, "w") as outxyz:
-        e = ElectronicEnergy.hf_pyscf(
-            x0,
-            ElectronicEnergy(
-                Cluster(cluster1, cluster2),
-                method_min,
-                sphere_center,
-                sphere_radius,
-                basis,
-            ),
-            outxyz,
-        )
-    os.remove("output.xyz")
+    e = ElectronicEnergy(
+        Cluster(cluster1, cluster2),
+        method_min,
+        sphere_center,
+        sphere_radius,
+        basis,
+    ).hf_pyscf(x0)
     assert e - expected_energy < 1.0e-7
 
 
@@ -440,7 +434,7 @@ def test_error_energy_hf_pyscf(
         (
             [("H", 0.0, 0.0, 0.0), ("H", 0.00, 0.0, 0.0)],
             [("H", 0.0, 0.0, 0.0), ("H", 0.00, 0.0, 0.0)],
-            1,
+            2,
             (0.0, 0.0, 0.0),
             0.0,
             "sto-3g",
@@ -462,19 +456,14 @@ def test_metropolis_else(
     """
     Test Error of pyscf
     """
-    with open("configurations.xyz", "w") as outxyz:
-        obj_sc = ElectronicEnergy(
-            Cluster(molecule1, molecule2),
-            method_min,
-            sphere_center,
-            sphere_radius,
-            bases,
-            max_closeness,
-        )
-        obj_sc.energy_current = 1.0
-        obj_sc.energy_before = 1.0
-        obj_sc.metropolis(outxyz)
-    with open("configurations.xyz", "r") as outxyz:
-        readl = outxyz.readline()
-    os.remove("configurations.xyz")
-    assert readl == "4\n"
+    obj_sc = ElectronicEnergy(
+        Cluster(molecule1, molecule2),
+        method_min,
+        sphere_center,
+        sphere_radius,
+        bases,
+        max_closeness,
+    )
+    obj_sc.energy_current = 1.0
+    obj_sc.energy_before = 1.0
+    obj_sc.metropolis()

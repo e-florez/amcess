@@ -179,7 +179,7 @@ class ElectronicEnergy:
                 File name where is save structure and energy
         """
         n_atoms = len(self.store_structures[0]) - 1
-        with open("configurations.txt", "w") as f:
+        with open("configurations.xyz", "w") as f:
             for system in self.store_structures:
                 f.write(str(n_atoms) + "\n")
                 f.write("Energy: " + str(system[0]) + "\n")
