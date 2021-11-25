@@ -8,5 +8,5 @@ amcess
    data
    main
    setup
-   src
+   amcess
    tests

@@ -1,60 +1,11 @@
-import random
-import sys
-
+import numpy as np
+import scipy
 from scipy.optimize import shgo
 
-import amcess.electronic_energy as ee
 from amcess.base_molecule import Cluster
+from amcess.electronic_energy import ElectronicEnergy, hf_pyscf
+from amcess.gaussian_process import solve_gaussian_processes
 from amcess.m_dual_annealing import solve_dual_annealing
-
-
-def overlaping(_system_object):
-    """
-    Confirm that the molecules aren't overlaping
-
-    Parameters
-    ----------
-        _system_object : object
-            Cluster object
-
-    Returns
-    -------
-        fragments : dictionary
-            Input for Cluster class
-
-    Print warning when there is overlaping
-    """
-    import warnings  # !Falta definir el tipo de warning
-
-    fragments = dict()
-    for i in range(_system_object.total_molecules - 1):
-        for j in range(i + 1, _system_object.total_molecules):
-            fragments[i] = _system_object.get_molecule(i)
-            equal_arrays = (
-                _system_object.get_molecule(i).center_of_mass
-                == _system_object.get_molecule(j).center_of_mass
-            )
-            if equal_arrays:
-                r = random.random()
-                fragments[j] = (
-                    Cluster(_system_object.get_molecule(j))
-                    .translate(0, r, r, r)
-                    .rotate(0, r, r, r)
-                ).get_molecule(0)
-                message = (
-                    "Center of Mass of the fragments "
-                    + str(i)
-                    + " and "
-                    + str(j)
-                    + " are overlapping. Then "
-                    + str(j)
-                    + " is move "
-                    + str(r)
-                )
-                warnings.warn(message)
-            else:
-                fragments[j] = _system_object.get_molecule(j)
-    return fragments
 
 
 class SearchConfig:
@@ -69,7 +20,7 @@ class SearchConfig:
         search_methodology : int
             Integer associated with type of searching
         basis : string
-            Label of bases set
+            Label of basis set
         program_electronic_structure : int
             Integer associated with the program to make the
             electronic structure calculations
@@ -80,75 +31,302 @@ class SearchConfig:
     Returns
     -------
         Output xyz with coordinates and electronic structure
+
+    Raises
+    ------
+        TypeError
+            System_object isn't difinite
+            AttributeError system_object isn't difinite as
+            an object Cluster
     """
 
     def __init__(
         self,
-        system_object=None,
-        search_methodology=1,
-        basis="sto-3g",
-        program_electronic_structure=1,
-        outxyz="configurations.xyz",
+        system_object: Cluster = None,
+        search_methodology: int = 1,
+        basis: str = "sto-3g",
+        program_electronic_structure: int = 1,
+        tolerance_contour_radius: float = 1.0,
+        outxyz: str = "configurations.xyz",
     ) -> None:
 
         if system_object is None:
-            sys.exit(
-                "AttributeError system_object isn't a object of Molecule.\
-                It's None"
+            raise TypeError("System_object isn't difinite\n" "It's NoneType")
+        if not isinstance(system_object, Cluster):
+            raise TypeError(
+                "System_object isn't difinite as an object Cluster\n"
+                f"please, check:\n'{system_object}'"
             )
-
-        if system_object.total_molecules == 1:
-            raise ValueError(
-                "System of study most have AT LEAST TWO FRAGMENTS"
-            )
-
         self._system_object = system_object
-        #
-        self._search_methodology = search_methodology
-        self._search_name = self.search_name(self._search_methodology)
 
-        # cost function
-        self._basis = basis
-        self._program_calculate_cost_function = program_electronic_structure
+        # Verfication and assigment of variables (type, value)
+        self.search_type = search_methodology
+        self.basis_set = basis
+        self.cost_function_number = program_electronic_structure
+        self.output_name = outxyz
+        self.tolerance_contour_radius = tolerance_contour_radius
+        self.cost_function_number = program_electronic_structure
+
+        # Check Overlaping
+        self._system_object.initialize_cluster()
+
+        # Build bounds, format for scipy functions
+        if system_object._sphere_radius is None:
+            self.spherical_contour_cluster()
+
         self._func = self.program_cost_function(
             self._program_calculate_cost_function
         )
 
-        # archivo de salida xyz con todas las configuraciones
-        self._outxyz = outxyz
-
-        # Siguiendo propuesta de Juan, con ediciones, para definir el bounds
-        # al parcer con este bounds no se alejan las moleculas en shgo pero
-        # con dual_annealing no se evita todavía que se alejen
-        # TODO Remplazar por el bounds definido por la clase Cluster
-        sphere_radius = self._system_object.total_atoms * 1.5 * 0.5
-        discretization = sphere_radius / 1.6
-        bound_translate = [
-            (-discretization, discretization),
-            (-discretization, discretization),
-            (-discretization, discretization),
-        ]
-        bound_rotate = [(0, 360), (0, 360), (0, 360)]
-        bound_translate = bound_translate * self._system_object.total_molecules
-        bound_rotate = bound_rotate * self._system_object.total_molecules
-        self._bounds = bound_translate + bound_rotate
-
-        # verificar superposición de las moleculas
-        self._system_object = Cluster(
-            *overlaping(self._system_object).values()
+        self._obj_ee = ElectronicEnergy(
+            self._system_object, self._sphere_center, self._sphere_radius
         )
 
+    # ===============================================================
+    # Decorators
+    # ===============================================================
+    def bounds_sphere_change(function_change_radius):
+        def new_bounds(self, new_radius):
+            """
+            Define the bounds for the optimization algorithm
+
+            Returns
+            -------
+                bounds : list
+                    Bounds for the optimization algorithm
+            """
+            new_radius_t = self._tolerance_contour_radius + new_radius
+
+            bound_translate = [
+                (-new_radius_t, new_radius_t),
+                (-new_radius_t, new_radius_t),
+                (-new_radius_t, new_radius_t),
+            ]
+            bound_rotate = [(0, scipy.pi), (0, scipy.pi), (0, scipy.pi)]
+
+            bound_translate = bound_translate * (
+                self._system_object.total_molecules - 1
+            )
+            bound_rotate = bound_rotate * (
+                self._system_object.total_molecules - 1
+            )
+
+            self._bounds = bound_translate + bound_rotate
+
+            return function_change_radius(self, new_radius)
+
+        return new_bounds
+
+    # ===============================================================
+    # PROPERTIES
+    # ===============================================================
+    @property
     def bounds(self):
         return self._bounds
 
-    def search_name(self, search_name):
-        """Say what type of searching is used"""
-        if self._search_methodology == 1:
-            return "dual_annealing from Scipy"
-        if self._search_methodology == 2:
-            return "shgo from Scipy"
-        if self._search_methodology == 3:
-            return "Bayesiana"
+    @bounds.setter
+    def bounds(self, new_bounds):
+        if len(new_bounds) != len(self._bounds):
+            raise ValueError(
+                "\n\nArray dimensions insufficient: "
+                f"\ndimensions of old bounds: '{len(self._bounds)}'\n"
+                f"\ndimensions of new bounds: '{len(new_bounds)}'\n"
+            )
+
+        self._bounds = new_bounds
+
+    @property
+    def output_name(self):
+        return self._output_name
+
+    @output_name.setter
+    def output_name(self, new_name_output):
+        if not isinstance(new_name_output, str):
+            raise TypeError(
+                "\n\nThe new name to output is not a string"
+                f"\nplease, check: '{type(new_name_output)}'\n"
+            )
+
+        self._output_name = new_name_output
+
+    @property
+    def search_type(self):
+        return self._search_methodology
+
+    @search_type.setter
+    def search_type(self, change_search_methodology):
+        if not isinstance(change_search_methodology, int):
+            raise TypeError(
+                "\n\nThe new search methodology is not an integer"
+                f"\nplease, check: '{type(change_search_methodology)}'\n"
+            )
+        if change_search_methodology > 3:
+            raise ValueError(
+                "\n\nThe search methodology is associated with a integer \n"
+                "1 -> Dual Annealing \n"
+                "2 -> SHGO \n"
+                "3 -> Bayessiana \n"
+                f"\nplease, check: '{type(change_search_methodology)}'\n"
+            )
+
+        self._search_methodology = change_search_methodology
+
+    @property
+    def basis_set(self):
+        return self._basis_set
+
+    @basis_set.setter
+    def basis_set(self, new_basis_set):
+        if not isinstance(new_basis_set, str):
+            raise TypeError(
+                "\n\nThe new name to basis set is not a string"
+                f"\nplease, check: '{type(new_basis_set)}'\n"
+            )
+
+        self._basis_set = new_basis_set
+
+    @property
+    def tolerance_contour_radius(self):
+        return self._tolerance_contour_radius
+
+    @tolerance_contour_radius.setter
+    def tolerance_contour_radius(self, new_tol_radius: float):
+        if not isinstance(new_tol_radius, float):
+            raise TypeError(
+                "\n\nThe new tolerance radius is not a float"
+                f"\nplease, check: '{type(new_tol_radius)}'\n"
+            )
+        self._tolerance_contour_radius = new_tol_radius
+
+    @property
+    def sphere_center(self) -> tuple:
+        return self._sphere_center
+
+    @sphere_center.setter
+    def sphere_center(self, new_center: tuple) -> None:
+        if not isinstance(new_center, tuple):
+            raise TypeError(
+                "\n\nThe Sphere center must be a tuple with three elements: "
+                "(float, float, float)"
+                f"\nplease, check: '{type(new_center)}'\n"
+            )
+        if len(new_center) != 3:
+            raise ValueError(
+                "\n\nThe Sphere center must be a tuple with three elements: "
+                "(float, float, float)"
+                f"\nplease, check: '{new_center}'\n"
+            )
+
+        self._sphere_center = new_center
+
+    @property
+    def sphere_radius(self) -> float:
+        return self._sphere_radius
+
+    @sphere_radius.setter
+    @bounds_sphere_change
+    def sphere_radius(self, new_radius: float) -> None:
+        if not isinstance(new_radius, (int, float)):
+            raise TypeError(
+                "\n\nThe Sphere  Radius must be a float or int"
+                f"\nplease, check: '{type(new_radius)}'\n"
+            )
+        self._sphere_radius = new_radius + self._tolerance_contour_radius
+        if self._sphere_radius <= self._tolerance_contour_radius:
+            raise ValueError(
+                "\n\nThe Sphere Radius more tolerance must be larger than 1 A"
+                f"\nplease, check: '{new_radius}'\n"
+            )
+
+    @property
+    def cost_function_ee(self):
+        return self._func
+
+    @property
+    def cost_function_number(self):
+        return self._program_calculate_cost_function
+
+    @cost_function_number.setter
+    def cost_function_number(self, new_func):
+        if not isinstance(new_func, int):
+            raise TypeError(
+                "\n\nThe new cost function is not a integer"
+                f"\nplease, check: '{type(new_func)}'\n"
+            )
+        elif new_func > 1:
+            raise ValueError(
+                "\n\nThe new cost function is not implemeted "
+                "\n 1 -> Hartree Fock into pyscf"
+                f"\nplease, check: '{new_func}'\n"
+            )
+
+        self._program_calculate_cost_function = new_func
+        self._func = self.program_cost_function(new_func)
+
+    # ===============================================================
+    # Methods
+    # ===============================================================
+
+    def spherical_contour_cluster(self, new_tol: float = None):
+        """
+        Define a spherical outline that contains our cluster
+
+        Parameters
+        ----------
+            tolerance : float
+                Tolerance with the radius between the mass center to the
+                furthest atom
+
+        Returns
+        -------
+            sphere_center : tuple
+                Mass center of the biggest molecule
+            sphere_radius : float
+                Radius between the sphere center to the furthest atom
+
+        """
+        if new_tol is not None:
+            self._tolerance_contour_radius = new_tol
+
+        max_distance_cm = 0.0
+        molecule = 0
+        max_atoms = 0
+
+        # The biggest molecule
+        for i in range(self._system_object.total_molecules):
+            if self._system_object.get_molecule(i).total_atoms > max_atoms:
+                max_atoms = self._system_object.get_molecule(i).total_atoms
+                molecule = i
+
+        self._sphere_center = self._system_object.get_molecule(
+            molecule
+        ).center_of_mass
+
+        # Move the biggest molecule to initio in the cluster object,
+        # if is necessary
+        if molecule != 0:
+            new_geom = dict()
+            for i in range(self._system_object.total_molecules):
+                if i == 0:
+                    new_geom[i] = self._system_object.get_molecule(molecule)
+                elif i == molecule:
+                    new_geom[i] = self._system_object.get_molecule(0)
+                else:
+                    new_geom[i] = self._system_object.get_molecule(i)
+
+            self._system_object = Cluster(
+                *new_geom.values(), sphere_center=self._sphere_center
+            )
+
+        # Radius between the sphere center to the furthest atom
+        for xyz in self._system_object.coordinates:
+            temp_r = np.linalg.norm(
+                np.asarray(self._sphere_center) - np.asarray(xyz)
+            )
+            if temp_r > max_distance_cm:
+                max_distance_cm = temp_r
+
+        self.sphere_radius = max_distance_cm
 
     def program_cost_function(self, _program_calculate_cost_function):
         """
@@ -158,63 +336,99 @@ class SearchConfig:
 
         Parameters
         ----------
-            _program_calculate_cost_function ([type]): [description]
+            _program_calculate_cost_function : int
+                Integer associated with the program to calculate the cost
+                and methodology (Hamiltonian, Functional, etc)
 
         Returns
         -------
             called
             name of the function cost which associated with a specify
-            program
+            program and methodology (Hamiltonian, Functional, etc)
 
         """
         if _program_calculate_cost_function == 1:
-            return ee.hf_pyscf
+            print(
+                "\n\n"
+                "*** Cost function is Hartree--Fock implemented into pyscf ***"
+                "\n\n"
+            )
+            return hf_pyscf
 
     def run(self, **kwargs):
-        """ """
+        """
+        Alternative to execute the searching methodologies
+
+        Parameters
+        ----------
+            **kwargs : dict
+                Dictionary with the parameters to be used in the
+                search methodologies
+        """
         if self._search_methodology == 1:
-            print("*** Minimization: Dual Annealing ***")
             self.da(**kwargs)
         if self._search_methodology == 2:
-            print("*** Minimization: SHGO from Scipy ***")
             self.shgo(**kwargs)
+        if self._search_methodology == 3:
+            self.bayesian(**kwargs)
 
     def da(self, **kwargs):
         """
         Execute solve dual annealing to search candidate structure
         and open output file
+
+        Parameters
+        ----------
+            **kwargs : dict
+                Dictionary with the parameters to be used in the
+                dual annealing methodology
         """
-        with open(self._outxyz, "w") as outxyz:
+        print("*** Minimization: Dual Annealing ***")
+        with open(self._output_name, "w") as outxyz:
             self._search = solve_dual_annealing(
                 self._func,
                 self._bounds,
                 self._system_object,
-                args=(
-                    self._basis,
-                    self._system_object,
-                    outxyz,
-                    self._search_methodology,
-                ),
-                **kwargs
+                args=(self._basis_set, self._obj_ee, outxyz),
+                **kwargs,
             )
 
     def shgo(self, **kwargs):
         """
         Execute solve shgo to search candidate structure
         and open output file
-        """
-        with open(self._outxyz, "w") as outxyz:
-            self._search_methodology = 2
 
+        Parameters
+        ----------
+            **kwargs : dict
+                Dictionary with the parameters to be used in the
+                shgo methodology
+        """
+        print("*** Minimization: SHGO from Scipy ***")
+        with open(self._output_name, "w") as outxyz:
             self._search = shgo(
                 self._func,
                 bounds=self._bounds,
-                sampling_method="sobol",
-                args=(
-                    self._basis,
-                    self._system_object,
-                    outxyz,
-                    self._search_methodology,
-                ),
-                **kwargs
+                args=(self._basis_set, self._obj_ee, outxyz),
+                **kwargs,
+            )
+
+    def bayesian(self, **kwargs):
+        """
+        Execute solve Bayesian to search candidate structure
+        and open output file
+
+        Parameters
+        ----------
+            **kwargs : dict
+                Dictionary with the parameters to be used in the
+                Bayesian methodology
+        """
+        print("*** Minimization: Bayesian ***")
+        with open(self._output_name, "w") as outxyz:
+            self._search = solve_gaussian_processes(
+                self._func,
+                bounds=self._bounds,
+                args=(self._basis_set, self._obj_ee, outxyz),
+                **kwargs,
             )
