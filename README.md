@@ -1,4 +1,3 @@
-
 <!-- [![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-390/)
 ![Gitlab pipeline status](https://img.shields.io/gitlab/pipeline/ADanianZE/ascec/main?style=plastic)
 [![pipeline status](https://gitlab.com/ADanianZE/ascec/badges/main/pipeline.svg)](https://gitlab.com/ADanianZE/ascec/-/commits/main)
@@ -22,8 +21,8 @@
   <br>
   <a href=https://www.python.org/downloads/release/python-390/>
   <img src=https://img.shields.io/badge/python-3.9-blue.svg></a>
-  <a href=https://img.shields.io/badge/license-MIT-blue.svg>
-  <img src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
+  <a href=https://www.gnu.org/licenses/gpl-3.0>
+  <img src="https://img.shields.io/badge/License-GPLv3-blue.svg"></a>
   <a href=https://mybinder.org/v2/gl/ADanianZE%2Fascec/main?filepath=workflow%2F01_importing_atoms_and_molecules.ipynb>
   <img src="https://mybinder.org/badge_logo.svg"></a>
   <br>  
