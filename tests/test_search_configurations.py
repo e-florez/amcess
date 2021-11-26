@@ -960,10 +960,65 @@ def test_SC_run_bayesian_method(
     """
     Test SC.run method for bayesian
     """
-    gp_params = {"initer": initer, "maxiter": maxiter}
     SearchConfig(
         Cluster(molecule1, molecule2), search_methodology=search_meth
-    ).run(gp_params=gp_params)
+    ).run(initer=initer, maxiter=maxiter)
+    with open("configurations.xyz", "r") as f:
+        readl = f.readline()
+    os.remove("configurations.xyz")
+    assert readl == "4\n"
+
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2, search_meth, initer, maxiter, num_cores",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 3.0), ("H", 0.78, 0.0, 3.0)],
+            "Bayesian",
+            3,
+            3,
+            2,
+        ),
+    ],
+)
+def test_SC_run_parallel_bayesian_method(
+    molecule1, molecule2, search_meth, initer, maxiter, num_cores
+):
+    """
+    Test SC.run method for bayesian
+    """
+    SearchConfig(
+        Cluster(molecule1, molecule2), search_methodology=search_meth
+    ).run(initer=initer, maxiter=maxiter, num_cores=num_cores)
+    with open("configurations.xyz", "r") as f:
+        readl = f.readline()
+    os.remove("configurations.xyz")
+    assert readl == "4\n"
+
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2, search_meth, initer, maxiter, MCMC",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 3.0), ("H", 0.78, 0.0, 3.0)],
+            "Bayesian",
+            3,
+            3,
+            True,
+        ),
+    ],
+)
+def test_SC_run_MCMC_bayesian_method(
+    molecule1, molecule2, search_meth, initer, maxiter, MCMC
+):
+    """
+    Test SC.run method for bayesian
+    """
+    SearchConfig(
+        Cluster(molecule1, molecule2), search_methodology=search_meth
+    ).run(initer=initer, maxiter=maxiter, MCMC=MCMC)
     with open("configurations.xyz", "r") as f:
         readl = f.readline()
     os.remove("configurations.xyz")

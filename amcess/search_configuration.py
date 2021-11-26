@@ -120,6 +120,8 @@ class SearchConfig:
                     self._basis_set,
                 )
                 if self._program_calculate_cost_function == 1:
+                    self.program_cost_function(
+                        self._program_calculate_cost_function)
                     self._func = self._obj_ee.hf_pyscf
             return function_minimization(self, **kwargs)
 
