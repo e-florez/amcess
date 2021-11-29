@@ -2,7 +2,6 @@ import time
 
 import GPyOpt
 import numpy as np
-from GPyOpt.util.general import spawn
 from scipy.optimize import OptimizeResult
 
 
@@ -10,25 +9,51 @@ def GPyOpt_formatted_bounds(bounds):
     """
     Create dictionary with GPyOpt format for bounds
     """
-    return [
-        dict(
-            zip(
-                ["name", "type", "domain", "dimensionality"],
-                ["x" + str(i), "continuous", bound, 1],
-            )
-        )
-        for i, bound in enumerate(bounds)
-    ]
+    keys = ["name", "type", "domain", "dimensionality"]
+    xbounds = list()
+    for i, bound in enumerate(bounds):
+        values = ["x" + str(i), "continuous", bound, 1]
+        xbounds.append(dict(zip(keys, values)))
+    return xbounds
 
 
-def define_run_optimization_args(gp_params):
+def define_optimization_args(**kargs):
+    """
+    Define arguments for optimization. If no values are given by user,
+    it returns default values.
+
+    Parameters
+    ----------
+    kargs : dictionary
+        parameters given by user
+
+    Returns
+    -------
+    dictionary
+        output with model parameters
+    """
+    default_opt = {
+        "initial_design": "latin",
+        "optimize_restarts": 5,
+        "xi": 0.001,
+        "MCMC": None
+    }
+    opt_args = dict()
+    for key, value in default_opt.items():
+        opt_args[key] = value
+        if key in kargs.keys():
+            opt_args[key] = kargs[key]
+    return opt_args
+
+
+def define_run_optimization_args(**kargs):
     """
     Define arguments for run_optimization method. If no values are
     given by user, it returns default values.
 
     Parameters
     ----------
-    gp_params : dictionary
+    kargs : dictionary
         parameters given by user
 
     Returns
@@ -39,17 +64,38 @@ def define_run_optimization_args(gp_params):
     default_runopt = {
         "save_models_parameters": False,
         "evaluations_file": None,
-        "models_file": None,
+        "models_file": None
     }
-
     runopt_args = {}
     for key, value in default_runopt.items():
-        if key in gp_params.keys():
-            runopt_args[key] = gp_params[key]
-        else:
-            runopt_args[key] = value
-
+        runopt_args[key] = value
+        if key in kargs.keys():
+            runopt_args[key] = kargs[key]
     return runopt_args
+
+
+def define_run_parallel_optimization_args(**kargs):
+    """
+    Define arguments for parallel computation. If no values are given,
+    it returns default values.
+
+    Parameters
+    ----------
+    kargs : dictionary
+        parameters given by user
+
+    Returns
+    -------
+    dictionary
+        output with parallel computation parameters
+    """
+    default_paropt = {"num_cores": 1}
+    par_kargs = {}
+    for key, value in default_paropt.items():
+        par_kargs[key] = value
+        if key in kargs.keys():
+            par_kargs[key] = kargs[key]
+    return par_kargs
 
 
 # #! Classes copied from GPyOpt/core/objective.py to can pass the
@@ -60,7 +106,7 @@ class Objective(object):
     """
 
     def evaluate(self, x):
-        raise NotImplementedError()
+        raise NotImplementedError("")
 
 
 class SingleObjective_Edited(Objective):
@@ -96,6 +142,7 @@ class SingleObjective_Edited(Objective):
         self.num_evaluations = 0
         self.space = space
         self.objective_name = objective_name
+        self.parallel_error = False
 
     def evaluate(self, x):
         """
@@ -105,18 +152,11 @@ class SingleObjective_Edited(Objective):
         if self.n_procs == 1:
             f_evals, cost_evals = self._eval_func(x)
         else:
-            try:
-                f_evals, cost_evals = self._syncronous_batch_evaluation(x)
-            # #! it is add E722 to avoid the error by :: to tox.init for flake8
-            except:
-                if not hasattr(self, "parallel_error"):
-                    print(
-                        "Error in parallel computation.\n"
-                        "Fall back to single process!"
-                    )
-                else:
-                    self.parallel_error = True
-                f_evals, cost_evals = self._eval_func(x)
+            if not self.parallel_error:
+                print("Parallel computation not implemented.\n"
+                      "Fall back to single process!")
+                self.parallel_error = True
+            f_evals, cost_evals = self._eval_func(x)
 
         return f_evals, cost_evals
 
@@ -137,51 +177,21 @@ class SingleObjective_Edited(Objective):
             cost_evals += [time.time() - st_time]
         return f_evals, cost_evals
 
-    def _syncronous_batch_evaluation(self, x):
-        """
-        Evaluates the function a x, where x can be a single location
-        or a batch. The evaluation is performed in parallel according
-        to the number of accessible cores.
-        """
-
-        from multiprocessing import Pipe, Process
-
-        # --- parallel evaluation of the function
-        # #! it is add E203 to avoid the error by :: to tox.init for flake8
-        divided_samples = [x[i :: self.n_procs] for i in range(self.n_procs)]
-        pipe = [Pipe() for i in range(self.n_procs)]
-        proc = [
-            Process(target=spawn(self._eval_func), args=(c, k))
-            for k, (p, c) in zip(divided_samples, pipe)
-        ]
-        [p.start() for p in proc]
-        [p.join() for p in proc]
-
-        # --- time of evaluation is set to constant (=1).
-        # This is one of the hypothesis of synchronous batch methods.
-        f_evals = np.zeros((x.shape[0], 1))
-        cost_evals = np.ones((x.shape[0], 1))
-        i = 0
-        for (p, c) in pipe:
-            f_evals[i :: self.n_procs] = p.recv()[0]  # throw away costs
-            i += 1
-        return f_evals, cost_evals
-
 
 def solve_gaussian_processes(
     func,
     bounds,
-    args: tuple,
+    object_system: object = None,
+    basis_set: str = None,
+    args: tuple = (),
     seed=None,
-    gp_params={},
+    initer: int = None,
+    maxiter: int = None,
+    **kargs
 ):
     """
     Find the global minimum of a function using Bayesian Optimization
     with Gaussian Processes [1].
-
-            Example:
-                lambda x: x ** 2
-                lambda x: (x[0] ** 2 + x[1] - 11) ** 2
 
         Parameters
         ----------
@@ -199,12 +209,11 @@ def solve_gaussian_processes(
             Basis set, Cluster object, and name output file.
 
         iseed : None, int
-
             If seed is None ...
 
-        gp_params : dictionary
-
-            Dictionary with Gaussian process parameters
+        **kargs : dict
+            Dictionary with Gaussian process parameters.
+            Required values:
             - initer : Number of initial evaluations (prior)
             - maxiter : Maximum number of iterations
             For more specific parameters, see [2]
@@ -216,66 +225,33 @@ def solve_gaussian_processes(
 
     [2] GPyOpt official documentation: https://sheffieldml.github.io/GPyOpt/
     """
-
-    if not bounds:
-        raise Exception("\n\n *** ERROR: No 'bounds' founds\n")
+    # Check input parameters
+    if not initer:
+        raise ValueError("initer not defined in Bayesian Optimization")
+    if not maxiter:
+        raise ValueError("maxiter not defined in Bayesian Optimization")
     if seed is None:
         seed = np.random.seed(1)
 
-    lu = list(zip(*bounds))
-    lower, upper = np.array(lu[0]), np.array(lu[1])
-
-    # Checking bounds are valid
-    if (
-        np.any(np.isinf(lower))
-        or np.any(np.isinf(upper))
-        or np.any(np.isnan(lower))
-        or np.any(np.isnan(upper))
-    ):
-        raise ValueError("Some bounds values are inf values or nan values")
-    # Checking that bounds are consistent
-    if not np.all(lower < upper):
-        raise ValueError("Bounds are not consistent min < max")
-    # Checking that bounds are the same length
-    if not len(lower) == len(upper):
-        raise ValueError("Bounds do not have the same dimensions")
-
-    # Check values in optimization_parameters:
-    gpyopt_keys = gp_params.keys()
-    if "initer" not in gpyopt_keys:
-        gp_params["initer"] = 3 * len(bounds)
-    if "maxiter" not in gpyopt_keys:
-        gp_params["maxiter"] = 10 * len(bounds)
-    if "initial_design" not in gpyopt_keys:
-        gp_params["initial_design"] = "latin"
-    if "optimize_restarts" not in gpyopt_keys:
-        gp_params["optimize_restarts"] = 5
-    if "xi" not in gpyopt_keys:
-        gp_params["xi"] = 0.001
-    if "MCMC" not in gpyopt_keys:
-        gp_params["MCMC"] = None
-
-    # Define run_optimization parameters
-    run_optimization_args = define_run_optimization_args(gp_params)
+    # Define optimization parameters
+    opt_kargs = define_optimization_args(**kargs)
+    run_kargs = define_run_optimization_args(**kargs)
+    par_kargs = define_run_parallel_optimization_args(**kargs)
+    kargs.update(opt_kargs)
 
     # Define search space
     xbounds = GPyOpt_formatted_bounds(bounds)
     space = GPyOpt.Design_space(space=xbounds)
 
-    # Define function to be minimized
-    # objective = GPyOpt.core.task.SingleObjective(func)
-
-    objective = SingleObjective_Edited(func, args)
-
     # Define initial evaluations (random seed must be fixed before)
     np.random.seed(seed)
     initial_design = GPyOpt.experiment_design.initial_design(
-        gp_params["initial_design"], space, gp_params["initer"]
+        kargs["initial_design"], space, initer
     )
 
     # define model and acquisition function
     acquisition_opt = GPyOpt.optimization.AcquisitionOptimizer(space)
-    if gp_params["MCMC"]:
+    if kargs["MCMC"]:
         model = GPyOpt.models.GPModel_MCMC(exact_feval=True, verbose=False)
         acquisition = GPyOpt.acquisitions.AcquisitionEI_MCMC(
             model, space, acquisition_opt
@@ -283,21 +259,22 @@ def solve_gaussian_processes(
     else:
         model = GPyOpt.models.GPModel(
             exact_feval=True,
-            optimize_restarts=gp_params["optimize_restarts"],
+            optimize_restarts=kargs["optimize_restarts"],
             verbose=False,
             ARD=True,
         )
         acquisition = GPyOpt.acquisitions.AcquisitionEI(
-            model, space, acquisition_opt, jitter=gp_params["xi"]
+            model, space, acquisition_opt, jitter=kargs["xi"]
         )
+
+    # Define evaluation method and objective function
+    objective = SingleObjective_Edited(func, args, **par_kargs)
     evaluator = GPyOpt.core.evaluators.Sequential(acquisition)
 
     opt = GPyOpt.methods.ModularBayesianOptimization(
         model, space, objective, acquisition, evaluator, initial_design
     )
-    opt.run_optimization(
-        max_iter=gp_params["maxiter"], **run_optimization_args
-    )
+    opt.run_optimization(max_iter=maxiter, **run_kargs)
 
     # Setting the OptimizeResult values
     optimize_res = OptimizeResult()
@@ -309,7 +286,7 @@ def solve_gaussian_processes(
     optimize_res.status = 0
     optimize_res.x = opt.x_opt
     optimize_res.fun = opt.fx_opt
-    optimize_res.nfev = gp_params["maxiter"]
+    optimize_res.nfev = maxiter
     optimize_res.update(
         {
             "X": opt.X,

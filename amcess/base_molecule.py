@@ -497,6 +497,8 @@ class Cluster(Molecule):
     # MAGIC METHODS
     # ===============================================================
     def __add__(self, other):
+        # ! Martin
+        # ! ver en que puede se diferenciar de Molecule
         return self.add_molecule(other)
 
     def __mul__(self, value: int):
@@ -622,7 +624,8 @@ class Cluster(Molecule):
         bool
             True if two point are closer than `max_closeness`
         """
-
+        # ! Martin
+        # ! itertools para optimizar los for
         for first_atom in first_coordinates:
             for second_atom in second_coordinates:
                 distance = np.linalg.norm(
@@ -973,7 +976,10 @@ class Cluster(Molecule):
         new_cluster: Cluster = deepcopy(self)
         new_cluster_dict: dict = new_cluster.cluster_dictionary
         del new_cluster_dict[molecule]
-
+        # ! Martin
+        # ! tener cuidado con el self porque se puede compartir Molecule
+        # ! o Cluster
+        # ! Preferible usar Cluster(...)
         return self.__class__(
             *new_cluster._cluster_dict.values(),
             freeze_molecule=new_cluster.freeze_molecule,

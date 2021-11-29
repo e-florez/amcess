@@ -1,20 +1,21 @@
-import os
-
+from pyscf import gto
 import pytest
+
 from amcess.base_molecule import Cluster
-from amcess.electronic_energy import ElectronicEnergy, hf_pyscf
+from amcess.electronic_energy import ElectronicEnergy
 
 
 @pytest.mark.parametrize(
-    "x0, bases, cluster1, cluster2, output, sphere_center, sphere_radius,"
-    "expected_energy",
+    "x0, basis, cluster1, cluster2, output, method_min,"
+    "sphere_center, sphere_radius, expected_energy",
     [
         (
             [1, 2, 3, 1, 2, 3, 0.9, 0.8, 0.7, 0.09, 0.08, 0.07],
             "sto-3g",
             [("H", 1, 1, 1), ("H", 1.74, 1, 1)],
             [("H", 0, 0, 0), ("H", 0.74, 0, 0)],
-            "output.xyz",
+            "configurations.xyz",
+            1,
             (0.0, 0.0, 0.0),
             1.0,
             -1.90426278138573,
@@ -23,10 +24,11 @@ from amcess.electronic_energy import ElectronicEnergy, hf_pyscf
 )
 def test_electronic_energy_with_hf_pyscf(
     x0,
-    bases,
+    basis,
     cluster1,
     cluster2,
     output,
+    method_min,
     sphere_center,
     sphere_radius,
     expected_energy,
@@ -38,14 +40,16 @@ def test_electronic_energy_with_hf_pyscf(
     ----------
         x0: array 1D
             Values to translate and rotate each molecule
-        bases: string
-            Label of the bases set
+        basis: string
+            Label of the basis set
         cluster1 : dict
             Dictionary with symbols and coordinates of the
             first molecule
         cluster2 : dict
             Dictionary with symbols and coordinates of the
             second molecule
+        method_min: int
+            Method to minimize the energy
         output : string
             Name of the output xyz to save energy and coordinates
         sphere_center : tuple
@@ -56,37 +60,36 @@ def test_electronic_energy_with_hf_pyscf(
             Expected electronic energy
 
     """
-    with open(output, "w") as outxyz:
-        e = hf_pyscf(
-            x0,
-            bases,
-            ElectronicEnergy(
-                Cluster(cluster1, cluster2),
-                sphere_center,
-                sphere_radius,
-            ),
-            outxyz,
-        )
-    os.remove("output.xyz")
+    e = ElectronicEnergy(
+        Cluster(cluster1, cluster2),
+        method_min,
+        sphere_center,
+        sphere_radius,
+        basis,
+    ).hf_pyscf(x0)
     assert e - expected_energy < 1.0e-7
 
 
 @pytest.mark.parametrize(
-    "cluster1, cluster2, sphere_center, sphere_radius",
+    "cluster1, cluster2, method_min, sphere_center, sphere_radius, basis",
     [
         (
             [("H", 1, 1, 1), ("H", 1.74, 1, 1)],
             [("H", 0, 0, 0), ("H", 0.74, 0, 0)],
+            1,
             (0.0, 0.0, 0.0),
             1.0,
+            "sto-3g",
         ),
     ],
 )
 def test_ElectronicEnergy_object_system_initial_grep(
     cluster1,
     cluster2,
+    method_min,
     sphere_center,
     sphere_radius,
+    basis,
 ):
     """
     Test for electronic energy object save inital object system
@@ -98,6 +101,8 @@ def test_ElectronicEnergy_object_system_initial_grep(
         cluster2 : dict
             Dictionary with symbols and coordinates of the
             second molecule
+        method_min: int
+            Method to minimize the energy
         output : string
             Name of the output xyz to save energy and coordinates
         type_searching : int
@@ -107,26 +112,33 @@ def test_ElectronicEnergy_object_system_initial_grep(
             Center mass of clusters
         sphere_radius : float
             Radius of the sphere centered in the cluster center mass
+        basis : string
+            Label of the basis set
     """
     assert (
         ElectronicEnergy(
             Cluster(cluster1, cluster2),
+            method_min,
             sphere_center,
             sphere_radius,
+            basis,
         )._object_system_initial
         == Cluster(cluster1, cluster2)
     )
 
 
 @pytest.mark.parametrize(
-    "cluster1, cluster2, cluster3, sphere_center, sphere_radius",
+    "cluster1, cluster2, cluster3, method_min, sphere_center,"
+    "sphere_radius, basis",
     [
         (
             [("H", 1, 1, 1), ("H", 1.74, 1, 1)],
             [("H", 0, 0, 0), ("H", 0.74, 0, 0)],
             [("H", 2, 2, 2), ("H", 2.74, 2, 2)],
+            1,
             (0.0, 0.0, 0.0),
             1.0,
+            "sto-3g",
         ),
     ],
 )
@@ -134,8 +146,10 @@ def test_ElectronicEnergy_object_system_initial_set(
     cluster1,
     cluster2,
     cluster3,
+    method_min,
     sphere_center,
     sphere_radius,
+    basis,
 ):
     """
     Test for electronic energy object overwite before, initial
@@ -151,6 +165,8 @@ def test_ElectronicEnergy_object_system_initial_set(
         cluster3 : dict
             Dictionary with symbols and coordinates of the
             second molecule
+        method_min: int
+            Method to minimize the energy
         output : string
             Name of the output xyz to save energy and coordinates
         type_searching : int
@@ -160,12 +176,16 @@ def test_ElectronicEnergy_object_system_initial_set(
             Center mass of clusters
         sphere_radius : float
             Radius of the sphere centered in the cluster center mass
+        basis : string
+            Label of the basis set
 
     """
     new_obj_ee = ElectronicEnergy(
         Cluster(cluster1, cluster2),
+        method_min,
         sphere_center,
         sphere_radius,
+        basis,
     )
     new_obj_ee.object_system_initial = Cluster(cluster3, cluster2)
     assert (
@@ -180,21 +200,25 @@ def test_ElectronicEnergy_object_system_initial_set(
 
 
 @pytest.mark.parametrize(
-    "cluster1, cluster2, sphere_center, sphere_radius",
+    "cluster1, cluster2, method_min, sphere_center, sphere_radius, basis",
     [
         (
             [("H", 1, 1, 1), ("H", 1.74, 1, 1)],
             [("H", 0, 0, 0), ("H", 0.74, 0, 0)],
+            1,
             (0.0, 0.0, 0.0),
             1.0,
+            "sto-3g",
         ),
     ],
 )
 def test_ElectronicEnergy_object_system_before_grep(
     cluster1,
     cluster2,
+    method_min,
     sphere_center,
     sphere_radius,
+    basis,
 ):
     """
     Test for electronic energy object save before object system
@@ -206,6 +230,8 @@ def test_ElectronicEnergy_object_system_before_grep(
         cluster2 : dict
             Dictionary with symbols and coordinates of the
             second molecule
+        method_min: int
+            Method to minimize the energy
         output : string
             Name of the output xyz to save energy and coordinates
         type_searching : int
@@ -215,33 +241,41 @@ def test_ElectronicEnergy_object_system_before_grep(
             Center mass of clusters
         sphere_radius : float
             Radius of the sphere centered in the cluster center mass
+        basis   : string
+            Label of the basis set
     """
     assert (
         ElectronicEnergy(
             Cluster(cluster1, cluster2),
+            method_min,
             sphere_center,
             sphere_radius,
+            basis,
         )._object_system_before
         == Cluster(cluster1, cluster2)
     )
 
 
 @pytest.mark.parametrize(
-    "cluster1, cluster2, sphere_center, sphere_radius",
+    "cluster1, cluster2, method_min, sphere_center, sphere_radius, basis",
     [
         (
             [("H", 1, 1, 1), ("H", 1.74, 1, 1)],
             [("H", 0, 0, 0), ("H", 0.74, 0, 0)],
+            1,
             (0.0, 0.0, 0.0),
             1.0,
+            "sto-3g",
         ),
     ],
 )
 def test_ElectronicEnergy_object_system_current_grep(
     cluster1,
     cluster2,
+    method_min,
     sphere_center,
     sphere_radius,
+    basis,
 ):
     """
     Test for electronic energy object save current object system
@@ -253,6 +287,8 @@ def test_ElectronicEnergy_object_system_current_grep(
         cluster2 : dict
             Dictionary with symbols and coordinates of the
             second molecule
+        method_min: int
+            Method to minimize the energy
         output : string
             Name of the output xyz to save energy and coordinates
         type_searching : int
@@ -262,26 +298,33 @@ def test_ElectronicEnergy_object_system_current_grep(
             Center mass of clusters
         sphere_radius : float
             Radius of the sphere centered in the cluster center mass
+        basis : string
+            Basis set used to calculate the electronic energy
     """
     assert (
         ElectronicEnergy(
             Cluster(cluster1, cluster2),
+            method_min,
             sphere_center,
             sphere_radius,
+            basis,
         )._object_system_current
         == Cluster(cluster1, cluster2)
     )
 
 
 @pytest.mark.parametrize(
-    "cluster1, cluster2, cluster3, sphere_center, sphere_radius",
+    "cluster1, cluster2, cluster3, method_min,"
+    "sphere_center, sphere_radius, basis",
     [
         (
             [("H", 1, 1, 1), ("H", 1.74, 1, 1)],
             [("H", 0, 0, 0), ("H", 0.74, 0, 0)],
             [("H", 2, 2, 2), ("H", 2.74, 2, 2)],
+            1,
             (0.0, 0.0, 0.0),
             1.0,
+            "sto-3g",
         ),
     ],
 )
@@ -289,8 +332,10 @@ def test_ElectronicEnergy_object_system_current_set(
     cluster1,
     cluster2,
     cluster3,
+    method_min,
     sphere_center,
     sphere_radius,
+    basis,
 ):
     """
     Test for electronic energy object overwite before and
@@ -306,6 +351,8 @@ def test_ElectronicEnergy_object_system_current_set(
         cluster3 : dict
             Dictionary with symbols and coordinates of the
             second molecule
+        method_min: int
+            Method to minimize the energy
         output : string
             Name of the output xyz to save energy and coordinates
         type_searching : int
@@ -315,15 +362,104 @@ def test_ElectronicEnergy_object_system_current_set(
             Center mass of clusters
         sphere_radius : float
             Radius of the sphere centered in the cluster center mass
+        basis : string
+            Basis set used to calculate the electronic energy
 
     """
     new_obj_ee = ElectronicEnergy(
         Cluster(cluster1, cluster2),
+        method_min,
         sphere_center,
         sphere_radius,
+        basis,
     )
     new_obj_ee.object_system_current = Cluster(cluster3, cluster2)
     assert (
         new_obj_ee.object_system_before,
         new_obj_ee.object_system_current,
     ) == (Cluster(cluster1, cluster2), Cluster(cluster3, cluster2))
+
+
+@pytest.mark.parametrize(
+    "molecule1, method_min, sphere_center, sphere_radius,"
+    "bases, max_closeness, mol_atom_input",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.00, 0.0, 0.0)],
+            1,
+            (0.0, 0.0, 0.0),
+            0.0,
+            "sto-3g",
+            0.11,
+            "H 0 0 0; H 0 0 0",
+        ),
+    ],
+)
+def test_error_energy_hf_pyscf(
+    molecule1,
+    method_min,
+    sphere_center,
+    sphere_radius,
+    bases,
+    max_closeness,
+    mol_atom_input,
+):
+    """
+    Test Warning of pyscf
+    """
+    with pytest.warns(UserWarning) as w:
+        obj_sc = ElectronicEnergy(
+            Cluster(molecule1),
+            method_min,
+            sphere_center,
+            sphere_radius,
+            bases,
+            max_closeness,
+        )
+        mol = gto.M(
+            atom=mol_atom_input,
+            basis=bases,
+            verbose=False,
+        )
+        obj_sc.calculate_electronic_e(mol)
+    assert str(w) == "WarningsChecker(record=True)"
+
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2, method_min, sphere_center, sphere_radius,"
+    "bases, max_closeness",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.00, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 0.0), ("H", 0.00, 0.0, 0.0)],
+            2,
+            (0.0, 0.0, 0.0),
+            0.0,
+            "sto-3g",
+            0.11,
+        ),
+    ],
+)
+def test_metropolis_else(
+    molecule1,
+    molecule2,
+    method_min,
+    sphere_center,
+    sphere_radius,
+    bases,
+    max_closeness,
+):
+    """
+    Test Error of pyscf
+    """
+    obj_sc = ElectronicEnergy(
+        Cluster(molecule1, molecule2),
+        method_min,
+        sphere_center,
+        sphere_radius,
+        bases,
+        max_closeness,
+    )
+    obj_sc.energy_current = 1.0
+    obj_sc.energy_before = 1.0
+    obj_sc.metropolis()

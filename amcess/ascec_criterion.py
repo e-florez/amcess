@@ -1,30 +1,114 @@
 import numpy as np
 from scipy import constants
+from amcess.electronic_energy import ElectronicEnergy
 
 
-class Ascec(object):
+class Ascec(ElectronicEnergy):
     """
-    stores or starts variables about ascec
+    ASCEC algorithm
     """
-    def __init__(self, ascec, *args):
+
+    def __init__(
+        self,
+        object_system: object,
+        search_type: str,
+        sphere_center: tuple,
+        sphere_radius: float,
+        basis_set: str,
+        call_function: int,
+        bounds: list,
+        max_closeness: float = 1.0,
+        seed: int = None,
+        T0: float = 1000.0,
+        nT: int = 100,
+        dT: float = 0.1,
+        maxCycle: int = 3000,
+    ):
         """
-        Store the boolean B. When B is True is used the ASCEC criterio
-        in the acceptance
+        Initialize the Ascec class
 
         Parameters
         ----------
-            B : Boolean
-                True activate ASCEC criterio
+            call_function : callable
+                The function to calculate electronic energy
+            bounds : array, float
+                The bounds of the search space
+            T0 : float
+                Initial temperature
+            nT : int
+                Number of temperature steps
+            dT : float
+                Temperature step
+            maxCylce : int
+                Maximum number of cycles
+        """
+        super().__init__(
+            object_system,
+            search_type,
+            sphere_center,
+            sphere_radius,
+            basis_set,
+            max_closeness,
+            seed,
+        )
+        self._object_system_current = object_system
+        self._bounds = bounds
+        self._call_function = call_function
+
+        self._T0 = T0
+        self._nT = nT
+        self._dT = dT
+        self._maxCylce = maxCycle
+
+        self.store_structures = []
+
+        # initial energy
+        self.electronic_e(np.zeros(len(bounds)))
+        self._e0 = self.energy_current
+        self.e_before = self._e0
+
+    # ===============================================================
+    # Methods
+    # ===============================================================
+    def electronic_e(self, x):
+        """
+        Evaluate the electronic energy
+
+        Parameters
+        ----------
+            function : callable
+                The function to calculate electronic energy
+            x : array, float
+                Value to move the molecules, in the 1D array
 
         Returns
         -------
-            B : Boolean
+            Electronic energy of the new configuration in
+            the attribute self.electronic_e
         """
-        self.ascec = ascec
+        if self._call_function == 1:
+            self.energy_current = self.hf_pyscf(x)
 
-    def ascec_criterion(self, e_before, e_now, t):
+    def random_mov(self, n):
+        """
+        Randomly move the molecules
+
+        Parameters
+        ----------
+            n : int
+                dimension of the 1D array
+
+        Returns
+        -------
+            x : array, float
+                Random value to move the molecules, in the 1D array
+        """
+
+        return np.random.rand(n)
+
+    def ascec_criterion(self, T):
         """[summary]
-        Evaluate ASCEC criterion for acceptance
+        ASCEC criterion for acceptance, based in Markov Chain Monte Carlo
 
         Parameters
         ----------
@@ -32,18 +116,40 @@ class Ascec(object):
             Value of each coordinate in the 1D array
         e : float
             Value of the cost function
-        t : float
+        T : float
             Annealing temperature
-        args :
-            Any additional fixed parameters needed to completely specify
-            the objective function.
         """
 
-        DE = e_before - e_now
-        if DE < 0.0000000001:
-            print("DE < 0", DE)
+        if self.energy_current < self.e_before:
+            return True
         else:
-            TKb = t*constants.k  # Boltzmann constant [J/K]
-            exp = np.exp(-DE*constants.h/TKb)
+            DE = self.energy_current / self.e_before
+            TKb = T * constants.k  # Boltzmann constant [J/K]
+            exp = np.exp(-DE / TKb)
             if DE < exp:
                 print("DE < Boltzmann Poblation ", DE)
+                return True
+
+    def ascec_run(self):
+        """
+        Run ASCEC algoritm
+        """
+        iT = 0
+        T = self._T0
+        while iT <= self._nT:
+            count = 0
+            while count <= self._maxCylce:
+                # 3 values to translate and another 3 to rotate
+                x = self.random_mov(len(self._bounds))
+                self.electronic_e(x)
+                self.store_structure()
+                accept = self.ascec_criterion(T)
+                if accept:
+                    self.e_before = self.energy_current
+                    count = self._maxCylce + 1
+                    self.store_structure()
+                    print("Accept in the Temperature ", T)
+                count += 1
+            T = T - T * self._dT
+            iT += 1
+        self.write_to_file()

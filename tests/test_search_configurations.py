@@ -3,9 +3,18 @@ import os
 import pytest
 import scipy
 
+from amcess.ascec_criterion import Ascec
 from amcess.base_molecule import Cluster, Molecule
-from amcess.electronic_energy import hf_pyscf
 from amcess.search_configuration import SearchConfig
+
+
+METHODS = {
+    "ASCEC": 0,
+    "dual_annealing": 1,
+    "SHGO": 2,
+    "Bayesian": 3,
+}
+available = list(METHODS.keys())
 
 
 @pytest.mark.parametrize(
@@ -334,7 +343,7 @@ def test_SC_output_name_TE_set(molecule1, molecule2):
         (
             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-            1,
+            "ASCEC",
         ),
     ],
 )
@@ -365,22 +374,22 @@ def test_SC_search_type_TP_set(molecule1, molecule2):
         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
         obj_sc.search_type = 1.0
     assert (
-        str(e.value) == "\n\nThe new search methodology is not an integer"
+        str(e.value) == "\n\nThe new search methodology is not a string"
         f"\nplease, check: '{type(1.0)}'\n"
     )
     with pytest.raises(TypeError) as e:
         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
         obj_sc.search_type = (1.0,)
     assert (
-        str(e.value) == "\n\nThe new search methodology is not an integer"
+        str(e.value) == "\n\nThe new search methodology is not a string"
         f"\nplease, check: '{type((1.0,))}'\n"
     )
     with pytest.raises(TypeError) as e:
         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-        obj_sc.search_type = "1.0"
+        obj_sc.search_type = 1
     assert (
-        str(e.value) == "\n\nThe new search methodology is not an integer"
-        f"\nplease, check: '{type('1.0')}'\n"
+        str(e.value) == "\n\nThe new search methodology is not a string"
+        f"\nplease, check: '{type(1)}'\n"
     )
 
 
@@ -390,7 +399,7 @@ def test_SC_search_type_TP_set(molecule1, molecule2):
         (
             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-            4,
+            "SHGOS",
         ),
     ],
 )
@@ -402,14 +411,7 @@ def test_SC_search_type_TE_set(molecule1, molecule2, search_methodology):
     with pytest.raises(ValueError) as e:
         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
         obj_sc.search_type = search_methodology
-    assert (
-        str(e.value)
-        == "\n\nThe search methodology is associated with a integer \n"
-        "1 -> Dual Annealing \n"
-        "2 -> SHGO \n"
-        "3 -> Bayessiana \n"
-        f"\nplease, check: '{type(search_methodology)}'\n"
-    )
+    assert str(e.value) == f"Invalid value. options are: {available}"
 
 
 @pytest.mark.parametrize(
@@ -418,7 +420,7 @@ def test_SC_search_type_TE_set(molecule1, molecule2, search_methodology):
         (
             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-            2,
+            "dual_annealing",
         ),
     ],
 )
@@ -742,23 +744,6 @@ def test_SC_cost_function_VE_set(molecule1, molecule2):
         ),
     ],
 )
-def test_SC_cost_function_grep(molecule1, molecule2):
-    """
-    Test default cost_function_ee @property
-    """
-    obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-    assert obj_sc.cost_function_ee == hf_pyscf
-
-
-@pytest.mark.parametrize(
-    "molecule1, molecule2",
-    [
-        (
-            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-        ),
-    ],
-)
 def test_SC_cost_function_number_grep(molecule1, molecule2):
     """
     Test default cost_function_number @property
@@ -768,7 +753,7 @@ def test_SC_cost_function_number_grep(molecule1, molecule2):
 
 
 @pytest.mark.parametrize(
-    "molecule1, molecule2, program_ee",
+    "molecule1, molecule2, expectation",
     [
         (
             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
@@ -777,13 +762,12 @@ def test_SC_cost_function_number_grep(molecule1, molecule2):
         ),
     ],
 )
-def test_SC_new_cost_function(molecule1, molecule2, program_ee):
+def test_SC_new_cost_function(molecule1, molecule2, expectation):
     """
     Test ValueError @sphere_radius.setter
     """
     obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-    obj_sc.cost_function_number = program_ee
-    assert obj_sc._func == hf_pyscf
+    assert obj_sc._program_calculate_cost_function == expectation
 
 
 @pytest.mark.parametrize(
@@ -881,11 +865,12 @@ def test_SC_tolerance_radius_TE_set(molecule1, molecule2):
         ),
     ],
 )
-def test_SC_run_da_method(molecule1, molecule2):
+def test_SC_run_ascec_method(molecule1, molecule2):
     """
-    Test SC.run method for dual annealing
+    Test SC.run method for ascec
     """
-    SearchConfig(Cluster(molecule1, molecule2)).run(NT=1, mxcycle=1)
+    kwargs = {"nT": 1, "maxCycle": 10}
+    SearchConfig(Cluster(molecule1, molecule2)).run(**kwargs)
     with open("configurations.xyz", "r") as f:
         readl = f.readline()
     os.remove("configurations.xyz")
@@ -893,19 +878,22 @@ def test_SC_run_da_method(molecule1, molecule2):
 
 
 @pytest.mark.parametrize(
-    "molecule1, molecule2",
+    "molecule1, molecule2, method_min",
     [
         (
             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            "dual_annealing",
         ),
     ],
 )
-def test_SC_da_method(molecule1, molecule2):
+def test_SC_run_da_method(molecule1, molecule2, method_min):
     """
-    Test SC.da method
+    Test SC.run method for dual annealing
     """
-    SearchConfig(Cluster(molecule1, molecule2)).da(NT=1, mxcycle=1)
+    SearchConfig(
+        Cluster(molecule1, molecule2), search_methodology=method_min
+    ).run(maxfun=1, maxiter=1)
     with open("configurations.xyz", "r") as f:
         readl = f.readline()
     os.remove("configurations.xyz")
@@ -918,7 +906,7 @@ def test_SC_da_method(molecule1, molecule2):
         (
             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-            2,
+            "SHGO",
         ),
     ],
 )
@@ -936,23 +924,155 @@ def test_SC_run_shgo_method(molecule1, molecule2, search_meth):
 
 
 @pytest.mark.parametrize(
-    "molecule1, molecule2, search_meth",
+    "molecule1, molecule2, molecule3",
     [
         (
-            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 0.0)],
             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-            2,
+            [("H", 0.0, 0.0, 3.0), ("H", 0.78, 0.0, 3.0)],
         ),
     ],
 )
-def test_SC_hgo_method(molecule1, molecule2, search_meth):
+def test_SC_the_biggest_to_initio(molecule1, molecule2, molecule3):
     """
-    Test SC.run method for shgo
+    Test of method spherical_contour_cluster, re--sort molecule
+    """
+    obj_sc = SearchConfig(Cluster(molecule1, molecule2, molecule3))
+    obj_sc.spherical_contour_cluster()
+    assert obj_sc.system_object.get_molecule(0).atoms == molecule2
+
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2, search_meth, initer, maxiter",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 3.0), ("H", 0.78, 0.0, 3.0)],
+            "Bayesian",
+            3,
+            3,
+        ),
+    ],
+)
+def test_SC_run_bayesian_method(
+    molecule1, molecule2, search_meth, initer, maxiter
+):
+    """
+    Test SC.run method for bayesian
     """
     SearchConfig(
         Cluster(molecule1, molecule2), search_methodology=search_meth
-    ).shgo(sampling_method="sobol", n=1)
+    ).run(initer=initer, maxiter=maxiter)
     with open("configurations.xyz", "r") as f:
         readl = f.readline()
     os.remove("configurations.xyz")
     assert readl == "4\n"
+
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2, search_meth, initer, maxiter, num_cores",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 3.0), ("H", 0.78, 0.0, 3.0)],
+            "Bayesian",
+            3,
+            3,
+            2,
+        ),
+    ],
+)
+def test_SC_run_parallel_bayesian_method(
+    molecule1, molecule2, search_meth, initer, maxiter, num_cores
+):
+    """
+    Test SC.run method for bayesian
+    """
+    SearchConfig(
+        Cluster(molecule1, molecule2), search_methodology=search_meth
+    ).run(initer=initer, maxiter=maxiter, num_cores=num_cores)
+    with open("configurations.xyz", "r") as f:
+        readl = f.readline()
+    os.remove("configurations.xyz")
+    assert readl == "4\n"
+
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2, search_meth, initer, maxiter, MCMC",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 3.0), ("H", 0.78, 0.0, 3.0)],
+            "Bayesian",
+            3,
+            3,
+            True,
+        ),
+    ],
+)
+def test_SC_run_MCMC_bayesian_method(
+    molecule1, molecule2, search_meth, initer, maxiter, MCMC
+):
+    """
+    Test SC.run method for bayesian
+    """
+    SearchConfig(
+        Cluster(molecule1, molecule2), search_methodology=search_meth
+    ).run(initer=initer, maxiter=maxiter, MCMC=MCMC)
+    with open("configurations.xyz", "r") as f:
+        readl = f.readline()
+    os.remove("configurations.xyz")
+    assert readl == "4\n"
+
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+        ),
+    ],
+)
+def test_SC_sphere_radius_TE_a_set(molecule1, molecule2):
+    """
+    Test TypeError @sphere_radius.setter
+    """
+    with pytest.raises(TypeError) as e:
+        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+        obj_sc.sphere_radius = 1
+
+    print(e.value)
+    assert (
+        str(e.value) == "\n\nThe Sphere  Radius must be a float"
+        f"\nplease, check: '{type(1)}'\n"
+    )
+
+
+# This test is for ascec criterion
+@pytest.mark.parametrize(
+    "molecule1, molecule2",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 3.0), ("H", 0.78, 0.0, 3.0)],
+        ),
+    ],
+)
+def test_Ascec_ascec_method(molecule1, molecule2):
+    """
+    Test Ascec.criterion else
+    """
+    obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+    ascec = Ascec(
+        obj_sc._system_object,
+        obj_sc._search_methodology,
+        obj_sc._sphere_center,
+        obj_sc._sphere_radius,
+        obj_sc._basis_set,
+        call_function=1,
+        bounds=obj_sc._bounds,
+    )
+    ascec.e_before = -1.0
+    ascec.energy_current = 1.0
+    ascec.ascec_criterion(1.0)

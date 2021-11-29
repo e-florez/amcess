@@ -1,11 +1,19 @@
 import numpy as np
 import scipy
 from scipy.optimize import shgo
+from scipy.optimize import dual_annealing
 
+from amcess.ascec_criterion import Ascec
 from amcess.base_molecule import Cluster
-from amcess.electronic_energy import ElectronicEnergy, hf_pyscf
+from amcess.electronic_energy import ElectronicEnergy
 from amcess.gaussian_process import solve_gaussian_processes
-from amcess.m_dual_annealing import solve_dual_annealing
+
+METHODS = {
+    "ASCEC": Ascec,
+    "dual_annealing": dual_annealing,
+    "SHGO": shgo,
+    "Bayesian": solve_gaussian_processes,
+}
 
 
 class SearchConfig:
@@ -43,29 +51,20 @@ class SearchConfig:
     def __init__(
         self,
         system_object: Cluster = None,
-        search_methodology: int = 1,
+        search_methodology: str = "ASCEC",
         basis: str = "sto-3g",
         program_electronic_structure: int = 1,
         tolerance_contour_radius: float = 1.0,
         outxyz: str = "configurations.xyz",
     ) -> None:
 
-        if system_object is None:
-            raise TypeError("System_object isn't difinite\n" "It's NoneType")
-        if not isinstance(system_object, Cluster):
-            raise TypeError(
-                "System_object isn't difinite as an object Cluster\n"
-                f"please, check:\n'{system_object}'"
-            )
-        self._system_object = system_object
-
         # Verfication and assigment of variables (type, value)
+        self.system_object = system_object
         self.search_type = search_methodology
         self.basis_set = basis
         self.cost_function_number = program_electronic_structure
         self.output_name = outxyz
         self.tolerance_contour_radius = tolerance_contour_radius
-        self.cost_function_number = program_electronic_structure
 
         # Check Overlaping
         self._system_object.initialize_cluster()
@@ -74,17 +73,10 @@ class SearchConfig:
         if system_object._sphere_radius is None:
             self.spherical_contour_cluster()
 
-        self._func = self.program_cost_function(
-            self._program_calculate_cost_function
-        )
-
-        self._obj_ee = ElectronicEnergy(
-            self._system_object, self._sphere_center, self._sphere_radius
-        )
-
     # ===============================================================
     # Decorators
     # ===============================================================
+
     def bounds_sphere_change(function_change_radius):
         def new_bounds(self, new_radius):
             """
@@ -117,9 +109,42 @@ class SearchConfig:
 
         return new_bounds
 
+    def init_electronic_energy(function_minimization):
+        def wrapper(self, **kwargs):
+            if self._search_methodology != "ASCEC":
+                self._obj_ee = ElectronicEnergy(
+                    self._system_object,
+                    self._search_methodology,
+                    self._sphere_center,
+                    self._sphere_radius,
+                    self._basis_set,
+                )
+                if self._program_calculate_cost_function == 1:
+                    self.program_cost_function(
+                        self._program_calculate_cost_function)
+                    self._func = self._obj_ee.hf_pyscf
+            return function_minimization(self, **kwargs)
+
+        return wrapper
+
     # ===============================================================
     # PROPERTIES
     # ===============================================================
+    @property
+    def system_object(self):
+        return self._system_object
+
+    @system_object.setter
+    def system_object(self, new_object):
+        if new_object is None:
+            raise TypeError("System_object isn't difinite\n" "It's NoneType")
+        if not isinstance(new_object, Cluster):
+            raise TypeError(
+                "System_object isn't difinite as an object Cluster\n"
+                f"please, check:\n'{new_object}'"
+            )
+        self._system_object = new_object
+
     @property
     def bounds(self):
         return self._bounds
@@ -155,19 +180,16 @@ class SearchConfig:
 
     @search_type.setter
     def search_type(self, change_search_methodology):
-        if not isinstance(change_search_methodology, int):
+        if not isinstance(change_search_methodology, str):
             raise TypeError(
-                "\n\nThe new search methodology is not an integer"
+                "\n\nThe new search methodology is not a string"
                 f"\nplease, check: '{type(change_search_methodology)}'\n"
             )
-        if change_search_methodology > 3:
-            raise ValueError(
-                "\n\nThe search methodology is associated with a integer \n"
-                "1 -> Dual Annealing \n"
-                "2 -> SHGO \n"
-                "3 -> Bayessiana \n"
-                f"\nplease, check: '{type(change_search_methodology)}'\n"
-            )
+        if change_search_methodology not in METHODS and not callable(
+            change_search_methodology
+        ):
+            available = list(METHODS.keys())
+            raise ValueError(f"Invalid value. options are: {available}")
 
         self._search_methodology = change_search_methodology
 
@@ -226,9 +248,9 @@ class SearchConfig:
     @sphere_radius.setter
     @bounds_sphere_change
     def sphere_radius(self, new_radius: float) -> None:
-        if not isinstance(new_radius, (int, float)):
+        if not isinstance(new_radius, float):
             raise TypeError(
-                "\n\nThe Sphere  Radius must be a float or int"
+                "\n\nThe Sphere  Radius must be a float"
                 f"\nplease, check: '{type(new_radius)}'\n"
             )
         self._sphere_radius = new_radius + self._tolerance_contour_radius
@@ -237,10 +259,6 @@ class SearchConfig:
                 "\n\nThe Sphere Radius more tolerance must be larger than 1 A"
                 f"\nplease, check: '{new_radius}'\n"
             )
-
-    @property
-    def cost_function_ee(self):
-        return self._func
 
     @property
     def cost_function_number(self):
@@ -261,7 +279,6 @@ class SearchConfig:
             )
 
         self._program_calculate_cost_function = new_func
-        self._func = self.program_cost_function(new_func)
 
     # ===============================================================
     # Methods
@@ -314,7 +331,7 @@ class SearchConfig:
                 else:
                     new_geom[i] = self._system_object.get_molecule(i)
 
-            self._system_object = Cluster(
+            self.system_object = Cluster(
                 *new_geom.values(), sphere_center=self._sphere_center
             )
 
@@ -340,12 +357,6 @@ class SearchConfig:
                 Integer associated with the program to calculate the cost
                 and methodology (Hamiltonian, Functional, etc)
 
-        Returns
-        -------
-            called
-            name of the function cost which associated with a specify
-            program and methodology (Hamiltonian, Functional, etc)
-
         """
         if _program_calculate_cost_function == 1:
             print(
@@ -353,11 +364,11 @@ class SearchConfig:
                 "*** Cost function is Hartree--Fock implemented into pyscf ***"
                 "\n\n"
             )
-            return hf_pyscf
 
+    @init_electronic_energy
     def run(self, **kwargs):
         """
-        Alternative to execute the searching methodologies
+        Alternative to execute the searching methodologies in METHODS
 
         Parameters
         ----------
@@ -365,70 +376,36 @@ class SearchConfig:
                 Dictionary with the parameters to be used in the
                 search methodologies
         """
-        if self._search_methodology == 1:
-            self.da(**kwargs)
-        if self._search_methodology == 2:
-            self.shgo(**kwargs)
-        if self._search_methodology == 3:
-            self.bayesian(**kwargs)
+        func = (
+            self._search_methodology
+            if callable(self._search_methodology)
+            else METHODS[self._search_methodology]
+        )
 
-    def da(self, **kwargs):
-        """
-        Execute solve dual annealing to search candidate structure
-        and open output file
-
-        Parameters
-        ----------
-            **kwargs : dict
-                Dictionary with the parameters to be used in the
-                dual annealing methodology
-        """
-        print("*** Minimization: Dual Annealing ***")
-        with open(self._output_name, "w") as outxyz:
-            self._search = solve_dual_annealing(
-                self._func,
-                self._bounds,
-                self._system_object,
-                args=(self._basis_set, self._obj_ee, outxyz),
+        if self._search_methodology == "ASCEC":
+            print("*** Minimization: ASCEC ***")
+            self._search = func(
+                object_system=self._system_object,
+                search_type=self._search_methodology,
+                sphere_center=self._sphere_center,
+                sphere_radius=self._sphere_radius,
+                basis_set=self._basis_set,
+                call_function=1,
+                bounds=self._bounds,
                 **kwargs,
             )
+            self._search.ascec_run()
+        else:
+            if self._search_methodology == "dual_annealing":
+                print("*** Minimization: Dual Annealing ***")
+            if self._search_methodology == "SHGO":
+                print("*** Minimization: SHGO from Scipy ***")
+            if self._search_methodology == "Bayesian":
+                print("*** Minimization: Bayesian ***")
 
-    def shgo(self, **kwargs):
-        """
-        Execute solve shgo to search candidate structure
-        and open output file
-
-        Parameters
-        ----------
-            **kwargs : dict
-                Dictionary with the parameters to be used in the
-                shgo methodology
-        """
-        print("*** Minimization: SHGO from Scipy ***")
-        with open(self._output_name, "w") as outxyz:
-            self._search = shgo(
+            self._search = func(
                 self._func,
                 bounds=self._bounds,
-                args=(self._basis_set, self._obj_ee, outxyz),
                 **kwargs,
             )
-
-    def bayesian(self, **kwargs):
-        """
-        Execute solve Bayesian to search candidate structure
-        and open output file
-
-        Parameters
-        ----------
-            **kwargs : dict
-                Dictionary with the parameters to be used in the
-                Bayesian methodology
-        """
-        print("*** Minimization: Bayesian ***")
-        with open(self._output_name, "w") as outxyz:
-            self._search = solve_gaussian_processes(
-                self._func,
-                bounds=self._bounds,
-                args=(self._basis_set, self._obj_ee, outxyz),
-                **kwargs,
-            )
+            self._obj_ee.write_to_file()
