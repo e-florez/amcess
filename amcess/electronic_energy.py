@@ -79,8 +79,7 @@ class ElectronicEnergy:
             system_object = self._object_system_current
             # Rotate and translate
             new_geom = dict()
-            # ! Martin
-            # ! tener cuidado como indexo el diccionario
+            # ? index is to distinguish the molecule
             new_geom[0] = {"atoms": system_object.get_molecule(0).atoms}
             for i in range(system_object.total_molecules - 1):
                 new_geom[i + 1] = {
@@ -272,8 +271,3 @@ class ElectronicEnergy:
             self.metropolis()
 
         return self.energy_current
-
-
-# ! Martin
-# ! hacer la visualización desde el archivo
-# ! evaluar lo métodos para almacenar los archivos
