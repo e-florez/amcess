@@ -393,6 +393,7 @@ class SearchConfig:
                 **kwargs,
             )
             self._search.ascec_run()
+            self._search.write_to_file(self.output_name)
         else:
             if self._search_methodology == "dual_annealing":
                 print("*** Minimization: Dual Annealing ***")
@@ -406,4 +407,4 @@ class SearchConfig:
                 bounds=self._bounds,
                 **kwargs,
             )
-            self._obj_ee.write_to_file()
+            self._obj_ee.write_to_file(self.output_name)
