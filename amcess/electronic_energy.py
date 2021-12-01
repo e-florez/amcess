@@ -79,8 +79,7 @@ class ElectronicEnergy:
             system_object = self._object_system_current
             # Rotate and translate
             new_geom = dict()
-            # ! Martin
-            # ! tener cuidado como indexo el diccionario
+            # ? index is to distinguish the molecule
             new_geom[0] = {"atoms": system_object.get_molecule(0).atoms}
             for i in range(system_object.total_molecules - 1):
                 new_geom[i + 1] = {
@@ -169,7 +168,7 @@ class ElectronicEnergy:
                 self.input_mol += " '"
         return self.input_mol
 
-    def write_to_file(self):
+    def write_to_file(self, filename):
         """
         Write the current system to a file
 
@@ -179,7 +178,7 @@ class ElectronicEnergy:
                 File name where is save structure and energy
         """
         n_atoms = len(self.store_structures[0]) - 1
-        with open("configurations.xyz", "w") as f:
+        with open(filename, "w") as f:
             for system in self.store_structures:
                 f.write(str(n_atoms) + "\n")
                 f.write("Energy: " + str(system[0]) + "\n")
@@ -272,8 +271,3 @@ class ElectronicEnergy:
             self.metropolis()
 
         return self.energy_current
-
-
-# ! Martin
-# ! hacer la visualización desde el archivo
-# ! evaluar lo métodos para almacenar los archivos

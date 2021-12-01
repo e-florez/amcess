@@ -152,4 +152,3 @@ class Ascec(ElectronicEnergy):
                 count += 1
             T = T - T * self._dT
             iT += 1
-        self.write_to_file()
