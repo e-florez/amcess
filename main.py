@@ -575,5 +575,64 @@ def run():
     test_cluster()
 
 
+def pipeline_andy():
+    from amcess.base_molecule import Cluster, Molecule
+    from amcess.search_configuration import SearchConfig
+
+    HF = [("H", 0, 0, 0), ("F", 0.917, 0, 0)]
+    HF1 = {"atoms": [("H", 0, 0, 1), ("F", 0.918, 0.0, 1)]}
+
+    DHF = Cluster(HF, HF1)
+    SC = SearchConfig(DHF)
+
+    # print(SC.search_type)
+    # SC.search_type = "Bayesian"
+    # SC.search_type = "SHGO"
+    # SC.search_type = "dual_annealing"
+    # SC.sphere_radius = 2.0
+    # SC.tolerance_contour_radius = 4.9
+    # SC.run(gp_params={"initer": 3, "maxiter": 3})  # Bayesian
+    # SC.run(sampling_method="sobol", n=1)
+    # SC.run(maxfun=1,maxiter=1)  # !da
+
+    SC.run(nT=1, maxCycle=3)  #
+
+
+def pipeline_ascec():
+    from amcess import Cluster
+    from amcess import engine
+
+    hf = [("H", 0, 0, 0), ("F", 0.917, 0, 0)]
+    hf_1 = {"atoms": [("H", 0, 0, 1), ("F", 0.918, 0.0, 1)]}
+
+    hf_dimer = Cluster(hf, hf_1)
+
+    simulation = engine(
+        hf_dimer,
+        search_methodology="ASCEC",
+    )
+
+    simulation.run(nT=10, maxCycle=100)
+
+
+def pipeline_dual():
+    from amcess import Cluster
+    from amcess import engine
+
+    hf = [("H", 0, 0, 0), ("F", 0.917, 0, 0)]
+    hf_1 = {"atoms": [("H", 0, 0, 1), ("F", 0.918, 0.0, 1)]}
+
+    hf_dimer = Cluster(hf, hf_1)
+
+    simulation = engine(
+        hf_dimer,
+        search_methodology="dual_annealing",
+    )
+
+    simulation.run()
+
+
 if __name__ == "__main__":
-    run()
+    pipeline_ascec()
+    # pipeline_dual()
+    # pipeline_andy()

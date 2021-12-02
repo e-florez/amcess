@@ -3,7 +3,7 @@ import scipy
 from scipy.optimize import shgo
 from scipy.optimize import dual_annealing
 
-from amcess.ascec_criterion import Ascec
+from amcess.ascec import Ascec
 from amcess.base_molecule import Cluster
 from amcess.electronic_energy import ElectronicEnergy
 from amcess.gaussian_process import solve_gaussian_processes
@@ -121,7 +121,8 @@ class SearchConfig:
                 )
                 if self._program_calculate_cost_function == 1:
                     self.program_cost_function(
-                        self._program_calculate_cost_function)
+                        self._program_calculate_cost_function
+                    )
                     self._func = self._obj_ee.hf_pyscf
             return function_minimization(self, **kwargs)
 
