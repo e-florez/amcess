@@ -442,7 +442,7 @@ class Cluster(Molecule):
     def __init__(
         self,
         *args,
-        freeze_molecule: list = [],
+        freeze_molecule: list = None,
         sphere_radius: float = None,
         sphere_center: tuple = (0, 0, 0),
     ):
@@ -451,7 +451,11 @@ class Cluster(Molecule):
         self._charge = 0
 
         # fixing molecule to NOT move or rotate
-        self._freeze_molecule = freeze_molecule
+        # initialize with an empty list
+        self._freeze_molecule = (
+            [] if freeze_molecule is None else freeze_molecule
+        )
+
         self._sphere_radius = sphere_radius
         self._sphere_center = sphere_center
 

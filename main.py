@@ -9,6 +9,7 @@ from data.molecules_coordinates import (
     metal_complex,
     ibuprofen,
 )
+from tests.test_search_configurations import test_SC_tolerance_radius_grep
 
 
 def system_hf():
@@ -602,30 +603,66 @@ def pipeline_ascec():
     from amcess import Cluster
     from amcess import engine
 
-    hf = [("H", 0, 0, 0), ("F", 0.917, 0, 0)]
-    hf_1 = {"atoms": [("H", 0, 0, 1), ("F", 0.918, 0.0, 1)]}
+    # hf = [("H", 0, 0, 0), ("F", 0.917, 0, 0)]
+    # hf_1 = {"atoms": [("H", 0, 0, 1), ("F", 0.918, 0.0, 1)]}
 
-    hf_dimer = Cluster(hf, hf_1)
+    # hf_dimer = Cluster(hf, hf_1)
+
+    water = {
+        "atoms": [
+            ("O", 0, 0, 0),
+            ("H", 0.58708, 0.75754, 0),
+            ("H", -0.58708, 0.75754, 0),
+        ],
+        "charge": 0,
+        "multiplicity": 1,
+    }
+
+    water_dimer = Cluster(water, water)
+    # water_dimer.sphere_radius = 4.0
+    # water_dimer.sphere_center = (0, 0, 0)
+    print(water_dimer.xyz)
+
+    water_dimer = water_dimer.initialize_cluster()
+    print(water_dimer.xyz)
 
     simulation = engine(
-        hf_dimer,
+        # hf_dimer,
+        water_dimer,
+        tolerance_contour_radius=5.0,
         search_methodology="ASCEC",
     )
 
-    simulation.run(nT=10, maxCycle=100)
+    simulation.run(nT=35, maxCycle=100)
 
 
 def pipeline_dual():
     from amcess import Cluster
     from amcess import engine
 
-    hf = [("H", 0, 0, 0), ("F", 0.917, 0, 0)]
-    hf_1 = {"atoms": [("H", 0, 0, 1), ("F", 0.918, 0.0, 1)]}
+    # hf = [("H", 0, 0, 0), ("F", 0.917, 0, 0)]
+    # hf_1 = {"atoms": [("H", 0, 0, 1), ("F", 0.918, 0.0, 1)]}
 
-    hf_dimer = Cluster(hf, hf_1)
+    # hf_dimer = Cluster(hf, hf_1)
+
+    water = {
+        "atoms": [
+            ("O", 0, 0, 0),
+            ("H", 0.58708, 0.75754, 0),
+            ("H", -0.58708, 0.75754, 0),
+        ],
+        "charge": 0,
+        "multiplicity": 1,
+    }
+
+    water_dimer = Cluster(water, water)
+    water_dimer.initialize_cluster
+
+    print(water_dimer.xyz)
 
     simulation = engine(
-        hf_dimer,
+        # hf_dimer,
+        water_dimer,
         search_methodology="dual_annealing",
     )
 
