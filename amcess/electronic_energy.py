@@ -96,7 +96,7 @@ class ElectronicEnergy:
                             x[(i + system_object.total_molecules - 1) * 3 + 2],
                         ),
                         self._max_closeness,
-                        self._move_seed,
+                        # self._move_seed,
                     )
                     .get_molecule(i + 1)
                     .atoms
@@ -228,13 +228,13 @@ class ElectronicEnergy:
                 File name where is save structure and energy
         """
         if self.energy_current < self.energy_before:
-            print("Accept 1")
+            print("New configuration ACCEPTED: lower energy")
             self.energy_before = self.energy_current
             self.store_structure()
         else:
             RE = self.energy_current / self.energy_before
             if np.random.random(1)[0] <= RE:
-                print("Accept 2")
+                print("New configuration ACCEPTED: Metropolis criterion")
                 self.energy_before = self.energy_current
                 self.store_structure()
 

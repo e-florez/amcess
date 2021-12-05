@@ -202,6 +202,18 @@ class Molecule:
         )
 
     @property
+    def write_atoms(self) -> str:
+        """Printing Molecule coordinates using XYZ format"""
+        write_coordinates = ""
+        for atom in self.atoms:
+            write_coordinates += f"""{atom[0]:<6}"""
+            write_coordinates += f"""\t{atom[1]:> 15.8f}"""
+            write_coordinates += f"""\t{atom[2]:> 15.8f}"""
+            write_coordinates += f"""\t{atom[3]:> 15.8f}\n"""
+
+        return write_coordinates
+
+    @property
     def atomic_masses(self) -> list:
         return [Atom(*atom).atomic_mass for atom in self.atoms]
 
@@ -432,6 +444,8 @@ class Cluster(Molecule):
         radius for the spherical boundary condition, by default None
     sphere_center : tuple, optional
         Center of the sphere, by default (0, 0, 0)
+    seed : int, optional
+        seed to initialize the random generator function, by default None
 
     Raises
     ------
@@ -445,6 +459,7 @@ class Cluster(Molecule):
         freeze_molecule: list = None,
         sphere_radius: float = None,
         sphere_center: tuple = (0, 0, 0),
+        seed: int = None,
     ):
         self._cluster_dict = dict()
         self._multiplicity = 1
@@ -458,6 +473,15 @@ class Cluster(Molecule):
 
         self._sphere_radius = sphere_radius
         self._sphere_center = sphere_center
+
+        # initialize random generator
+        if not seed:
+            self._seed = np.random.randint(0, 999999)
+        else:
+            self._seed: int = seed
+
+        # ----------------------------------------------------
+        # attrs post-initialization
 
         cluster_atoms: list = list()
 
@@ -490,7 +514,7 @@ class Cluster(Molecule):
             self._charge += new_molecule.charge
             self._cluster_dict[size] = new_molecule
 
-        # initialazing Cluster as a 'Molecule' (sum of all individual ones)
+        # initializing Cluster as a 'Molecule' (sum of all individual ones)
         super().__init__(
             atoms=cluster_atoms,
             charge=self.charge,
@@ -570,6 +594,20 @@ class Cluster(Molecule):
             self._freeze_molecule = [values]
 
     @property
+    def random_generator(self) -> np.random.Generator:
+        # self._random_gen: np.random.Generator = np.random.default_rng(seed)
+        return np.random.default_rng(self.seed)
+
+    @property
+    def seed(self) -> int:
+        return self._seed
+
+    @seed.setter
+    def seed(self, new_seed: int) -> None:
+        self._seed = new_seed
+        self._random_gen = np.random.default_rng(new_seed)
+
+    @property
     def sphere_center(self) -> tuple:
         return self._sphere_center
 
@@ -641,7 +679,7 @@ class Cluster(Molecule):
 
         return False
 
-    def add_molecule(self, other) -> object:
+    def add_molecule(self, other: Molecule) -> object:
         new_cluster = deepcopy(self)
         return self.__class__(
             new_cluster,
@@ -651,16 +689,12 @@ class Cluster(Molecule):
             sphere_center=new_cluster.sphere_center,
         )
 
-    def initialize_cluster(
-        self, max_closeness: float = 1.0, seed: int = None
-    ) -> object:
+    def initialize_cluster(self, max_closeness: float = 1.0) -> object:
         """Create a new cluster object which any atom is overlapped
         Parameters
         ----------
         max_closeness : float, optional
             maximun closeness between two pairs, by default 1.0
-        seed : int, optional
-            seed to initialize the random generator function, by default None
 
         Returns
         -------
@@ -690,7 +724,6 @@ class Cluster(Molecule):
                     max_step=None,
                     max_rotation=None,
                     max_closeness=max_closeness,
-                    seed=seed,
                 )
             else:
                 new_cluster += molecule
@@ -727,7 +760,6 @@ class Cluster(Molecule):
         max_step: float = None,
         max_rotation: float = None,
         max_closeness: int = 1.0,
-        seed: int = None,
     ) -> object:
         """Moving (translating and rotating) randomly without overlapping
         any atom
@@ -742,8 +774,6 @@ class Cluster(Molecule):
             maximun angle fro any rotation, by default None
         max_closeness : float
             maximun closeness between any pair of atoms, by default 1.0 A
-        seed : int, optional
-            seed to initialize the random generator function, by default None
 
         Returns
         -------
@@ -774,8 +804,9 @@ class Cluster(Molecule):
         cluster_without_molecule: Cluster = self.remove_molecule(molecule)
         cluster_coordinates: Cluster = cluster_without_molecule.coordinates
 
-        random_gen = np.random.default_rng(seed)
-        max_overlap_cycle: int = 1000
+        random_gen: np.random.Generator = self.random_generator
+
+        max_overlap_cycle: int = 10000
 
         for count in range(max_overlap_cycle):
 
@@ -784,14 +815,14 @@ class Cluster(Molecule):
                 max_rotation *= 1.1
 
             # angle between [0, max_rotation) degrees
-            rotation_x = random_gen.uniform() * max_rotation
-            rotation_y = random_gen.uniform() * max_rotation
-            rotation_z = random_gen.uniform() * max_rotation
+            rotation_x = random_gen.uniform(-1, 1) * max_rotation
+            rotation_y = random_gen.uniform(-1, 1) * max_rotation
+            rotation_z = random_gen.uniform(-1, 1) * max_rotation
 
             # moving between [-max_step, +max_step] Angstrom
-            tranlation_x = max_step * (random_gen.uniform() - 0.5)
-            tranlation_y = max_step * (random_gen.uniform() - 0.5)
-            tranlation_z = max_step * (random_gen.uniform() - 0.5)
+            tranlation_x = max_step * random_gen.uniform(-1, 1)
+            tranlation_y = max_step * random_gen.uniform(-1, 1)
+            tranlation_z = max_step * random_gen.uniform(-1, 1)
 
             new_molecule: Cluster = molecule_to_move.translate(
                 0,
@@ -815,19 +846,7 @@ class Cluster(Molecule):
 
             if not overlap:
                 break
-
-        cluster_dict: dict = deepcopy(self.cluster_dictionary)
-        cluster_dict[molecule] = new_molecule
-
-        new_cluster = Cluster(
-            *cluster_dict.values(),
-            freeze_molecule=self.freeze_molecule,
-            sphere_radius=self.sphere_radius,
-            sphere_center=self.sphere_center,
-        )
-
-        if count < max_overlap_cycle - 1:
-            return new_cluster
+        # if overlapping and max_overlap_cycle reached
         else:
             raise AttributeError(
                 "\n\n *** Overlapping Error ***"
@@ -835,8 +854,18 @@ class Cluster(Molecule):
                 f" less than '{max_closeness}' Angstroms"
                 "\nfor a cluster into a sphere of radius"
                 f" '{self.sphere_radius}' Angstroms"
-                f"\nPlease, check: \n\n{new_cluster.xyz}"
+                # f"\nPlease, check: \n\n{self.xyz}"
             )
+
+        cluster_dict: dict = deepcopy(self.cluster_dictionary)
+        cluster_dict[molecule] = new_molecule
+
+        return self.__class__(
+            *cluster_dict.values(),
+            freeze_molecule=self.freeze_molecule,
+            sphere_radius=self.sphere_radius,
+            sphere_center=self.sphere_center,
+        )
 
     def move_molecules(
         self,
@@ -844,7 +873,6 @@ class Cluster(Molecule):
         steps: tuple = None,
         rotations: tuple = None,
         max_closeness: int = 1.0,
-        seed: int = None,
     ) -> object:
         """Moving (translating and rotating) randomly without overlapping
         any atom
@@ -859,8 +887,6 @@ class Cluster(Molecule):
             angle for rotation in different rectangular directions
         max_closeness : float
             maximun closeness between any pair of atoms, by default 1.0 A
-        seed : int, optional
-            seed to initialize the random generator function, by default None
 
         Returns
         -------
@@ -901,7 +927,7 @@ class Cluster(Molecule):
         cluster_without_molecule: Cluster = self.remove_molecule(molecule)
         cluster_coordinates: Cluster = cluster_without_molecule.coordinates
 
-        random_gen = np.random.default_rng(seed)
+        random_gen: np.random.Generator = self.random_generator
         max_overlap_cycle: int = 1000
 
         for count in range(max_overlap_cycle):

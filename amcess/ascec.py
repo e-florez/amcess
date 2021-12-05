@@ -123,7 +123,10 @@ class Ascec(ElectronicEnergy):
         if self.energy_current < self.e_before:
             return True
         else:
-            DE = self.energy_current / self.e_before
+            DE = (
+                np.abs(self.energy_current - self.e_before)
+                / self.energy_current
+            )
             TKb = T * constants.k  # Boltzmann constant [J/K]
             exp = np.exp(-DE / TKb)
             if DE < exp:
