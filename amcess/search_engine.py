@@ -135,7 +135,7 @@ def simulated_annealing(
     )
 
     print("#" + "-" * 80)
-    print(f"Energy function:")
+    print("Energy function:")
     for k, v in energy_settings.items():
         print(f"\t{k} = {v}")
 

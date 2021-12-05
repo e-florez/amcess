@@ -99,7 +99,7 @@ tmp/
 **pics/
 
 # XYL log files
-**/*.xyz
+**/*xyz
 
 # Pyre type checker
 .pyre/
