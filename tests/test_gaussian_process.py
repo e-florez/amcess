@@ -2,7 +2,7 @@ import pytest
 import scipy
 
 from amcess.base_molecule import Cluster
-from amcess.search_configuration import SearchConfig
+from amcess.search_engine import SearchConfig
 from amcess.gaussian_process import GPyOpt_formatted_bounds
 from amcess.gaussian_process import define_optimization_args
 from amcess.gaussian_process import define_run_optimization_args
@@ -20,7 +20,7 @@ from amcess.gaussian_process import Objective
             (-2.3260049557867735, 2.3260049557867735),
             (0, scipy.pi),
             (0, scipy.pi),
-            (0, scipy.pi)
+            (0, scipy.pi),
         ],
     ],
 )
@@ -28,7 +28,7 @@ def test_Bayesian_bounds_formatter(bounds):
     """
     Test Bayesian bounds formatter
     """
-    keys = ('name', 'type', 'domain', 'dimensionality')
+    keys = ("name", "type", "domain", "dimensionality")
     xbounds = GPyOpt_formatted_bounds(bounds)
     assert all(k in xbounds[0] for k in keys)
 
@@ -98,9 +98,7 @@ def test_Bayesian_run_optimization_args_with_input(kargs):
 @pytest.mark.parametrize(
     "num_cores",
     [
-        (
-            2
-        ),
+        (2),
     ],
 )
 def test_Bayesian_run_parallel_optimization_args(num_cores):
@@ -109,7 +107,7 @@ def test_Bayesian_run_parallel_optimization_args(num_cores):
     """
     key = "num_cores"
     opt_keys = define_run_parallel_optimization_args(num_cores=num_cores)
-    assert (key in opt_keys)
+    assert key in opt_keys
 
 
 @pytest.mark.parametrize(
@@ -123,9 +121,7 @@ def test_Bayesian_run_parallel_optimization_args(num_cores):
         ),
     ],
 )
-def test_Bayesian_input_maxeval(
-    molecule1, molecule2, search_meth, initer
-):
+def test_Bayesian_input_maxeval(molecule1, molecule2, search_meth, initer):
     """
     Test ValueError for maxeval
     """
@@ -133,9 +129,7 @@ def test_Bayesian_input_maxeval(
         SearchConfig(
             Cluster(molecule1, molecule2), search_methodology=search_meth
         ).run(initer=3)
-    assert (
-        str(e.value) == "maxiter not defined in Bayesian Optimization"
-    )
+    assert str(e.value) == "maxiter not defined in Bayesian Optimization"
 
 
 @pytest.mark.parametrize(
@@ -149,9 +143,7 @@ def test_Bayesian_input_maxeval(
         ),
     ],
 )
-def test_Bayesian_input_initer(
-    molecule1, molecule2, search_meth, maxiter
-):
+def test_Bayesian_input_initer(molecule1, molecule2, search_meth, maxiter):
     """
     Test ValueError for maxeval
     """
@@ -159,9 +151,7 @@ def test_Bayesian_input_initer(
         SearchConfig(
             Cluster(molecule1, molecule2), search_methodology=search_meth
         ).run(maxiter=3)
-    assert (
-        str(e.value) == "initer not defined in Bayesian Optimization"
-    )
+    assert str(e.value) == "initer not defined in Bayesian Optimization"
 
 
 @pytest.mark.parametrize(
@@ -176,6 +166,4 @@ def test_Bayesian_Objective(x):
     """
     with pytest.raises(NotImplementedError) as e:
         Objective().evaluate(x=x)
-    assert (
-        str(e.value) == ""
-    )
+    assert str(e.value) == ""
