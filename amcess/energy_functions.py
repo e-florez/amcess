@@ -1,8 +1,21 @@
+from pyscf import lib
+from pyscf import (
+    gto,
+    scf,
+    dft,
+    cc,
+    mp,
+    mcscf,
+    fci,
+    lo,
+    df,
+    ao2mo,
+)
+
+
 def compute_energy(molecule, energy_function: dict):
     """Energy unit are Hartree"""
 
-    # ------------------------------------------------------
-    # energy setting
     energy_method = energy_function.get("energy", None)
 
     if energy_method == "pyscf":
@@ -23,33 +36,26 @@ def compute_energy(molecule, energy_function: dict):
         return None
 
 
+# ----------------------------------------------------------------------------
+def write_pyscf_input(molecule):
+    input_mol = molecule.xyz.replace("\t", "").split("\n")
+    input_mol = input_mol[2:]
+    input_mol = ";".join(input_mol)
+
+    return input_mol
+
+
 def pyscf_energy(
     molecule,  #: Cluster,
     hamiltonian: str = "hf",
     basis_set: str = "sto-3g",
     cpu: str = "1",
 ) -> float:
-    from pyscf import lib
-    from pyscf import (
-        gto,
-        scf,
-        dft,
-        cc,
-        mp,
-        mcscf,
-        fci,
-        lo,
-        df,
-        ao2mo,
-    )
 
-    # --------------------------------------------------
-
+    # define CPU number
     lib.num_threads(n=cpu)
 
-    input_mol = molecule.xyz.replace("\t", "").split("\n")
-    input_mol = input_mol[2:]
-    input_mol = ";".join(input_mol)
+    input_mol = write_pyscf_input(molecule)
 
     mol = gto.M(
         atom=input_mol,
