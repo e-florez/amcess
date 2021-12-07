@@ -16,6 +16,8 @@ class extra_functions(Electronic_energy):
         type=Cluster,
         validator=attr.validators.instance_of(Cluster),
     )
+    minima_energy = []
+    minima_energy_x = []
 
     @property
     def center_sphere_mass(self):
@@ -54,6 +56,32 @@ class extra_functions(Electronic_energy):
         )
         self.initial_cluster = new_cluster_center + self.initial_cluster
         return self.initial_cluster
+
+    def callback_dual_annealing(self, x, func, context):
+        """This function is created in order to get local minima of the function
+        that is being optimized.
+
+
+        Parameters
+        ----------
+        x : [type]
+            [values that are being optimized]
+        func : [type]
+            [values of the function that is being optimized]
+        context : [type]
+            [0 or 1, 1 is that the x is a local minimum of the function]
+
+        Raises
+        ------
+        ValueError
+            [description]
+        """
+        # print(context)
+        if context == 1:
+            func = np.around(func, decimals=8)
+            if self.minima_energy.count(func) == 0:
+                self.minima_energy.append(func)
+                self.minima_energy_x.append(x)
 
 
 @attr.s
@@ -164,12 +192,13 @@ class LocalMinima(extra_functions):
             n=n,
             sampling_method=sampling_method,
         )
-
-        final_cluster = self.controled_move(minimos.x)
-        # esta parte habría que reformularla, para el caso donde se encuentren
-        # más de un minimo
-        with open("configurations.xyz", "w") as f:
-            f.write(final_cluster.xyz)
+        with open("configurations.xyz", "a") as f:
+            for i in range(len(minimos.funl)):
+                cluster_in_minima = self.controled_move(minimos.xl[i])
+                f.write(str(len(self.initial_cluster.atoms)) + "\n")
+                f.write("Energy: " + str(minimos.funl[i]) + "\n")
+                for terms in cluster_in_minima.atoms:
+                    f.write(" ".join([str(x) for x in terms]) + "\n")
 
         return minimos
 
@@ -191,12 +220,10 @@ class LocalMinima(extra_functions):
         -------
         [OptimizeResult object]
         """
-        # no sé como hacer para heredar todas variables que están en el método
-        # dual_annealing, o los otros
         if num_runs is None:
-            num_runs = 5
+            num_runs = 2
         if maxiter is None:
-            maxiter = 5
+            maxiter = 100
 
         if not isinstance(num_runs, (int)):
             raise ValueError("\n\n num_runs must be an integer")
@@ -204,14 +231,21 @@ class LocalMinima(extra_functions):
         for i in range(num_runs):
             energie = self.energy
             minimo = dual_annealing(
-                energie, bounds=self.bounds, maxiter=maxiter
+                energie,
+                bounds=self.bounds,
+                maxiter=maxiter,
+                callback=self.callback_dual_annealing,
             )
-            final_cluster = self.controled_move(minimo.x)
+
             with open("configurations.xyz", "a") as f:
-                f.write(str(len(final_cluster.atoms)) + "\n")
-                f.write("Energy: " + str(minimo.fun) + "\n")
-                for terms in final_cluster.atoms:
-                    f.write(" ".join([str(x) for x in terms]) + "\n")
+                for i in range(len(self.minima_energy)):
+                    f.write(str(len(self.initial_cluster.atoms)) + "\n")
+                    f.write("Energy: " + str(self.minima_energy[i]) + "\n")
+                    cluster_in_minima = self.controled_move(
+                        self.minima_energy_x[i]
+                    )
+                    for terms in cluster_in_minima.atoms:
+                        f.write(" ".join([str(x) for x in terms]) + "\n")
 
         return minimo
 
