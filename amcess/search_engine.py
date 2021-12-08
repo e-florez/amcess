@@ -20,6 +20,33 @@ METHODS = {
 }
 
 
+def lennard_jones(r, epsilon=1.0, sigma=1.0):
+    """
+    Lennard-Jones potential.
+
+    Parameters
+    ----------
+    r : float
+        Distance between two atoms.
+    epsilon : float
+        Depth of potential well.
+    sigma : float
+        Width of potential well.
+
+    Returns
+    -------
+    float
+        Lennard-Jones potential.
+    """
+    return 4 * epsilon * ((sigma / r) ** 12 - (sigma / r) ** 6)
+
+
+COST_FUNCTIONS = {
+    "pyscf_HF": ElectronicEnergy.hf_pyscf,
+    "Lennard_Jones": lennard_jones,
+}
+
+
 def simulated_annealing(
     cluster_settings: dict,
     energy_settings: dict,
@@ -283,6 +310,7 @@ class SearchConfig:
         program_electronic_structure: int = 1,
         tolerance_contour_radius: float = 1.0,
         outxyz: str = "configurations.xyz",
+        costo_function="pyscf_HF",
     ) -> None:
 
         # Verfication and assigment of variables (type, value)
@@ -292,6 +320,7 @@ class SearchConfig:
         self.cost_function_number = program_electronic_structure
         self.output_name = outxyz
         self.tolerance_contour_radius = tolerance_contour_radius
+        self.func_costo = costo_function
 
         # Check Overlaping
         self._system_object.initialize_cluster()
@@ -299,6 +328,30 @@ class SearchConfig:
         # Build bounds, format for scipy functions
         if system_object._sphere_radius is None:
             self.spherical_contour_cluster()
+        else:
+            # ! arreglar esto, al fin que va a pasar con sphere_center y radius
+            # ! y eso articular con bounds
+            self._sphere_center = system_object.sphere_center
+            self._sphere_radius = system_object.sphere_radius
+            new_radius_t = (
+                self._sphere_radius
+            )  # self._tolerance_contour_radius + new_radius
+
+            bound_translate = [
+                (-new_radius_t, new_radius_t),
+                (-new_radius_t, new_radius_t),
+                (-new_radius_t, new_radius_t),
+            ]
+            bound_rotate = [(-180, 180), (-180, 180), (-180, 180)]
+
+            bound_translate = bound_translate * (
+                self._system_object.total_molecules - 1
+            )
+            bound_rotate = bound_rotate * (
+                self._system_object.total_molecules - 1
+            )
+
+            self._bounds = bound_translate + bound_rotate
 
     # ===============================================================
     # Decorators
@@ -321,7 +374,7 @@ class SearchConfig:
                 (-new_radius_t, new_radius_t),
                 (-new_radius_t, new_radius_t),
             ]
-            bound_rotate = [(0, scipy.pi), (0, scipy.pi), (0, scipy.pi)]
+            bound_rotate = [(-180, 180), (-180, 180), (-180, 180)]
 
             bound_translate = bound_translate * (
                 self._system_object.total_molecules - 1
@@ -347,10 +400,11 @@ class SearchConfig:
                     self._basis_set,
                 )
                 if self._program_calculate_cost_function == 1:
+                    cost_func = self._func_cost
                     self.program_cost_function(
                         self._program_calculate_cost_function
                     )
-                    self._func = self._obj_ee.hf_pyscf
+                    self._func = self._obj_ee.cost_func  # hf_pyscf
             return function_minimization(self, **kwargs)
 
         return wrapper
@@ -492,6 +546,18 @@ class SearchConfig:
     def cost_function_number(self):
         return self._program_calculate_cost_function
 
+    @property
+    def func_costo(self):
+        return self._func_costo
+
+    @func_costo.setter
+    def func_costo(self, new_func_costo):
+        self._func_cost = (
+            new_func_costo
+            if callable(new_func_costo)
+            else COST_FUNCTIONS[new_func_costo]
+        )
+
     @cost_function_number.setter
     def cost_function_number(self, new_func):
         if not isinstance(new_func, int):
@@ -499,7 +565,7 @@ class SearchConfig:
                 "\n\nThe new cost function is not a integer"
                 f"\nplease, check: '{type(new_func)}'\n"
             )
-        elif new_func > 1:
+        elif new_func > 2:
             raise ValueError(
                 "\n\nThe new cost function is not implemeted "
                 "\n 1 -> Hartree Fock into pyscf"

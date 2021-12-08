@@ -103,7 +103,7 @@ class Ascec(ElectronicEnergy):
             x : array, float
                 Random value to move the molecules, in the 1D array
         """
-
+        # ! Editar para que el rotar y la translacion esten asociados con los bounds
         return np.random.rand(n)
 
     def ascec_criterion(self, T):
@@ -119,7 +119,7 @@ class Ascec(ElectronicEnergy):
         T : float
             Annealing temperature
         """
-
+        KB: float = 3.166811563e-6  # Eh/K
         if self.energy_current < self.e_before:
             return True
         else:
@@ -127,7 +127,8 @@ class Ascec(ElectronicEnergy):
                 np.abs(self.energy_current - self.e_before)
                 / self.energy_current
             )
-            TKb = T * constants.k  # Boltzmann constant [J/K]
+            # TKb = T * constants.k  # Boltzmann constant [J/K]
+            TKb = T * KB  # Boltzmann constant [Eh/K]
             exp = np.exp(-DE / TKb)
             if DE < exp:
                 print("DE < Boltzmann Poblation ", DE)
