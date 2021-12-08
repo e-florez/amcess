@@ -1,3 +1,5 @@
+import warnings
+
 import numpy as np
 from pyscf import gto, scf
 
@@ -202,7 +204,6 @@ class ElectronicEnergy:
         self.store_structures.append(
             [self.energy_current] + self._object_system_current.atoms
         )
-        pass
 
     def calculate_electronic_energy(self, mol):
         """
@@ -215,24 +216,22 @@ class ElectronicEnergy:
 
         Returns
         -------
-            e: float
-                Electronic energy
+            Electronic energy
         """
-        try:
-            return scf.HF(mol).kernel()
-        except (UserWarning, np.linalg.LinAlgError):
-            print("Error in pyscf")  # usar un warning
-            return float("inf")
+        with warnings.catch_warnings():
+            warnings.filterwarnings("error")
+            try:
+                return scf.HF(mol).kernel()
+            except Warning as w:
+                print("*** Exception in SCF Calculation \n", w)
+                return float("inf")
 
     def metropolis(self):
-        """[summary]
+        """
         Metroplois algorithm (symmetric proposal distribution).
-        If structure is accepted, it will add into file xyz
+        If structure is accepted, it will add into the list of
+        lists self.store_structures
 
-        Parameters
-        ----------
-            filename: str
-                File name where is save structure and energy
         """
         if self.energy_current < self.energy_before:
             print("New configuration ACCEPTED: lower energy")
@@ -254,26 +253,26 @@ class ElectronicEnergy:
         ----------
             x : array 1D
                 Possible new positions and angles
-            args : list
-                basis set, Cluster Object, name output xyz
 
         Returns
         -------
-            e : float
-                electronic energy
+            Electronic energy
 
         """
-        # Build input to pyscf
+        # ------------------------------------------------------
+        # Build input of gto pyscf
         mol = gto.M(
             atom=self.input_gto_pyscf,
             basis=self._basis_set,
             verbose=False,
         )
 
+        # ------------------------------------------------------
         # Calculate electronic energy
         self.energy_current = self.calculate_electronic_energy(mol)
 
         if self._search_type != "ASCEC":
+            # --------------------------------------------------
             # Metroplis
             self.metropolis()
 
