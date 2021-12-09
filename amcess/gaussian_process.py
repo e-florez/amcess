@@ -36,7 +36,7 @@ def define_optimization_args(**kargs):
         "initial_design": "latin",
         "optimize_restarts": 5,
         "xi": 0.001,
-        "MCMC": None
+        "MCMC": None,
     }
     opt_args = dict()
     for key, value in default_opt.items():
@@ -64,7 +64,7 @@ def define_run_optimization_args(**kargs):
     default_runopt = {
         "save_models_parameters": False,
         "evaluations_file": None,
-        "models_file": None
+        "models_file": None,
     }
     runopt_args = {}
     for key, value in default_runopt.items():
@@ -153,8 +153,10 @@ class SingleObjective_Edited(Objective):
             f_evals, cost_evals = self._eval_func(x)
         else:
             if not self.parallel_error:
-                print("Parallel computation not implemented.\n"
-                      "Fall back to single process!")
+                print(
+                    "Parallel computation not implemented.\n"
+                    "Fall back to single process!"
+                )
                 self.parallel_error = True
             f_evals, cost_evals = self._eval_func(x)
 

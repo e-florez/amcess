@@ -308,11 +308,9 @@ class SearchConfig:
         search_methodology: str = "ASCEC",
         methodology: str = "HF",
         basis: str = "sto-3g",
-        # program_electronic_structure: int = 1,
         tolerance_contour_radius: float = 1.0,
         outxyz: str = "configurations.xyz",
-        # costo_function="pyscf_HF",
-        program_cost_function="pyscf",
+        cost_function="pyscf",
     ) -> None:
 
         # Verfication and assigment of variables (type, value)
@@ -320,11 +318,10 @@ class SearchConfig:
         self.search_type = search_methodology
         self.methodology = methodology
         self.basis_set = basis
-        # self.cost_function_number = program_electronic_structure
         self.output_name = outxyz
         self.tolerance_contour_radius = tolerance_contour_radius
-        # self.func_costo = costo_function
-        self.cost_function = program_cost_function
+        self.func_cost = cost_function
+
         # Check Overlaping
         self._system_object.initialize_cluster()
 
@@ -391,21 +388,6 @@ class SearchConfig:
             return function_change_radius(self, new_radius)
 
         return new_bounds
-
-    def init_electronic_energy(function_minimization):
-        def wrapper(self, **kwargs):
-            if self._search_methodology != "ASCEC":
-                self._obj_ee = ElectronicEnergy(
-                    self._system_object,
-                    self._search_methodology,
-                    self._sphere_center,
-                    self._sphere_radius,
-                    self._methodology,
-                    self._basis_set,
-                )
-            return function_minimization(self, **kwargs)
-
-        return wrapper
 
     # ===============================================================
     # PROPERTIES
@@ -554,21 +536,13 @@ class SearchConfig:
                 f"\nplease, check: '{new_radius}'\n"
             )
 
-    # @property
-    # def cost_function_number(self):
-    #    return self._program_calculate_cost_function
-
     @property
-    def cost_function(self):
-        return self._cost_function
+    def func_cost(self):
+        return self._func_cost
 
-    @cost_function.setter
-    def cost_function(self, new_cost_function):
-        self._cost_function = (
-            new_cost_function
-            if callable(new_cost_function)
-            else COST_FUNCTIONS[new_cost_function]
-        )
+    @func_cost.setter
+    def func_cost(self, new_func_cost):
+        self._func_cost = new_func_cost
 
     # ===============================================================
     # Methods
@@ -635,27 +609,6 @@ class SearchConfig:
 
         self.sphere_radius = max_distance_cm
 
-    # def program_cost_function(self, _program_calculate_cost_function):
-    #     """
-    #     Assign the name of the cost function, which is associated with
-    #     determined program to calculate the energy of the electronic
-    #     structure
-
-    #     Parameters
-    #     ----------
-    #         _program_calculate_cost_function : int
-    #             Integer associated with the program to calculate the cost
-    #             and methodology (Hamiltonian, Functional, etc)
-
-    #     """
-    #     if _program_calculate_cost_function == 1:
-    #         print(
-    #             "\n\n"
-    #             "*** Cost function is Hartree--Fock implemented into pyscf ***"
-    #             "\n\n"
-    #         )
-
-    @init_electronic_energy
     def run(self, **kwargs):
         """
         Alternative to execute the searching methodologies in METHODS
@@ -695,10 +648,24 @@ class SearchConfig:
             if self._search_methodology == "Bayesian":
                 print("*** Minimization: Bayesian ***")
 
+            if self._search_methodology != "ASCEC":
+                obj_ee = ElectronicEnergy(
+                    self._system_object,
+                    self._search_methodology,
+                    self._sphere_center,
+                    self._sphere_radius,
+                    self._methodology,
+                    self._basis_set,
+                )
+
+                if self._func_cost == "pyscf":
+                    cost_func = obj_ee.pyscf
+                else:
+                    cost_func = COST_FUNCTIONS[self._func_cost]
+
             self._search = func(
-                # self._func,
-                self._cost_function,
+                cost_func,
                 bounds=self._bounds,
                 **kwargs,
             )
-            self._obj_ee.write_to_file(self.output_name)
+            obj_ee.write_to_file(self.output_name)

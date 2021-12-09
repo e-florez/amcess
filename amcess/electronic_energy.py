@@ -240,7 +240,7 @@ class ElectronicEnergy:
             else:
                 raise Exception("Method not implemented")
         except (UserWarning, np.linalg.LinAlgError):
-            print("*** Exception in SCF Calculation \n", w)
+            print("*** Exception in SCF Calculation \n")
             return float("inf")
 
     def metropolis(self):

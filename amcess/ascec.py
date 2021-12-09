@@ -105,8 +105,13 @@ class Ascec(ElectronicEnergy):
             x : array, float
                 Random value to move the molecules, in the 1D array
         """
-        # ! Editar para que el rotar y la translacion esten asociados con los bounds
-        return np.random.rand(n)
+        translate = np.random.uniform(
+            low=-self._sphere_radius,
+            high=self._sphere_radius,
+            size=(int(n / 2),),
+        )
+        rotate = np.random.uniform(low=-180.0, high=180.0, size=(int(n / 2),))
+        return np.concatenate((translate, rotate))
 
     def ascec_criterion(self, T):
         """[summary]
