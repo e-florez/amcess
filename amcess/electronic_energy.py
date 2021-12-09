@@ -6,15 +6,6 @@ from pyscf import lib, gto, scf, dft, mp, cc
 from amcess.base_molecule import Cluster
 
 
-METHODPYSCF = {
-    "HF": scf.RHF,
-    "DFT": dft.RKS,
-    "MP2": mp.MP2,
-    "CCSD": cc.CCSD,
-}
-PROGRAM = {"pyscf": METHODPYSCF}
-
-
 class ElectronicEnergy:
     def __init__(
         self,
@@ -22,7 +13,6 @@ class ElectronicEnergy:
         search_type: str,
         sphere_center: tuple,
         sphere_radius: float,
-        program: str,
         methodology: str,
         basis_set: str,
         max_closeness: float = 1.0,
@@ -50,11 +40,6 @@ class ElectronicEnergy:
         self._sphere_radius = sphere_radius
 
         self._method = methodology.split()[0]
-        self._methodology = (
-            methodology
-            if callable(methodology)
-            else PROGRAM[program][methodology.split()[0]]
-        )
         if len(methodology.split()) > 1:
             self._functional = methodology.split()[1]
         self._basis_set = basis_set
@@ -237,21 +222,26 @@ class ElectronicEnergy:
         -------
             Electronic energy
         """
-        with warnings.catch_warnings():
-            warnings.filterwarnings("error")
-            try:
-                if self._method == "HF" or self._method == "CCSD":
-                    return self._methodology(mol).kernel()
-                elif self._method == "DFT":
-                    dft_call = self._methodology(mol)
-                    dft_call.xc = self._functional
-                    return dft_call.kernel()
-                elif self._method == "MP2":
-                    mf = scf.RHF(mol).run()
-                    return mp.MP2(mf).run()
-            except Warning as w:
-                print("*** Exception in SCF Calculation \n", w)
-                return float("inf")
+        try:
+            if self._method == "HF":
+                return scf.RHF(mol).kernel()
+            elif self._method == "DFT":
+                dft_call = dft.RKS(mol)
+                dft_call.xc = self._functional
+                return dft_call.kernel()
+            elif self._method == "MP2":
+                mf = scf.RHF(mol).run()
+                energy = mp.MP2(mf).run()
+                return energy.e_tot
+            elif self._method == "CCSD":
+                mf = scf.RHF(mol).run()
+                energy = cc.CCSD(mf).run()
+                return energy.e_tot
+            else:
+                raise Exception("Method not implemented")
+        except (UserWarning, np.linalg.LinAlgError):
+            print("*** Exception in SCF Calculation \n", w)
+            return float("inf")
 
     def metropolis(self):
         """

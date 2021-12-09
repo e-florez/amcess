@@ -400,7 +400,6 @@ class SearchConfig:
                     self._search_methodology,
                     self._sphere_center,
                     self._sphere_radius,
-                    self._program,
                     self._methodology,
                     self._basis_set,
                 )
@@ -561,43 +560,15 @@ class SearchConfig:
 
     @property
     def cost_function(self):
-        return self._cost_function, self._program
+        return self._cost_function
 
     @cost_function.setter
     def cost_function(self, new_cost_function):
-        self._cost_function, self._program = (
+        self._cost_function = (
             new_cost_function
             if callable(new_cost_function)
             else COST_FUNCTIONS[new_cost_function]
-        ), new_cost_function
-
-    #    @property
-    #    def func_costo(self):
-    #        return self._func_costo
-
-    #    @func_costo.setter
-    #    def func_costo(self, new_func_costo):
-    #        self._func_cost = (
-    #            new_func_costo
-    #            if callable(new_func_costo)
-    #            else COST_FUNCTIONS[new_func_costo]
-    #        )
-
-    # @cost_function_number.setter
-    # def cost_function_number(self, new_func):
-    #    if not isinstance(new_func, int):
-    #        raise TypeError(
-    #            "\n\nThe new cost function is not a integer"
-    #            f"\nplease, check: '{type(new_func)}'\n"
-    #        )
-    #    elif new_func > 2:
-    #        raise ValueError(
-    #            "\n\nThe new cost function is not implemeted "
-    #            "\n 1 -> Hartree Fock into pyscf"
-    #            f"\nplease, check: '{new_func}'\n"
-    #        )
-
-    #    self._program_calculate_cost_function = new_func
+        )
 
     # ===============================================================
     # Methods
@@ -708,7 +679,6 @@ class SearchConfig:
                 search_type=self._search_methodology,
                 sphere_center=self._sphere_center,
                 sphere_radius=self._sphere_radius,
-                program=self._program,
                 methodology=self._methodology,
                 basis_set=self._basis_set,
                 call_function=1,
