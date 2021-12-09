@@ -1,9 +1,18 @@
 import warnings
 
 import numpy as np
-from pyscf import gto, scf
+from pyscf import lib, gto, scf, dft, mp, cc
 
 from amcess.base_molecule import Cluster
+
+
+METHODPYSCF = {
+    "HF": scf.RHF,
+    "DFT": dft.RKS,
+    "MP2": mp.MP2,
+    "CCSD": cc.CCSD,
+}
+PROGRAM = {"pyscf": METHODPYSCF}
 
 
 class ElectronicEnergy:
@@ -13,6 +22,8 @@ class ElectronicEnergy:
         search_type: str,
         sphere_center: tuple,
         sphere_radius: float,
+        program: str,
+        methodology: str,
         basis_set: str,
         max_closeness: float = 1.0,
         seed: int = None,
@@ -38,6 +49,14 @@ class ElectronicEnergy:
         self._sphere_center = sphere_center
         self._sphere_radius = sphere_radius
 
+        self._method = methodology.split()[0]
+        self._methodology = (
+            methodology
+            if callable(methodology)
+            else PROGRAM[program][methodology.split()[0]]
+        )
+        if len(methodology.split()) > 1:
+            self._functional = methodology.split()[1]
         self._basis_set = basis_set
 
         self._max_closeness = max_closeness
@@ -51,7 +70,7 @@ class ElectronicEnergy:
                 basis=self._basis_set,
                 verbose=False,
             )
-            self._e0 = self.calculate_electronic_e(mol)
+            self._e0 = self.calculate_electronic_energy(mol)
             self.energy_before = self._e0
 
     # ===============================================================
@@ -207,12 +226,12 @@ class ElectronicEnergy:
 
     def calculate_electronic_energy(self, mol):
         """
-        Calculate electronic energy
+        Calculate electronic energy with pyscf
 
         Parameters
         ----------
             mol: object
-                pyscf object
+                gto pyscf object
 
         Returns
         -------
@@ -221,7 +240,15 @@ class ElectronicEnergy:
         with warnings.catch_warnings():
             warnings.filterwarnings("error")
             try:
-                return scf.HF(mol).kernel()
+                if self._method == "HF" or self._method == "CCSD":
+                    return self._methodology(mol).kernel()
+                elif self._method == "DFT":
+                    dft_call = self._methodology(mol)
+                    dft_call.xc = self._functional
+                    return dft_call.kernel()
+                elif self._method == "MP2":
+                    mf = scf.RHF(mol).run()
+                    return mp.MP2(mf).run()
             except Warning as w:
                 print("*** Exception in SCF Calculation \n", w)
                 return float("inf")
@@ -245,7 +272,7 @@ class ElectronicEnergy:
                 self.store_structure()
 
     @build_input_gto_pyscf
-    def hf_pyscf(self, x):
+    def pyscf(self, x):
         """
         Calculate of electronic energy with pyscf
 
@@ -268,7 +295,7 @@ class ElectronicEnergy:
         )
 
         # ------------------------------------------------------
-        # Calculate electronic energy
+        # Calculate electronic energy with pyscf
         self.energy_current = self.calculate_electronic_energy(mol)
 
         if self._search_type != "ASCEC":

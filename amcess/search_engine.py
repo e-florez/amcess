@@ -42,7 +42,7 @@ def lennard_jones(r, epsilon=1.0, sigma=1.0):
 
 
 COST_FUNCTIONS = {
-    "pyscf_HF": ElectronicEnergy.hf_pyscf,
+    "pyscf": ElectronicEnergy.pyscf,
     "Lennard_Jones": lennard_jones,
 }
 
@@ -306,22 +306,25 @@ class SearchConfig:
         self,
         system_object: Cluster = None,
         search_methodology: str = "ASCEC",
+        methodology: str = "HF",
         basis: str = "sto-3g",
-        program_electronic_structure: int = 1,
+        # program_electronic_structure: int = 1,
         tolerance_contour_radius: float = 1.0,
         outxyz: str = "configurations.xyz",
-        costo_function="pyscf_HF",
+        # costo_function="pyscf_HF",
+        program_cost_function="pyscf",
     ) -> None:
 
         # Verfication and assigment of variables (type, value)
         self.system_object = system_object
         self.search_type = search_methodology
+        self.methodology = methodology
         self.basis_set = basis
-        self.cost_function_number = program_electronic_structure
+        # self.cost_function_number = program_electronic_structure
         self.output_name = outxyz
         self.tolerance_contour_radius = tolerance_contour_radius
-        self.func_costo = costo_function
-
+        # self.func_costo = costo_function
+        self.cost_function = program_cost_function
         # Check Overlaping
         self._system_object.initialize_cluster()
 
@@ -397,14 +400,10 @@ class SearchConfig:
                     self._search_methodology,
                     self._sphere_center,
                     self._sphere_radius,
+                    self._program,
+                    self._methodology,
                     self._basis_set,
                 )
-                if self._program_calculate_cost_function == 1:
-                    cost_func = self._func_cost
-                    self.program_cost_function(
-                        self._program_calculate_cost_function
-                    )
-                    self._func = self._obj_ee.cost_func  # hf_pyscf
             return function_minimization(self, **kwargs)
 
         return wrapper
@@ -476,6 +475,20 @@ class SearchConfig:
         self._search_methodology = change_search_methodology
 
     @property
+    def methodology(self):
+        return self._methodology
+
+    @methodology.setter
+    def methodology(self, new_methodology):
+        if not isinstance(new_methodology, str):
+            raise TypeError(
+                "\n\nThe new name to basis set is not a string"
+                f"\nplease, check: '{type(new_methodology)}'\n"
+            )
+
+        self._methodology = new_methodology
+
+    @property
     def basis_set(self):
         return self._basis_set
 
@@ -542,37 +555,49 @@ class SearchConfig:
                 f"\nplease, check: '{new_radius}'\n"
             )
 
-    @property
-    def cost_function_number(self):
-        return self._program_calculate_cost_function
+    # @property
+    # def cost_function_number(self):
+    #    return self._program_calculate_cost_function
 
     @property
-    def func_costo(self):
-        return self._func_costo
+    def cost_function(self):
+        return self._cost_function, self._program
 
-    @func_costo.setter
-    def func_costo(self, new_func_costo):
-        self._func_cost = (
-            new_func_costo
-            if callable(new_func_costo)
-            else COST_FUNCTIONS[new_func_costo]
-        )
+    @cost_function.setter
+    def cost_function(self, new_cost_function):
+        self._cost_function, self._program = (
+            new_cost_function
+            if callable(new_cost_function)
+            else COST_FUNCTIONS[new_cost_function]
+        ), new_cost_function
 
-    @cost_function_number.setter
-    def cost_function_number(self, new_func):
-        if not isinstance(new_func, int):
-            raise TypeError(
-                "\n\nThe new cost function is not a integer"
-                f"\nplease, check: '{type(new_func)}'\n"
-            )
-        elif new_func > 2:
-            raise ValueError(
-                "\n\nThe new cost function is not implemeted "
-                "\n 1 -> Hartree Fock into pyscf"
-                f"\nplease, check: '{new_func}'\n"
-            )
+    #    @property
+    #    def func_costo(self):
+    #        return self._func_costo
 
-        self._program_calculate_cost_function = new_func
+    #    @func_costo.setter
+    #    def func_costo(self, new_func_costo):
+    #        self._func_cost = (
+    #            new_func_costo
+    #            if callable(new_func_costo)
+    #            else COST_FUNCTIONS[new_func_costo]
+    #        )
+
+    # @cost_function_number.setter
+    # def cost_function_number(self, new_func):
+    #    if not isinstance(new_func, int):
+    #        raise TypeError(
+    #            "\n\nThe new cost function is not a integer"
+    #            f"\nplease, check: '{type(new_func)}'\n"
+    #        )
+    #    elif new_func > 2:
+    #        raise ValueError(
+    #            "\n\nThe new cost function is not implemeted "
+    #            "\n 1 -> Hartree Fock into pyscf"
+    #            f"\nplease, check: '{new_func}'\n"
+    #        )
+
+    #    self._program_calculate_cost_function = new_func
 
     # ===============================================================
     # Methods
@@ -639,25 +664,25 @@ class SearchConfig:
 
         self.sphere_radius = max_distance_cm
 
-    def program_cost_function(self, _program_calculate_cost_function):
-        """
-        Assign the name of the cost function, which is associated with
-        determined program to calculate the energy of the electronic
-        structure
+    # def program_cost_function(self, _program_calculate_cost_function):
+    #     """
+    #     Assign the name of the cost function, which is associated with
+    #     determined program to calculate the energy of the electronic
+    #     structure
 
-        Parameters
-        ----------
-            _program_calculate_cost_function : int
-                Integer associated with the program to calculate the cost
-                and methodology (Hamiltonian, Functional, etc)
+    #     Parameters
+    #     ----------
+    #         _program_calculate_cost_function : int
+    #             Integer associated with the program to calculate the cost
+    #             and methodology (Hamiltonian, Functional, etc)
 
-        """
-        if _program_calculate_cost_function == 1:
-            print(
-                "\n\n"
-                "*** Cost function is Hartree--Fock implemented into pyscf ***"
-                "\n\n"
-            )
+    #     """
+    #     if _program_calculate_cost_function == 1:
+    #         print(
+    #             "\n\n"
+    #             "*** Cost function is Hartree--Fock implemented into pyscf ***"
+    #             "\n\n"
+    #         )
 
     @init_electronic_energy
     def run(self, **kwargs):
@@ -683,6 +708,8 @@ class SearchConfig:
                 search_type=self._search_methodology,
                 sphere_center=self._sphere_center,
                 sphere_radius=self._sphere_radius,
+                program=self._program,
+                methodology=self._methodology,
                 basis_set=self._basis_set,
                 call_function=1,
                 bounds=self._bounds,
@@ -699,7 +726,8 @@ class SearchConfig:
                 print("*** Minimization: Bayesian ***")
 
             self._search = func(
-                self._func,
+                # self._func,
+                self._cost_function,
                 bounds=self._bounds,
                 **kwargs,
             )

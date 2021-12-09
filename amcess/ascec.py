@@ -14,6 +14,8 @@ class Ascec(ElectronicEnergy):
         search_type: str,
         sphere_center: tuple,
         sphere_radius: float,
+        program: str,
+        methodology: str,
         basis_set: str,
         call_function: int,
         bounds: list,
@@ -47,6 +49,8 @@ class Ascec(ElectronicEnergy):
             search_type,
             sphere_center,
             sphere_radius,
+            program,
+            methodology,
             basis_set,
             max_closeness,
             seed,
@@ -87,7 +91,7 @@ class Ascec(ElectronicEnergy):
             the attribute self.electronic_e
         """
         if self._call_function == 1:
-            self.energy_current = self.hf_pyscf(x)
+            self.energy_current = self.pyscf(x)
 
     def random_mov(self, n):
         """
