@@ -72,7 +72,7 @@ def test_bounds(cluster1, cluster2, expected_bounds):
     [
         (
             [("H", 0, 0, 0), ("H", 1, 0, 0)],
-            [("H", 2, 0, 0), ("H", 3, 0, 0)],
+            [("H", -2, 0, 0), ("H", -3, 0, 0)],
             [
                 (-2.132227),
             ],
@@ -92,7 +92,7 @@ def test_shgo_optimize(cluster1, cluster2, expected_energy):
     [
         (
             [("H", 0, 0, 0), ("H", 1, 0, 0)],
-            [("H", 2, 0, 0), ("H", 3, 0, 0)],
+            [("H", -2, 0, 0), ("H", -3, 0, 0)],
             [
                 (-2.132227),
             ],
@@ -112,7 +112,7 @@ def test_dual_annealing_optimize(cluster1, cluster2, expected_energy):
     [
         (
             [("H", 0, 0, 0), ("H", 1, 0, 0)],
-            [("H", 2, 0, 0), ("H", 3, 0, 0)],
+            [("H", -2, 0, 0), ("H", -3, 0, 0)],
             [
                 (-2.132227),
             ],

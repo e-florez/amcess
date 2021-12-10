@@ -223,7 +223,7 @@ class LocalMinima(extra_functions):
         if num_runs is None:
             num_runs = 2
         if maxiter is None:
-            maxiter = 100
+            maxiter = 2
 
         if not isinstance(num_runs, (int)):
             raise ValueError("\n\n num_runs must be an integer")
