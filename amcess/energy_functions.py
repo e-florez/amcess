@@ -5,11 +5,6 @@ from pyscf import (
     dft,
     cc,
     mp,
-    mcscf,
-    fci,
-    lo,
-    df,
-    ao2mo,
 )
 
 
@@ -45,6 +40,7 @@ def write_pyscf_input(molecule):
     return input_mol
 
 
+# ----------------------------------------------------------------------------
 def pyscf_energy(
     molecule,  #: Cluster,
     hamiltonian: str = "hf",
@@ -70,6 +66,15 @@ def pyscf_energy(
         dft_obj = dft.RKS(mol)
         dft_obj.xc = hamiltonian
         energy = dft_obj.kernel()
+    elif hamiltonian == "mp2":
+        mp2 = mp.MP2(scf.RHF(mol))
+        energy = mp2.kernel()
+        # mf = scf.RHF(mol).run()
+        # # freeze 2 core orbitals
+        # pt = mp.MP2(mf).set(frozen = 2).run()
+        # # freeze 2 core orbitals and 3 high lying unoccupied orbitals
+        # pt.set(frozen = [0,1,16,17,18]).run()
+
     elif hamiltonian == "ccsd":
         cc_obj = cc.CCSD(mol)
         energy = cc_obj.kernel()

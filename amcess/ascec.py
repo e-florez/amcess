@@ -14,6 +14,7 @@ class Ascec(ElectronicEnergy):
         search_type: str,
         sphere_center: tuple,
         sphere_radius: float,
+        methodology: str,
         basis_set: str,
         call_function: int,
         bounds: list,
@@ -47,6 +48,7 @@ class Ascec(ElectronicEnergy):
             search_type,
             sphere_center,
             sphere_radius,
+            methodology,
             basis_set,
             max_closeness,
             seed,
@@ -87,7 +89,7 @@ class Ascec(ElectronicEnergy):
             the attribute self.electronic_e
         """
         if self._call_function == 1:
-            self.energy_current = self.hf_pyscf(x)
+            self.energy_current = self.pyscf(x)
 
     def random_mov(self, n):
         """
@@ -103,8 +105,13 @@ class Ascec(ElectronicEnergy):
             x : array, float
                 Random value to move the molecules, in the 1D array
         """
-
-        return np.random.rand(n)
+        translate = np.random.uniform(
+            low=-self._sphere_radius,
+            high=self._sphere_radius,
+            size=(int(n / 2),),
+        )
+        rotate = np.random.uniform(low=-180.0, high=180.0, size=(int(n / 2),))
+        return np.concatenate((translate, rotate))
 
     def ascec_criterion(self, T):
         """[summary]
@@ -119,7 +126,7 @@ class Ascec(ElectronicEnergy):
         T : float
             Annealing temperature
         """
-
+        KB: float = 3.166811563e-6  # Eh/K
         if self.energy_current < self.e_before:
             return True
         else:
@@ -127,7 +134,8 @@ class Ascec(ElectronicEnergy):
                 np.abs(self.energy_current - self.e_before)
                 / self.energy_current
             )
-            TKb = T * constants.k  # Boltzmann constant [J/K]
+            # TKb = T * constants.k  # Boltzmann constant [J/K]
+            TKb = T * KB  # Boltzmann constant [Eh/K]
             exp = np.exp(-DE / TKb)
             if DE < exp:
                 print("DE < Boltzmann Poblation ", DE)
