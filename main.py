@@ -623,7 +623,7 @@ def old_cluster_class():
 
 def pipeline_andy():
     from amcess.base_molecule import Cluster, Molecule
-    from amcess.search_configuration import SearchConfig
+    from amcess import engine as SearchConfig
 
     HF = [("H", 0, 0, 0), ("F", 0.917, 0, 0)]
     HF1 = {"atoms": [("H", 0, 0, 1), ("F", 0.918, 0.0, 1)]}
@@ -669,13 +669,19 @@ def pipeline_dual():
 
     print(water_dimer.xyz)
 
+    search = ["ASCEC", "dual_annealing", "SHGO", "Bayesian"]
+
     simulation = engine(
         # hf_dimer,
         water_dimer,
-        search_methodology="dual_annealing",
+        # search_methodology="ASCEC",
+        search_methodology=search[1],
     )
 
-    simulation.run()
+    simulation.run(maxfun=1, maxiter=1)  #!da
+    # simulation.run(gp_params={"initer": 3, "maxiter": 3})  # Bayesian
+    # simulation.run(initer=10, maxiter=10) #bayesian
+    # simulation.run(nT=20, maxCycle=50) #ASCEC
 
 
 # -------------------------------------------------------------------
@@ -760,11 +766,11 @@ def run():
 # -------------------------------------------------------------------
 if __name__ == "__main__":
 
-    run()
+    # run()
 
     # move_init()
 
     # temperature_grid()
 
-    # pipeline_dual()
+    pipeline_dual()
     # pipeline_andy()
