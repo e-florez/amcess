@@ -1,6 +1,7 @@
 import numpy as np
-from scipy import constants
 from amcess.electronic_energy import ElectronicEnergy
+
+from copy import deepcopy
 
 
 class Ascec(ElectronicEnergy):
@@ -28,18 +29,18 @@ class Ascec(ElectronicEnergy):
 
         Parameters
         ----------
-            call_function : callable
-                The function to calculate electronic energy
-            bounds : array, float
-                The bounds of the search space
-            T0 : float
-                Initial temperature
-            nT : int
-                Number of temperature steps
-            dT : float
-                Temperature step
-            maxCylce : int
-                Maximum number of cycles
+        call_function : callable
+            The function to calculate electronic energy
+        bounds : array, float
+            The bounds of the search space
+        T0 : float
+            Initial temperature
+        nT : int
+            Number of temperature steps
+        dT : float
+            Temperature step
+        maxCylce : int
+            Maximum number of cycles
         """
         super().__init__(
             object_system,
@@ -74,15 +75,15 @@ class Ascec(ElectronicEnergy):
 
         Parameters
         ----------
-            function : callable
-                The function to calculate electronic energy
-            x : array, float
-                Value to move the molecules, in the 1D array
+        function : callable
+            The function to calculate electronic energy
+        x : array, float
+            Value to move the molecules, in the 1D array
 
         Returns
         -------
-            Electronic energy of the new configuration in
-            the attribute self.electronic_e
+        energy :
+            Electronic energy of the new configuration
         """
         if self._call_function == 1:
             self.energy_current = self.pyscf(x)
@@ -93,13 +94,13 @@ class Ascec(ElectronicEnergy):
 
         Parameters
         ----------
-            n : int
-                dimension of the 1D array
+        n : int
+            dimension of the 1D array
 
         Returns
         -------
-            x : array, float
-                Random value to move the molecules, in the 1D array
+        x : array, float
+            Random value to move the molecules, in the 1D array
         """
         translate = np.random.uniform(
             low=-self._object_system_current._sphere_radius,
@@ -110,49 +111,71 @@ class Ascec(ElectronicEnergy):
         return np.concatenate((translate, rotate))
 
     def ascec_criterion(self, T):
-        """[summary]
+        """
         ASCEC criterion for acceptance, based in Markov Chain Monte Carlo
 
         Parameters
         ----------
         e : float
             Value of the cost function
+
         T : float
             Annealing temperature
         """
         KB: float = 3.166811563e-6  # Eh/K
+        accepted = False
+        lower_energy = False
         if self.energy_current < self.e_before:
-            return True
+            accepted = True
+            lower_energy = True
         else:
-            DE = (
-                np.abs(self.energy_current - self.e_before)
-                / self.energy_current
-            )
+            DE = self.energy_current - self.e_before
             TKb = T * KB  # Boltzmann constant [Eh/K]
-            exp = np.exp(-DE / TKb)
-            if DE < exp:
-                print("DE < Boltzmann Poblation ", DE)
-                return True
+            boltzmann = np.exp(-DE / TKb)
+            delta_energy = np.abs(DE / self.energy_current)
+
+            # random = np.random.uniform(0, 1)
+            # if boltzmann > random:
+            if boltzmann > delta_energy:
+                # print(f"Boltzmann Accepted {boltzmann:.3e}")
+                accepted = True
+
+        return accepted, lower_energy
 
     def ascec_run(self):
         """
         Run ASCEC algoritm
         """
+
         iT = 0
         T = self._T0
+        configurations_accepted = 0
         while iT <= self._nT:
             count = 0
             while count <= self._maxCylce:
+
+                print(
+                    f"\r Current temperature {T:7.2f} K, progress:"
+                    f" {100*iT/self._nT:.2f}%, with "
+                    f" {configurations_accepted:3d} configurations accepted"
+                    f" (cycle {count:>4d}/{self._maxCylce:<4d})",
+                    end="",
+                )
+
                 # 3 values to translate and another 3 to rotate
                 x = self.random_mov(len(self._bounds))
                 self.electronic_e(x)
-                self.store_structure()
-                accept = self.ascec_criterion(T)
-                if accept:
+                # self.store_structure()
+                accepted, lower_energy = self.ascec_criterion(T)
+                if accepted:
+                    configurations_accepted += 1
                     self.e_before = self.energy_current
-                    count = self._maxCylce + 1
                     self.store_structure()
-                    print("Accept in the Temperature ", T)
+                    # print("Configuration Temperature ", T)
+
+                    if lower_energy:
+                        count = float("inf")
+
                 count += 1
             T = T - T * self._dT
             iT += 1

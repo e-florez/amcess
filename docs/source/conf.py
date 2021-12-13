@@ -15,8 +15,9 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath(".."))
+sys.path.insert(0, os.path.abspath("../.."))
 
+import amcess
 
 # -- Project information -----------------------------------------------------
 
@@ -25,9 +26,9 @@ copyright = "2021, Edison Florez"
 author = "Edison Florez, Andy Zapata"
 
 # The short X.Y version
-version = ""
+version = amcess.__version__
 # The full version, including alpha/beta/rc tags
-release = "2021"
+release = ""  # amcess.__version__
 
 
 # -- General configuration ---------------------------------------------------
@@ -44,7 +45,11 @@ extensions = [
     "sphinx.ext.doctest",
     "sphinx.ext.mathjax",
     "sphinx.ext.githubpages",
+    "sphinx.ext.intersphinx",
+    "sphinxcontrib.bibtex",
 ]
+
+bibtex_bibfiles = ["refs.bib"]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -85,7 +90,7 @@ html_theme = "sphinx_rtd_theme"
 html_logo = "_static/amcess_logo.png"
 html_theme_options = {
     "logo_only": True,
-    "display_version": False,
+    "display_version": True,
 }
 
 # Theme options are theme-specific and customize the look and feel of a theme
