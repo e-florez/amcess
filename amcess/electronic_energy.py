@@ -21,12 +21,12 @@ class ElectronicEnergy:
 
         Attributes
         ----------
-            molecule_object : object
-                Object initialized with Molecule or Cluster class
-            sphere_center : list
-                Center of the sphere where evolve the system
-            sphere_radius : float
-                Radius of the sphere where should evolve the system
+        molecule_object : object
+            Object initialized with Molecule or Cluster class
+        sphere_center : list
+            Center of the sphere where evolve the system
+        sphere_radius : float
+            Radius of the sphere where should evolve the system
         """
 
         self._object_system_initial = object_system
@@ -66,17 +66,17 @@ class ElectronicEnergy:
 
             Parameters
             ----------
-                x : array 1D
-                    possible new positions and angles.
-                system_object : object Cluster
-                    Object initialized with Molecule or Cluster class
+            x : array 1D
+                possible new positions and angles.
+            system_object : object Cluster
+                Object initialized with Molecule or Cluster class
 
             Returns
             -------
-                input_gto_pyscf: list
-                    Atom's symbols and coordinates
-                system_object: Cluster
-                    Cluster objects
+            input_gto_pyscf: list
+                Atom's symbols and coordinates
+            system_object: Cluster
+                Cluster objects
             """
             system_object = self._object_system_current
 
@@ -184,8 +184,8 @@ class ElectronicEnergy:
 
         Parameters
         ----------
-            filename: str
-                File name where is save structure and energy
+        filename: str
+            File name where is save structure and energy
         """
 
         n_atoms = len(self.store_structures[0]) - 1
@@ -201,7 +201,7 @@ class ElectronicEnergy:
         Store the accept systems in a list of lists of the energy more
         a tuples with the coordinates
 
-            [[Energy, ('X', 0., 0., 0.), ('Y', 1., 0., 0.)], [ ... ], ...]
+        [[Energy, ('X', 0., 0., 0.), ('Y', 1., 0., 0.)], [ ... ], ...]
         """
         self.store_structures.append(
             [self.energy_current] + self._object_system_current.atoms
@@ -213,12 +213,12 @@ class ElectronicEnergy:
 
         Parameters
         ----------
-            mol: object
-                gto pyscf object
+        mol: object
+            gto pyscf object
 
         Returns
         -------
-            Electronic energy
+        Electronic energy
         """
         try:
             if self._method == "HF":
@@ -266,12 +266,12 @@ class ElectronicEnergy:
 
         Parameters
         ----------
-            x : array 1D
-                Possible new positions and angles
+        x : array 1D
+            Possible new positions and angles
 
         Returns
         -------
-            Electronic energy
+        Electronic energy
 
         """
         # ------------------------------------------------------

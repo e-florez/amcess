@@ -31,18 +31,18 @@ class Ascec(ElectronicEnergy):
 
         Parameters
         ----------
-            call_function : callable
-                The function to calculate electronic energy
-            bounds : array, float
-                The bounds of the search space
-            T0 : float
-                Initial temperature
-            nT : int
-                Number of temperature steps
-            dT : float
-                Temperature step
-            maxCylce : int
-                Maximum number of cycles
+        call_function : callable
+            The function to calculate electronic energy
+        bounds : array, float
+            The bounds of the search space
+        T0 : float
+            Initial temperature
+        nT : int
+            Number of temperature steps
+        dT : float
+            Temperature step
+        maxCylce : int
+            Maximum number of cycles
         """
         super().__init__(
             object_system,
@@ -79,15 +79,15 @@ class Ascec(ElectronicEnergy):
 
         Parameters
         ----------
-            function : callable
-                The function to calculate electronic energy
-            x : array, float
-                Value to move the molecules, in the 1D array
+        function : callable
+            The function to calculate electronic energy
+        x : array, float
+            Value to move the molecules, in the 1D array
 
         Returns
         -------
-            Electronic energy of the new configuration in
-            the attribute self.electronic_e
+        energy :
+            Electronic energy of the new configuration
         """
         if self._call_function == 1:
             self.energy_current = self.pyscf(x)
@@ -98,13 +98,13 @@ class Ascec(ElectronicEnergy):
 
         Parameters
         ----------
-            n : int
-                dimension of the 1D array
+        n : int
+            dimension of the 1D array
 
         Returns
         -------
-            x : array, float
-                Random value to move the molecules, in the 1D array
+        x : array, float
+            Random value to move the molecules, in the 1D array
         """
         translate = np.random.uniform(
             low=-self._sphere_radius,
@@ -115,15 +115,17 @@ class Ascec(ElectronicEnergy):
         return np.concatenate((translate, rotate))
 
     def ascec_criterion(self, T):
-        """[summary]
+        """
         ASCEC criterion for acceptance, based in Markov Chain Monte Carlo
 
         Parameters
         ----------
         x : array, float
             Value of each coordinate in the 1D array
+
         e : float
             Value of the cost function
+
         T : float
             Annealing temperature
         """

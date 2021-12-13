@@ -113,18 +113,29 @@ class SingleObjective_Edited(Objective):
     """
     Class to handle problems with one single objective function.
 
-    param func: objective function.
-    param batch_size: size of the batches (default, 1)
-    param num_cores: number of cores to use in the process of evaluating
-    the objective (default, 1).
-    param objective_name: name of the objective function.
-    param batch_type: Type of batch used. Only 'synchronous' evaluations
-    are possible at the moment.
-    param space: Not in use.
+    Parameters
+    ----------
+    param func:
+        objective function.
+    param batch_size:
+        size of the batches (default, 1)
+    param num_cores:
+        number of cores to use in the process of evaluating
+        the objective (default, 1).
+    param objective_name:
+        name of the objective function.
+    param batch_type:
+        Type of batch used. Only 'synchronous' evaluations are possible
+        at the moment.
+    param space:
+        Not in use.
 
-    .. Note:: the objective function should take 2-dimensional numpy arrays
+    Notes
+    -----
+    the objective function should take 2-dimensional numpy arrays
     as input and outputs. Each row should contain a location (in the case of
     the inputs) or a function evaluation (in the case of the outputs).
+
     """
 
     def __init__(
@@ -195,38 +206,38 @@ def solve_gaussian_processes(
     Find the global minimum of a function using Bayesian Optimization
     with Gaussian Processes [1].
 
-        Parameters
-        ----------
-        func : callable
-            The objective function to be minimized. Must be in the form
-            f(x, *args), where x is the argument in the form of a 1-D array and
-            args is a tuple of any additional fixed parameters needed to
-            completely specify the function
+    Parameters
+    ----------
+    func : callable
+        The objective function to be minimized. Must be in the form
+        `f(x, *args)`, where x is the argument in the form of a 1-D array and
+        args is a tuple of any additional fixed parameters needed to
+        completely specify the function
+    bounds : sequence, shape (n, 2)
+        Bounds for variables. (min, max) pairs for each element in x,
+        defining bounds for the objective function parameter.
+    args : tuple
+        Basis set, Cluster object, and name output file.
+    iseed : None, int
+        If seed is None ...
+    initer :
+        Number of initial evaluations (prior)
+    maxiter :
+        Maximum number of iterations
+    kargs : dict
+        Dictionary with Gaussian process parameters.
 
-        bounds : sequence, shape (n, 2)
-            Bounds for variables. (min, max) pairs for each element in x,
-            defining bounds for the objective function parameter.
+    Notes
+    -----
+    For more specific parameters, see `GPyOpt`_ official documentation
 
-        args : tuple
-            Basis set, Cluster object, and name output file.
+    [1] Gaussian Processes for Machine Learning. C. E. Rasmussen and
+        C. K. I. Williams. MIT Press, 2006.
 
-        iseed : None, int
-            If seed is None ...
-
-        **kargs : dict
-            Dictionary with Gaussian process parameters.
-            Required values:
-            - initer : Number of initial evaluations (prior)
-            - maxiter : Maximum number of iterations
-            For more specific parameters, see [2]
-
-        Returns
-        -------
-    [1] "Gaussian Processes for Machine Learning" C. E. Rasmussen and
-    C. K. I. Williams. MIT Press, 2006.
-
-    [2] GPyOpt official documentation: https://sheffieldml.github.io/GPyOpt/
+    .. _GPyOpt:
+        https://sheffieldml.github.io/GPyOpt/
     """
+
     # Check input parameters
     if not initer:
         raise ValueError("initer not defined in Bayesian Optimization")

@@ -14,10 +14,10 @@ class Atom:
 
     Examples
     --------
-    >>>Atom(element='H', x=0, y=0, z=0)
+    >>> Atom(element='H', x=0, y=0, z=0)
     {'element': 'H', 'x': 0, 'y': 0, 'z': 0}
 
-    >>>Atom('F', 0, 0, 1.97)
+    >>> Atom('F', 0, 0, 1.97)
     {'element': 'F', 'x': 0, 'y': 0, 'z': 1.97}
 
     Returns
@@ -732,6 +732,7 @@ class Cluster(Molecule):
 
     def initialize_cluster(self, max_closeness: float = 1.0) -> object:
         """Create a new cluster object which any atom is overlapped
+
         Parameters
         ----------
         max_closeness : float, optional

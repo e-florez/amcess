@@ -18,24 +18,24 @@ METHODS = {
 }
 
 
-def lennard_jones(r, epsilon=1.0, sigma=1.0):
-    """
-    Lennard-Jones potential.
+def lennard_jones(r, epsilon=1.0, sigma=1.0) -> float:
+    """Lennard-Jones potential
 
     Parameters
     ----------
     r : float
         Distance between two atoms.
-    epsilon : float
-        Depth of potential well.
-    sigma : float
-        Width of potential well.
+    epsilon : float, optional
+        Depth of potential well, by default 1.0
+    sigma : float, optional
+        Width of potential well, by default 1.0
 
     Returns
     -------
     float
-        Lennard-Jones potential.
+        Lennard-Jones potential
     """
+
     return 4 * epsilon * ((sigma / r) ** 12 - (sigma / r) ** 6)
 
 
@@ -52,29 +52,29 @@ class SearchConfig:
 
     Parameters
     ----------
-        system_object : object
-            Object made with the Cluster class
-        search_methodology : int
-            Integer associated with type of searching
-        basis : string
-            Label of basis set
-        program_electronic_structure : int
-            Integer associated with the program to make the
-            electronic structure calculations
-        outxyz : string
-            Name of the output xyz with coordinates of the
-            configurations accepts
+    system_object : object
+        Object made with the Cluster class
+    search_methodology : int
+        Integer associated with type of searching
+    basis : string
+        Label of basis set
+    program_electronic_structure : int
+        Integer associated with the program to make the
+        electronic structure calculations
+    outxyz : string
+        Name of the output xyz with coordinates of the
+        configurations accepts
 
     Returns
     -------
-        Output xyz with coordinates and electronic structure
+    Output xyz with coordinates and electronic structure
 
     Raises
     ------
-        TypeError
-            System_object isn't difinite
-            AttributeError system_object isn't difinite as
-            an object Cluster
+    TypeError
+        System_object isn't difinite
+        AttributeError system_object isn't difinite as
+        an object Cluster
     """
 
     def __init__(
@@ -139,8 +139,8 @@ class SearchConfig:
 
             Returns
             -------
-                bounds : list
-                    Bounds for the optimization algorithm
+            bounds : list
+                Bounds for the optimization algorithm
             """
             new_radius_t = self._tolerance_contour_radius + new_radius
 
@@ -329,16 +329,16 @@ class SearchConfig:
 
         Parameters
         ----------
-            tolerance : float
-                Tolerance with the radius between the mass center to the
-                furthest atom
+        tolerance : float
+            Tolerance with the radius between the mass center to the
+            furthest atom
 
         Returns
         -------
-            sphere_center : tuple
-                Mass center of the biggest molecule
-            sphere_radius : float
-                Radius between the sphere center to the furthest atom
+        sphere_center : tuple
+            Mass center of the biggest molecule
+        sphere_radius : float
+            Radius between the sphere center to the furthest atom
 
         """
         if new_tol is not None:
@@ -390,9 +390,9 @@ class SearchConfig:
 
         Parameters
         ----------
-            **kwargs : dict
-                Dictionary with the parameters to be used in the
-                search methodologies
+        kwargs : dict
+            Dictionary with the parameters to be used in the
+            search methodologies
         """
         func = (
             self._search_methodology
