@@ -1,7 +1,5 @@
-import warnings
-
 import numpy as np
-from pyscf import lib, gto, scf, dft, mp, cc
+from pyscf import gto, scf, dft, mp, cc
 
 from amcess.base_molecule import Cluster
 

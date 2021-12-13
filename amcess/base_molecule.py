@@ -41,6 +41,7 @@ class Atom:
     # ===============================================================
     @element.validator
     def _check_valid_element(self, element, value):
+        """Element: Must be valid NOT empty alphanumeric character"""
         if not value.isalnum():
             raise ValueError(
                 "\n\nMust be valid NOT empty alphanumeric character"
@@ -51,6 +52,7 @@ class Atom:
     @y.validator
     @z.validator
     def _check_valid_point(self, coordinate, value):
+        """Coordinate: Must be valid float"""
         if not isinstance(value, (int, float)):
             raise ValueError(
                 "\n\nMust be valid NOT empty float"
@@ -62,16 +64,19 @@ class Atom:
     # ===============================================================
     @property
     def atomic_mass(self) -> list:
+        """Atomic mass of the atom"""
         return atomic_mass(self.element)
 
     @property
     def symbol(self) -> list:
+        """Atomic symbol of the atom"""
         return self.element
 
     # ===============================================================
     # MAGIC METHODS
     # ===============================================================
     def __str__(self):
+        """Magic method '__str__' to print the object as a dictionary"""
         return str(attr.asdict(self))
 
 
@@ -105,6 +110,7 @@ class Molecule:
     # ===============================================================
     @_atoms.validator
     def _cehck_valid_atoms(self, attribute, atoms):
+        """check if the atoms are valid"""
         for line, atom in enumerate(atoms):
             try:
                 Atom(*atom)
@@ -118,6 +124,7 @@ class Molecule:
 
     @_charge.validator
     def _check_valid_charge(self, attribute, charge):
+        """check if the charge is valid"""
         if not isinstance(charge, int):
             raise ValueError(
                 "\n\ncharge must be an integer "
@@ -126,6 +133,7 @@ class Molecule:
 
     @_multiplicity.validator
     def _check_valid_multiplicity(self, attribute, multiplicity):
+        """check if the multiplicity is valid"""
         if not isinstance(multiplicity, int) or multiplicity < 1:
             raise ValueError(
                 "\n\nmultiplicity must be an integer larger than zero (0)"
@@ -154,9 +162,11 @@ class Molecule:
     # MAGIC METHODS
     # ===============================================================
     def __add__(self, other) -> object:
+        """Magic method '__add__' to add two molecules, return a new one"""
         return self.add_molecule(other)
 
     def __mul__(self, value: int):
+        """Magic method '__mul__' to multiply a molecule by a number"""
         return value * self
 
     def __rmul__(self, value: int):
@@ -186,6 +196,7 @@ class Molecule:
         return new_cluster
 
     def __str__(self):
+        """Magic method '__str__' to print the Molecule in XYZ format"""
         return self.xyz
 
     # ===============================================================
@@ -193,10 +204,12 @@ class Molecule:
     # ===============================================================
     @property
     def atoms(self) -> list:
+        """Return the list of atoms"""
         return self._atoms
 
     @atoms.setter
     def atoms(self, *args, **kwargs) -> None:
+        """Set the list of atoms"""
         raise AttributeError(
             "\n\nyou cannot reset 'atoms'. Consider create a new instance \n"
         )
@@ -215,14 +228,17 @@ class Molecule:
 
     @property
     def atomic_masses(self) -> list:
+        """Atomic mass of the molecule"""
         return [Atom(*atom).atomic_mass for atom in self.atoms]
 
     @property
     def charge(self) -> int:
+        """Total molecular/atomic charge"""
         return self._charge
 
     @charge.setter
     def charge(self, new_charge) -> int:
+        """Set the total molecular/atomic charge"""
         if not isinstance(new_charge, int):
             raise ValueError(
                 "\n\ncharge must be an integer "
@@ -232,6 +248,7 @@ class Molecule:
 
     @property
     def coordinates(self) -> list:
+        """Return the list of coordinates"""
         return [c[1:] for c in self.atoms]
 
     @property
@@ -247,10 +264,12 @@ class Molecule:
 
     @property
     def multiplicity(self) -> int:
+        """Return the multiplicity"""
         return self._multiplicity
 
     @multiplicity.setter
     def multiplicity(self, new_multiplicity) -> int:
+        """Set the multiplicity"""
         if not isinstance(new_multiplicity, int) or new_multiplicity < 1:
             raise ValueError(
                 "\n\nmultiplicity must be an integer larger than zero (0)"
@@ -280,14 +299,17 @@ class Molecule:
 
     @property
     def symbols(self) -> list:
+        """Return the list of symbols"""
         return [str(s[0]).title() for s in self.atoms]
 
     @property
     def total_atoms(self) -> int:
+        """Return the total number of atoms"""
         return len(self.atoms)
 
     @property
     def total_mass(self) -> float:
+        """Return the total mass of the molecule"""
         return sum(self.atomic_masses)
 
     @property
@@ -320,6 +342,7 @@ class Molecule:
 
     @property
     def principal_axes(self) -> list:
+        """Principal axes for according to Jacobi coordinates"""
         return [
             tuple(c)
             for c in (
@@ -372,6 +395,7 @@ class Molecule:
         return self.__class__(total_atoms)
 
     def add_molecule(self, other) -> object:
+        """adding molecule return a new Cluster object"""
         if not isinstance(other, Molecule):
             raise TypeError(
                 "\nOnly type 'Molecule', list or dict could be added"
@@ -407,6 +431,7 @@ class Molecule:
         return self.atoms[atom]
 
     def remove_atom(self, atom: int) -> object:
+        """remove one atom"""
         if not isinstance(atom, int) or atom >= self.total_atoms:
             raise IndexError(
                 f"\nMolecule with {self.total_atoms} total atoms "
@@ -525,11 +550,15 @@ class Cluster(Molecule):
     # MAGIC METHODS
     # ===============================================================
     def __add__(self, other):
+        """Adding two molecules/clusters, return a new Cluster object"""
         # ! Martin
         # ! ver en que puede se diferenciar de Molecule
+        # * la idea es que debe ser similar para que ambos
+        # * creen una nueva instancia nueva de Cluster
         return self.add_molecule(other)
 
     def __mul__(self, value: int):
+        """multiply the cluster by a number"""
         return value * self
 
     def __rmul__(self, value: int):
@@ -558,6 +587,7 @@ class Cluster(Molecule):
         return new_cluster
 
     def __str__(self):
+        """print the cluster"""
         cluster_dict: dict = self._cluster_dict
 
         cluster_string: str = (
@@ -580,14 +610,17 @@ class Cluster(Molecule):
     # ===============================================================
     @property
     def cluster_dictionary(self) -> dict:
+        """return the cluster dictionary"""
         return self._cluster_dict
 
     @property
     def freeze_molecule(self) -> int:
+        """return a list with freezed molecules"""
         return self._freeze_molecule
 
     @freeze_molecule.setter
     def freeze_molecule(self, values) -> None:
+        """set the freeze molecules"""
         if isinstance(values, list):
             self._freeze_molecule = values
         else:
@@ -595,24 +628,29 @@ class Cluster(Molecule):
 
     @property
     def random_generator(self) -> np.random.Generator:
+        """return the random generator"""
         # self._random_gen: np.random.Generator = np.random.default_rng(seed)
         return np.random.default_rng(self.seed)
 
     @property
     def seed(self) -> int:
+        """return the seed for the random generator"""
         return self._seed
 
     @seed.setter
     def seed(self, new_seed: int) -> None:
+        """set the seed for the random generator"""
         self._seed = new_seed
         self._random_gen = np.random.default_rng(new_seed)
 
     @property
     def sphere_center(self) -> tuple:
+        """return the sphere center for the Cluster boundary conditions"""
         return self._sphere_center
 
     @sphere_center.setter
     def sphere_center(self, new_center: tuple) -> None:
+        """set the sphere center for the Cluster boundary conditions"""
         if len(new_center) != 3:
             raise ValueError(
                 "\n\nThe Sphere center must be a tuple with three elements: "
@@ -624,10 +662,12 @@ class Cluster(Molecule):
 
     @property
     def sphere_radius(self) -> float:
+        """return the sphere radius for the Cluster boundary conditions"""
         return self._sphere_radius
 
     @sphere_radius.setter
     def sphere_radius(self, new_radius: float) -> None:
+        """set the sphere radius for the Cluster boundary conditions"""
         if not isinstance(new_radius, (int, float)) or new_radius < 0.9:
             raise ValueError(
                 "\n\nThe Sphere  Radius must be larger than 1 Angstrom"
@@ -638,6 +678,7 @@ class Cluster(Molecule):
 
     @property
     def total_molecules(self) -> int:
+        """return the total number of molecules in the cluster"""
         return len(self._cluster_dict)
 
     # ===============================================================
@@ -736,6 +777,7 @@ class Cluster(Molecule):
         )
 
     def get_molecule(self, molecule: int):
+        """extract a molecule from the cluster and return a new Cluster"""
         if molecule not in self.cluster_dictionary:
             raise IndexError(
                 f"\nMolecule with {self.total_molecules} total molecules "
@@ -996,6 +1038,7 @@ class Cluster(Molecule):
             )
 
     def remove_molecule(self, molecule: int) -> object:
+        """Removing molecule from cluster"""
         if molecule not in self.cluster_dictionary:
             raise IndexError(
                 f"\nMolecule with {self.total_molecules} total atoms "

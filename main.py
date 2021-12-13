@@ -654,34 +654,44 @@ def pipeline_dual():
 
     # hf_dimer = Cluster(hf, hf_1)
 
-    water = {
-        "atoms": [
-            ("O", 0, 0, 0),
-            ("H", 0.58708, 0.75754, 0),
-            ("H", -0.58708, 0.75754, 0),
-        ],
-        "charge": 0,
-        "multiplicity": 1,
-    }
+    # water = {
+    #     "atoms": [
+    #         ("O", 0, 0, 0),
+    #         ("H", 0.58708, 0.75754, 0),
+    #         ("H", -0.58708, 0.75754, 0),
+    #     ],
+    #     "charge": 0,
+    #     "multiplicity": 1,
+    # }
 
-    water_dimer = Cluster(water, water)
-    water_dimer.initialize_cluster
+    # water_dimer = Cluster(water, water)
+    # water_dimer.initialize_cluster
 
-    print(water_dimer.xyz)
+    # print(water_dimer.xyz)
+
+    oxygen = [("O", 0, 0, 0)]
+    hydrogen = [("H", 0, 0, 0)]
+
+    water = Cluster(oxygen, hydrogen, hydrogen)
+
+    water.sphere_center = (0, 0, 0)
+    water.sphere_radius = 1.0
+
+    water.initialize_cluster()
 
     search = ["ASCEC", "dual_annealing", "SHGO", "Bayesian"]
 
     simulation = engine(
-        # hf_dimer,
-        water_dimer,
-        # search_methodology="ASCEC",
-        search_methodology=search[1],
+        water,
+        # water_dimer,
+        search_methodology=search[0],
     )
 
-    simulation.run(maxfun=1, maxiter=1)  #!da
-    # simulation.run(gp_params={"initer": 3, "maxiter": 3})  # Bayesian
-    # simulation.run(initer=10, maxiter=10) #bayesian
-    # simulation.run(nT=20, maxCycle=50) #ASCEC
+    simulation.run(T0=1000, dT=0.2, nT=20, maxCycle=100)  # ASCEC
+    # simulation.run(maxfun=10, maxiter=10)  #!da
+    # simulation.run(sampling_method="sobol", n=1)
+    # simulation.run(gp_params={"initer": 10, "maxiter": 10})  # Bayesian
+    # simulation.run(initer=10, maxiter=10)  # bayesian
 
 
 # -------------------------------------------------------------------
