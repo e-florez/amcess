@@ -1144,6 +1144,79 @@ class Cluster(Molecule):
             sphere_center=new_cluster.sphere_center,
         )
 
+    def center_radius_sphere(self, add_tolerance_radius: float = 0.5):
+        """
+        Define a spherical outline that contains our cluster
+
+        Parameters
+        ----------
+            add_tolerance_radius : float
+                Tolerance with the radius between the mass center to the
+                furthest atom
+
+        Returns
+        -------
+            sphere_center : tuple
+                Mass center of the biggest molecule
+            sphere_radius : float
+                Radius between the sphere center to the furthest atom
+
+        """
+        # ----------------------------------------------------------------
+        # Verfication
+        if not isinstance(add_tolerance_radius, float):
+            raise TypeError(
+                "\n\nThe tolerance for radius is not a float"
+                f"\nplease, check: '{type(add_tolerance_radius)}'\n"
+            )
+        # ---------------------------------------------------------------
+        maximum_r_cm = 0.0
+        molecule = 0
+        max_atoms = 0
+        # ---------------------------------------------------------------
+        # The biggest molecule
+        molecules_number: Cluster = self.total_molecules
+        for i in range(molecules_number):
+            if self.get_molecule(i).total_atoms > max_atoms:
+                max_atoms = self.get_molecule(i).total_atoms
+                molecule = i
+        # ---------------------------------------------------------------
+        # Define sphere center above the cm of the biggest molecule
+        center = self.get_molecule(molecule).center_of_mass
+        # ---------------------------------------------------------------
+        # Radius between the sphere center to the furthest atom
+        for xyz in self.coordinates:
+            temporal_r = np.linalg.norm(
+                np.asarray(self._sphere_center) - np.asarray(xyz)
+            )
+            if temporal_r > maximum_r_cm:
+                maximum_r_cm = temporal_r
+        # ---------------------------------------------------------------
+        # Move the biggest molecule to the first position in the cluster
+        # object, if is necessary
+        if molecule != 0:
+            new_geom = dict()
+            for i in range(molecules_number):
+                if i == 0:
+                    new_geom[i] = self.get_molecule(molecule)
+                elif i == molecule:
+                    new_geom[i] = self.get_molecule(0)
+                else:
+                    new_geom[i] = self.get_molecule(i)
+            # ---------------------------------------------------------------
+            # Instantiation of Cluster object with radius and center sphere
+            return Cluster(
+                *new_geom.values(),
+                sphere_center=center,
+                sphere_radius=maximum_r_cm,
+            )
+        else:
+            return Cluster(
+                self.atoms,
+                sphere_center=center,
+                sphere_radius=maximum_r_cm,
+            )
+
 
 # -------------------------------------------------------------
 # -------------------------------------------------------------

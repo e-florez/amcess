@@ -11,8 +11,6 @@ class ElectronicEnergy:
         self,
         object_system: object,
         search_type: str,
-        sphere_center: tuple,
-        sphere_radius: float,
         methodology: str,
         basis_set: str,
         max_closeness: float = 1.0,
@@ -36,8 +34,6 @@ class ElectronicEnergy:
         self._object_system_current = object_system
 
         self._search_type = search_type
-        self._sphere_center = sphere_center
-        self._sphere_radius = sphere_radius
 
         self._method = methodology.split()[0]
         if len(methodology.split()) > 1:
@@ -108,8 +104,8 @@ class ElectronicEnergy:
             # New object Cluster with new geometries
             self.object_system_current = Cluster(
                 *new_geom.values(),
-                sphere_radius=self._sphere_radius,
-                sphere_center=self._sphere_center
+                sphere_radius=system_object._sphere_radius,
+                sphere_center=system_object._sphere_center
             )
 
             # ------------------------------------------------------------

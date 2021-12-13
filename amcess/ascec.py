@@ -12,8 +12,6 @@ class Ascec(ElectronicEnergy):
         self,
         object_system: object,
         search_type: str,
-        sphere_center: tuple,
-        sphere_radius: float,
         methodology: str,
         basis_set: str,
         call_function: int,
@@ -46,8 +44,6 @@ class Ascec(ElectronicEnergy):
         super().__init__(
             object_system,
             search_type,
-            sphere_center,
-            sphere_radius,
             methodology,
             basis_set,
             max_closeness,
@@ -106,8 +102,8 @@ class Ascec(ElectronicEnergy):
                 Random value to move the molecules, in the 1D array
         """
         translate = np.random.uniform(
-            low=-self._sphere_radius,
-            high=self._sphere_radius,
+            low=-self._object_system_current._sphere_radius,
+            high=self._object_system_current._sphere_radius,
             size=(int(n / 2),),
         )
         rotate = np.random.uniform(low=-180.0, high=180.0, size=(int(n / 2),))

@@ -308,86 +308,44 @@ class SearchConfig:
         search_methodology: str = "ASCEC",
         methodology: str = "HF",
         basis: str = "sto-3g",
-        tolerance_contour_radius: float = 1.0,
         outxyz: str = "configurations.xyz",
         cost_function="pyscf",
     ) -> None:
 
         # Verfication and assigment of variables (type, value)
-        self.system_object = system_object
+        # -- Cluster Object
+        #    Calculate center and radius sphere when are null
+        if system_object._sphere_radius is None:
+            self.system_object = system_object.center_radius_sphere()
+        else:
+            self.system_object = system_object
+
         self.search_type = search_methodology
         self.methodology = methodology
         self.basis_set = basis
         self.output_name = outxyz
-        self.tolerance_contour_radius = tolerance_contour_radius
+        # self.tolerance_contour_radius = tolerance_contour_radius
         self.func_cost = cost_function
 
         # Check Overlaping
         self._system_object.initialize_cluster()
 
         # Build bounds, format for scipy functions
-        if system_object._sphere_radius is None:
-            self.spherical_contour_cluster()
-        else:
-            # ! arreglar esto, al fin que va a pasar con sphere_center y radius
-            # ! y eso articular con bounds
-            self._sphere_center = system_object.sphere_center
-            self._sphere_radius = system_object.sphere_radius
-            new_radius_t = (
-                self._sphere_radius
-            )  # self._tolerance_contour_radius + new_radius
+        sphere_radius = self._system_object._sphere_radius
 
-            bound_translate = [
-                (-new_radius_t, new_radius_t),
-                (-new_radius_t, new_radius_t),
-                (-new_radius_t, new_radius_t),
-            ]
-            bound_rotate = [(-180, 180), (-180, 180), (-180, 180)]
+        bound_translate = [
+            (-sphere_radius, sphere_radius),
+            (-sphere_radius, sphere_radius),
+            (-sphere_radius, sphere_radius),
+        ]
+        bound_rotate = [(-180, 180), (-180, 180), (-180, 180)]
 
-            bound_translate = bound_translate * (
-                self._system_object.total_molecules - 1
-            )
-            bound_rotate = bound_rotate * (
-                self._system_object.total_molecules - 1
-            )
+        bound_translate = bound_translate * (
+            self._system_object.total_molecules - 1
+        )
+        bound_rotate = bound_rotate * (self._system_object.total_molecules - 1)
 
-            self._bounds = bound_translate + bound_rotate
-
-    # ===============================================================
-    # Decorators
-    # ===============================================================
-
-    def bounds_sphere_change(function_change_radius):
-        def new_bounds(self, new_radius):
-            """
-            Define the bounds for the optimization algorithm
-
-            Returns
-            -------
-                bounds : list
-                    Bounds for the optimization algorithm
-            """
-            new_radius_t = self._tolerance_contour_radius + new_radius
-
-            bound_translate = [
-                (-new_radius_t, new_radius_t),
-                (-new_radius_t, new_radius_t),
-                (-new_radius_t, new_radius_t),
-            ]
-            bound_rotate = [(-180, 180), (-180, 180), (-180, 180)]
-
-            bound_translate = bound_translate * (
-                self._system_object.total_molecules - 1
-            )
-            bound_rotate = bound_rotate * (
-                self._system_object.total_molecules - 1
-            )
-
-            self._bounds = bound_translate + bound_rotate
-
-            return function_change_radius(self, new_radius)
-
-        return new_bounds
+        self._bounds = bound_translate + bound_rotate
 
     # ===============================================================
     # PROPERTIES
@@ -484,59 +442,6 @@ class SearchConfig:
         self._basis_set = new_basis_set
 
     @property
-    def tolerance_contour_radius(self):
-        return self._tolerance_contour_radius
-
-    @tolerance_contour_radius.setter
-    def tolerance_contour_radius(self, new_tol_radius: float):
-        if not isinstance(new_tol_radius, float):
-            raise TypeError(
-                "\n\nThe new tolerance radius is not a float"
-                f"\nplease, check: '{type(new_tol_radius)}'\n"
-            )
-        self._tolerance_contour_radius = new_tol_radius
-
-    @property
-    def sphere_center(self) -> tuple:
-        return self._sphere_center
-
-    @sphere_center.setter
-    def sphere_center(self, new_center: tuple) -> None:
-        if not isinstance(new_center, tuple):
-            raise TypeError(
-                "\n\nThe Sphere center must be a tuple with three elements: "
-                "(float, float, float)"
-                f"\nplease, check: '{type(new_center)}'\n"
-            )
-        if len(new_center) != 3:
-            raise ValueError(
-                "\n\nThe Sphere center must be a tuple with three elements: "
-                "(float, float, float)"
-                f"\nplease, check: '{new_center}'\n"
-            )
-
-        self._sphere_center = new_center
-
-    @property
-    def sphere_radius(self) -> float:
-        return self._sphere_radius
-
-    @sphere_radius.setter
-    @bounds_sphere_change
-    def sphere_radius(self, new_radius: float) -> None:
-        if not isinstance(new_radius, float):
-            raise TypeError(
-                "\n\nThe Sphere  Radius must be a float"
-                f"\nplease, check: '{type(new_radius)}'\n"
-            )
-        self._sphere_radius = new_radius + self._tolerance_contour_radius
-        if self._sphere_radius <= self._tolerance_contour_radius:
-            raise ValueError(
-                "\n\nThe Sphere Radius more tolerance must be larger than 1 A"
-                f"\nplease, check: '{new_radius}'\n"
-            )
-
-    @property
     def func_cost(self):
         return self._func_cost
 
@@ -547,67 +452,6 @@ class SearchConfig:
     # ===============================================================
     # Methods
     # ===============================================================
-
-    def spherical_contour_cluster(self, new_tol: float = None):
-        """
-        Define a spherical outline that contains our cluster
-
-        Parameters
-        ----------
-            tolerance : float
-                Tolerance with the radius between the mass center to the
-                furthest atom
-
-        Returns
-        -------
-            sphere_center : tuple
-                Mass center of the biggest molecule
-            sphere_radius : float
-                Radius between the sphere center to the furthest atom
-
-        """
-        if new_tol is not None:
-            self._tolerance_contour_radius = new_tol
-
-        max_distance_cm = 0.0
-        molecule = 0
-        max_atoms = 0
-
-        # The biggest molecule
-        for i in range(self._system_object.total_molecules):
-            if self._system_object.get_molecule(i).total_atoms > max_atoms:
-                max_atoms = self._system_object.get_molecule(i).total_atoms
-                molecule = i
-
-        self._sphere_center = self._system_object.get_molecule(
-            molecule
-        ).center_of_mass
-
-        # Move the biggest molecule to initio in the cluster object,
-        # if is necessary
-        if molecule != 0:
-            new_geom = dict()
-            for i in range(self._system_object.total_molecules):
-                if i == 0:
-                    new_geom[i] = self._system_object.get_molecule(molecule)
-                elif i == molecule:
-                    new_geom[i] = self._system_object.get_molecule(0)
-                else:
-                    new_geom[i] = self._system_object.get_molecule(i)
-
-            self.system_object = Cluster(
-                *new_geom.values(), sphere_center=self._sphere_center
-            )
-
-        # Radius between the sphere center to the furthest atom
-        for xyz in self._system_object.coordinates:
-            temp_r = np.linalg.norm(
-                np.asarray(self._sphere_center) - np.asarray(xyz)
-            )
-            if temp_r > max_distance_cm:
-                max_distance_cm = temp_r
-
-        self.sphere_radius = max_distance_cm
 
     def run(self, **kwargs):
         """
@@ -630,8 +474,6 @@ class SearchConfig:
             self._search = func(
                 object_system=self._system_object,
                 search_type=self._search_methodology,
-                sphere_center=self._sphere_center,
-                sphere_radius=self._sphere_radius,
                 methodology=self._methodology,
                 basis_set=self._basis_set,
                 call_function=1,
@@ -652,8 +494,6 @@ class SearchConfig:
                 obj_ee = ElectronicEnergy(
                     self._system_object,
                     self._search_methodology,
-                    self._sphere_center,
-                    self._sphere_radius,
                     self._methodology,
                     self._basis_set,
                 )
