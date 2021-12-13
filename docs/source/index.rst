@@ -10,47 +10,119 @@
    :alt: Atomic and Molecular Cluster Energy Surface Sample (AMCESS)
    :align: center
 
-===================================================
-Atomic and Molecular Cluster Energy Surface Sampler
-===================================================
 
-AMCCES is an object-oriented Python package to sample the Potential Energy 
-Surface (PES) for atomic and molecular cluster. The package provides a simple, 
-lightweight, and efficient platform for exploring the PES.
+.. raw:: html
 
+   <div>
+      <h1 style=font-size:45px align="center"> 
+      Atomic and Molecular Cluster Energy Surface Sampler 
+   </h1>
+   </div>
 
-It can explore the PES by sampling the potential energy surface using 
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+   :titlesonly:   
 
-   * Simulated annealing methods
+   Home <self>
+   About AMCESS <about>
+   Basic Example <quickstart>
+   modules
+   support
 
-   * Bayesian methods
+AMCESS
+======
+
+is an object-oriented Python package to sample the Potential Energy 
+Surface (PES) for atomic and molecular cluster. The main goal of the AMCESS 
+project is to provide a simple, lightweight, and efficient platform to explore
+the PES. The package is designed to be used in a Python environment. 
+
+Here we present a user-friendly, simple, and efficient Python package to
+sample the Potential Energy Surface (PES) for atomic and molecular cluster.
+It is a fast and affordable tool for novice users and for experts who want
+to produce high-quality PES samples. 
+
+The package only requires a a minimal input information, such as the 
+number of atoms and their coordinates. Despite its click-and-go appeal, 
+the package is designed to be used and customized for any specific case. 
+
+AMCESS can explore the the potential energy surface using the following 
+techniques:
+
+   * Stochastic methods: Simulated Annealing and Parallel Tempering
+
+      * Metropolis or Delta Energy acceptance criteria   
+
+   * Response methods: Bayesian Optimization
+   * Combinatorial topology: simplicial homology global optimization (SHGO)
 
 AMCESS calculates the energy using `PySCF <https://pyscf.org/>`_, the 
 Python-based Simulations of Chemistry Framework. PySCF is an efficient 
 platform for quantum chemistry calculations that can be used to simulate the
-properties of molecules, crystals, and custom Hamiltonians using mean-field 
-and post-mean-field methods [1]_. 
+properties of molecules and crystals using mean-field and post-mean-field 
+methods [1]_. 
+
+In addition to the above, AMCESS can also calculate the energy by using any 
+input function that takes in a array of coordinates (Atom type and coordinates) 
+and returns the energy of each configuration.
+
+The basic (:doc:`examples <quickstart>`) demonstrates some of these 
+features. Read more on :doc:`Installation <quickstart>`.
+
+A previous version of AMCESS, called as ASCEC :cite:`ascec` (spanish acronym 
+Annealing Simulado con Energía Cuántica) was written in FORTRAN77 and 
+was successfully used in the wide range of research and academic applications. 
+From atomic cluster to molecular cluster, the ASCEC package has produced 
+novel results (structure never seen before) published in the literature. 
+Some of the most notable results are:
+
+   1. Structural studies of the water tetramer :cite:`w4`
+   2. Lithium and Bimetallic Lithium-Sodium Clusters :cite:`li-na_cluster`
+   3. Structural Characterization of the (Methanol) :math:`_4` Potential Energy Surface :cite:`methanol4`
+   4. Insights into the structure and stability of the carbonic acid dimer :cite:`ca_dimer`
+   5. Structural studies of the water hexamer :cite:`w6`
+   6. Structure and Reactivity of the :math:`^1Au_6Pt` Clusters :cite:`aupt`
+   7. Understanding microsolvation of Li+: structural and energetical analyses :cite:`li+`
+   8. Microsolvation of dimethylphosphate: a molecular model for the interaction of cell membranes with water
+   9. Microsolvation of Mg 2+, Ca 2+: strong influence of formal charges in hydrogen bond networks
+   10. A combined experimental and computational study of the molecular interactions between anionic ibuprofen and water
+   11. Potential Energy Surfaces of WC6 Clusters in Different Spin States
+   12. Microsolvation of methylmercury: structures, energies, bonding and NMR constants (199 Hg, 13 C and 17 O)
+   13. How many water molecules does it take to dissociate HCl?
+
+
+Availability
+============
+
+AMCESS can be easily installed with its dependencies using the pip or conda 
+package managers. All source code is available under the GNU General Public 
+License, version 3 from `GitLab <https://gitlab.com/ADanianZE/amcess>`_
+and the `Python Package index <pypi.org/project/amcess>`_.
+
+Participating
+=============
+
+Ask questions on the AMCESS Discord Server to talk with other users and 
+developers. (In order to join our Discord server, use the invitation link 
+https://discord.gg/AxxTsfDJwxE)
+
+Please report bugs or enhancement requests through the Issue Tracker.
+
+AMCESS is open source and welcomes your contributions. Fork the repository on 
+GitLab and submit a pull request. Participate on the developer Discord Server.
 
 
 
 .. rubric:: Footnotes
 
-.. [1] To ensure ease of extensibility, almost all of the features in PySCF are implemented in Python, while computationally critical parts are implemented and optimized in C. Using this combined Python/C implementation, the package is as efficient as the best existing C or Fortran based quantum chemistry programs. In addition to its core libraries, PySCF supports a rich ecosystem of Extension modules.
+.. [1] All of the features in PySCF are implemented in Python, while computationally critical parts are implemented and optimized in C. Using this combined Python/C implementation, the package is as efficient as the best existing C or Fortran based quantum chemistry programs.
 
+References
+==========
+.. bibliography:: ./refs.bib
+   :style: unsrt
 
-
-
-
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Contents:
-   :titlesonly:   
-
-   Home <self>
-   about
-   support
-   modules
 
 Indices and tables
 ==================
@@ -58,3 +130,4 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+

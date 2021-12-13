@@ -1,12 +1,10 @@
-	
+============
+About AMCESS
+============
 
-Installation
-************
+Community
+=========
 
-At the command line:
 
-easy_install crawler
-
-Or, if you have pip installed:
-
-pip install crawler
+AMCESS is developed and maintained as a freely available, open-source project
+by a global community of scientists
