@@ -119,8 +119,6 @@ class Ascec(ElectronicEnergy):
 
         Parameters
         ----------
-        x : array, float
-            Value of each coordinate in the 1D array
         e : float
             Value of the cost function
         T : float
@@ -134,7 +132,6 @@ class Ascec(ElectronicEnergy):
                 np.abs(self.energy_current - self.e_before)
                 / self.energy_current
             )
-            # TKb = T * constants.k  # Boltzmann constant [J/K]
             TKb = T * KB  # Boltzmann constant [Eh/K]
             exp = np.exp(-DE / TKb)
             if DE < exp:
