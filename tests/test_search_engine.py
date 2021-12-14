@@ -611,7 +611,7 @@ def test_SC_run_ascec_method(molecule1, molecule2):
     """
     Test SC.run method for ascec
     """
-    kwargs = {"nT": 1, "maxCycle": 10}
+    kwargs = {"number_temperatures": 1, "maxCycles": 10}
     SearchConfig(Cluster(molecule1, molecule2)).run(**kwargs)
     with open("configurations.xyz", "r") as f:
         readl = f.readline()
