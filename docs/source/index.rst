@@ -70,7 +70,7 @@ and returns the energy of each configuration.
 The basic (:doc:`examples <quickstart>`) demonstrates some of these 
 features. Read more on :doc:`Installation <quickstart>`.
 
-A previous version of AMCESS, called as ASCEC :cite:`ascec` (spanish acronym 
+A previous version of AMCESS, called ASCEC :cite:`ascec` (spanish acronym 
 Annealing Simulado con Energía Cuántica) was written in FORTRAN77 and 
 was successfully used in the wide range of research and academic applications. 
 From atomic cluster to molecular cluster, the ASCEC package has produced 
