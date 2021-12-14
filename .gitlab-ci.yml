@@ -70,7 +70,7 @@ pages:
   - source venv/bin/activate
   - cd docs/
   - ls -l
-  - sphinx-build -b html . ../public
+  - sphinx-build -b html ./source/ ../public
   - cd ../
   artifacts:
     paths:

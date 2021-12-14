@@ -25,9 +25,9 @@
    :titlesonly:   
 
    Home <self>
-   About AMCESS <about>
+   About <about>
    Basic Example <quickstart>
-   modules
+   AMCESS API <modules>
    support
 
 AMCESS
@@ -82,15 +82,13 @@ Some of the most notable results are:
    3. Structural Characterization of the (Methanol) :math:`_4` Potential Energy Surface :cite:`methanol4`
    4. Insights into the structure and stability of the carbonic acid dimer :cite:`ca_dimer`
    5. Structural studies of the water hexamer :cite:`w6`
-   6. Structure and Reactivity of the :math:`^1Au_6Pt` Clusters :cite:`aupt`
-   7. Understanding microsolvation of Li+: structural and energetical analyses :cite:`li+`
-   8. Microsolvation of dimethylphosphate: a molecular model for the interaction of cell membranes with water
-   9. Microsolvation of Mg 2+, Ca 2+: strong influence of formal charges in hydrogen bond networks
-   10. A combined experimental and computational study of the molecular interactions between anionic ibuprofen and water
-   11. Potential Energy Surfaces of WC6 Clusters in Different Spin States
-   12. Microsolvation of methylmercury: structures, energies, bonding and NMR constants (199 Hg, 13 C and 17 O)
-   13. How many water molecules does it take to dissociate HCl?
+   6. Understanding microsolvation of Li+: structural and energetical analyses :cite:`li+`
+   7. Microsolvation of dimethylphosphate: a molecular model for the interaction of cell membranes with water :cite:`dmp`
+   8. A combined experimental and computational study of the molecular interactions between anionic ibuprofen and water :cite:`ibuprofen`
+   9. Microsolvation of methylmercury: structures, energies, bonding and NMR constants (199 Hg, 13 C and 17 O) :cite:`florez`
+   10. How many water molecules does it take to dissociate HCl? :cite:`hcl`
 
+Read more on `ASCEC publications <https://scholar.google.com/scholar?start=0&q=%22ascec%22,+annealing&hl=en&as_sdt=0,5>`_.
 
 Availability
 ============

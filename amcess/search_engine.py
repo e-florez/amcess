@@ -22,6 +22,7 @@ class SearchConfig:
 
     Parameters
     ----------
+
     system_object : object
         Object made with the Cluster class
     search_methodology : int
@@ -212,8 +213,8 @@ class SearchConfig:
         Parameters
         ----------
         kwargs : dict
-            Dictionary with the parameters to be used in the
-            search methodologies
+            Dictionary with the parameters to be used in the search
+            methodologies
         """
         func = (
             self._search_methodology

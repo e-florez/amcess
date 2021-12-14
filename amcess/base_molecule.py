@@ -4,7 +4,7 @@ import attr
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from data.atomic_data import atomic_mass
+from .data.atomic_data import atomic_mass
 
 
 @attr.s(frozen=True)

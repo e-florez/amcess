@@ -44,6 +44,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.doctest",
     "sphinx.ext.mathjax",
+    "sphinx.ext.viewcode",
     "sphinx.ext.githubpages",
     "sphinx.ext.intersphinx",
     "sphinxcontrib.bibtex",

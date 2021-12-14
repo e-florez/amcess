@@ -29,7 +29,7 @@ def system_hf():
     # print(w.rotate(1, x=0, y=0, z=45))
     # print()
 
-    for Temperature in range(20):
+    for i in range(20):
         ang = 45 * (i + 1)
         print(hf)
         hf = hf.rotate(0, x=0, y=0, z=45).translate(0, x=0.3, y=0, z=0)
@@ -687,7 +687,7 @@ def pipeline_dual():
         search_methodology=search[0],
     )
 
-    simulation.run(T0=1000, dT=0.2, nT=20, maxCycle=100)  # ASCEC
+    simulation.run(T0=1000, dT=0.2, nT=5, maxCycle=10)  # ASCEC
     # simulation.run(maxfun=10, maxiter=10)  #!da
     # simulation.run(sampling_method="sobol", n=1)
     # simulation.run(gp_params={"initer": 10, "maxiter": 10})  # Bayesian

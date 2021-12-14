@@ -11,6 +11,7 @@ PATH = pathlib.Path(os.path.abspath(os.path.dirname(__file__)))
 
 
 REQUIREMENTS = [
+    "attrs==21.2",
     "scipy==1.7.1",
     "numpy==1.21.2",
     "pyscf==1.7.6.post1",

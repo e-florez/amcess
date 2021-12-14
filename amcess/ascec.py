@@ -118,7 +118,6 @@ class Ascec(ElectronicEnergy):
         KB: float = 3.166811563e-6  # Eh/K
         accepted = False
         lower_energy = False
-        print(" vamos ")
         if self.energy_current < self.e_before:
             accepted = True
             lower_energy = True
