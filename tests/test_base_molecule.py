@@ -1147,3 +1147,22 @@ def test_cluster_translate_fails():
         mol.translate(-2, x=90)
     with pytest.raises(IndexError):
         mol.translate(10, x=90)
+
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2, molecule3",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            [("H", 0.0, 0.0, 3.0), ("H", 0.78, 0.0, 3.0)],
+        ),
+    ],
+)
+def test_the_biggest_to_initio(molecule1, molecule2, molecule3):
+    """
+    Test of method spherical_contour_cluster, re--sort molecule
+    """
+    obj_cluster = Cluster(molecule1, molecule2, molecule3)
+    obj_cluster = obj_cluster.center_radius_sphere()
+    assert obj_cluster.get_molecule(0).atoms == molecule2

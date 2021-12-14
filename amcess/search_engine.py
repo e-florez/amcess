@@ -1,6 +1,3 @@
-from copy import deepcopy
-
-import numpy as np
 from scipy.optimize import shgo
 from scipy.optimize import dual_annealing
 
@@ -197,7 +194,7 @@ class SearchConfig:
     def methodology(self, new_methodology):
         if not isinstance(new_methodology, str):
             raise TypeError(
-                "\n\nThe new name to basis set is not a string"
+                "\n\nThe new name to methodology is not a string"
                 f"\nplease, check: '{type(new_methodology)}'\n"
             )
 
@@ -223,6 +220,12 @@ class SearchConfig:
 
     @func_cost.setter
     def func_cost(self, new_func_cost):
+        if not isinstance(new_func_cost, str):
+            raise TypeError(
+                "\n\nThe new cost function is not a string"
+                f"\nplease, check: '{type(new_func_cost)}'\n"
+            )
+
         self._func_cost = new_func_cost
 
     # ===============================================================

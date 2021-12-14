@@ -1,8 +1,6 @@
 import numpy as np
 from amcess.electronic_energy import ElectronicEnergy
 
-from copy import deepcopy
-
 
 class Ascec(ElectronicEnergy):
     """

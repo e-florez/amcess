@@ -1254,7 +1254,7 @@ class Cluster(Molecule):
             # ---------------------------------------------------------------
             # Instantiation of Cluster object with radius and center sphere
             return Cluster(
-                *new_geom._cluster_dict.values(),
+                *new_geom.values(),
                 sphere_center=center,
                 sphere_radius=maximum_r_cm,
             )
