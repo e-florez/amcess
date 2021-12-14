@@ -392,3 +392,138 @@ def test_metropolis_else(
     obj_sc.energy_current = 1.0
     obj_sc.energy_before = 1.0
     obj_sc.metropolis()
+
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2, method_min, dft, bases, expected",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.00, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 0.0), ("H", 0.00, 0.0, 0.0)],
+            "dual_annealing",
+            "DFT b3lyp",
+            "sto-3g",
+            "b3lyp",
+        ),
+    ],
+)
+def test_functional(
+    molecule1,
+    molecule2,
+    method_min,
+    dft,
+    bases,
+    expected,
+):
+    """
+    Verification of functional of dft choose
+    """
+    obj_sc = ElectronicEnergy(
+        Cluster(molecule1, molecule2),
+        method_min,
+        dft,
+        bases,
+    )
+    assert obj_sc._functional == expected
+
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2, method_min, methodology, bases",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.00, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 0.0), ("H", 0.00, 0.0, 0.0)],
+            "dual_annealing",
+            "pm",
+            "sto-3g",
+        ),
+    ],
+)
+def test_method_not_implemented(
+    molecule1,
+    molecule2,
+    method_min,
+    methodology,
+    bases,
+):
+    """
+    Verification of method not implemented
+    """
+    with pytest.raises(ValueError) as e:
+        ElectronicEnergy(
+            Cluster(molecule1, molecule2),
+            method_min,
+            methodology,
+            bases,
+        )
+    assert str(e.value) == "Methodology not implemented"
+
+
+@pytest.mark.parametrize(
+    "x0, cluster1, cluster2, method_min, basis, mp2, expected_energy",
+    [
+        (
+            [1, 2, 3, 1, 2, 3, 0.9, 0.8, 0.7, 0.09, 0.08, 0.07],
+            [("H", 1, 1, 1), ("H", 1.74, 1, 1)],
+            [("H", 0, 0, 0), ("H", 0.74, 0, 0)],
+            "dual_annealing",
+            "sto-3g",
+            "MP2",
+            -2.254050875005756,
+        ),
+    ],
+)
+def test_electronic_energy_with_mp2_pyscf(
+    x0,
+    cluster1,
+    cluster2,
+    method_min,
+    mp2,
+    basis,
+    expected_energy,
+):
+    """
+    Test for electronic energy calculate with MP2 in the pyscf
+    """
+    e = ElectronicEnergy(
+        Cluster(cluster1, cluster2),
+        method_min,
+        mp2,
+        basis,
+    ).pyscf(x0)
+    assert e - expected_energy < 1.0e-7
+
+
+@pytest.mark.parametrize(
+    "x0, cluster1, cluster2, method_min, basis, ccsd, expected_energy",
+    [
+        (
+            [1, 2, 3, 1, 2, 3, 0.9, 0.8, 0.7, 0.09, 0.08, 0.07],
+            [("H", 1, 1, 1), ("H", 1.74, 1, 1)],
+            [("H", 0, 0, 0), ("H", 0.74, 0, 0)],
+            "dual_annealing",
+            "sto-3g",
+            "CCSD",
+            -2.2689731245694804,
+        ),
+    ],
+)
+def test_electronic_energy_with_ccsd_pyscf(
+    x0,
+    cluster1,
+    cluster2,
+    method_min,
+    ccsd,
+    basis,
+    expected_energy,
+):
+    """
+    Test for electronic energy calculate with MP2 in the pyscf
+    """
+    e = ElectronicEnergy(
+        Cluster(cluster1, cluster2),
+        method_min,
+        ccsd,
+        basis,
+    ).pyscf(x0)
+    assert e - expected_energy < 1.0e-7

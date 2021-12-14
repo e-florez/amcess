@@ -225,7 +225,7 @@ class ElectronicEnergy:
                 energy = cc.CCSD(mf).run()
                 return energy.e_tot
             else:
-                raise Exception("Method not implemented")
+                raise ValueError("Methodology not implemented")
         except (UserWarning, np.linalg.LinAlgError):
             print("*** Exception in SCF Calculation \n")
             return float("inf")
