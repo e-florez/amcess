@@ -684,14 +684,14 @@ def pipeline_dual():
     simulation = engine(
         water,
         # water_dimer,
-        search_methodology=search[0],
+        search_methodology=search[3],
     )
 
-    simulation.run(T0=1000, dT=0.2, nT=5, maxCycle=10)  # ASCEC
+    # simulation.run()
+    # simulation.run(T0=1000, dT=0.2, nT=5, maxCycle=10)  # ASCEC
     # simulation.run(maxfun=10, maxiter=10)  #!da
     # simulation.run(sampling_method="sobol", n=1)
-    # simulation.run(gp_params={"initer": 10, "maxiter": 10})  # Bayesian
-    # simulation.run(initer=10, maxiter=10)  # bayesian
+    simulation.run(initer=10, maxiter=10)  # bayesian
 
 
 # -------------------------------------------------------------------
