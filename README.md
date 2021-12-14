@@ -40,7 +40,7 @@
 
 <div align="center">
   <a href="Atomic and Molecular Cluster Energy Surface Sampler">
-  <img width="400" height="200" src="./docs/_static/amcess_logo.png"></a>
+  <img width="400" height="200" src="./docs/source/_static/amcess_logo.png"></a>
   <br>
 </div>
 
@@ -56,8 +56,8 @@ systems and generate candidate structures for the local and global minima.
 
 
 <div align="center">
-  <img width="200" height="80" src="./docs/_static/ibuprofen.png" VSPACE=50 HSPACE=10>
-  <img width="350" height="200" src="./docs/_static/ibu_w6_white.gif" HSPACE=20>
+  <img width="200" height="80" src="./docs/source/_static/ibuprofen.png" VSPACE=50 HSPACE=10>
+  <img width="350" height="200" src="./docs/source/_static/ibu_w6_white.gif" HSPACE=20>
   <br>
   Molecular cluster of ibuprofen and six water molecules
   [<a href="http://www.doi.org/10.1063/1.4874258">doi: 10.1063/1.4874258</a>]
@@ -66,11 +66,11 @@ systems and generate candidate structures for the local and global minima.
 </div>
 
 <div align="center">
-  <img width="300" height="200" src="./docs/_static/2d_surface_1.gif">
-  <img width="300" height="200" src="./docs/_static/2d_surface_2.gif">
+  <img width="300" height="200" src="./docs/source/_static/2d_surface_1.gif">
+  <img width="300" height="200" src="./docs/source/_static/2d_surface_2.gif">
   <br>
-  <img width="300" height="200" src="./docs/_static/2d_surface_3.gif">
-  <img width="300" height="200" src="./docs/_static/2d_surface_4.gif">
+  <img width="300" height="200" src="./docs/source/_static/2d_surface_3.gif">
+  <img width="300" height="200" src="./docs/source/_static/2d_surface_4.gif">
   <br> 
   Example images taken from Deniz Yuret's blog on October 29, 2021 
   <br>
@@ -151,12 +151,21 @@ Workflow:
 5. Initialize a cluster avoiding atomic overlapping
       - Notebook ([binder](https://mybinder.org/v2/gl/ADanianZE%2Fascec/main?filepath=workflow%2F05_initialize_cluster_and_move_molecule.ipynb)): `05_initialize_cluster_and_move_molecule.ipynb` 
 
-### Contributing
+## Support
+Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
 
-...
+## Roadmap
+
+
+## Contributing
+State if you are open to contributions and what your requirements are for accepting them.
+
+For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+
+You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
 
 ### Licence
-GNU General Public License
+GNU General Public License v3 (GLPv3)
 
 ### Authors and Acknowledgment
 Main authors: Alejandra Mendez, Juan Jose Aucar, Daniel Bajac, César Ibargüen, Andy Zapata, Edison Florez (_edisonffh@mail.com_)
@@ -272,20 +281,7 @@ Within a particular ecosystem, there may be a common way of installing things, s
 ## Usage
 Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
 Show your appreciation to those who have contributed to the project.
 
 ## License
