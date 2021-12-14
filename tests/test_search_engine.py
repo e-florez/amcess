@@ -104,75 +104,66 @@ def test_search_conf_basis_default(molecule1, molecule2, expected_basis):
 
 
 @pytest.mark.parametrize(
-    "molecule1, molecule2, tolerance_radius, expecteted_contour_value",
+    "molecule1, molecule2",
     [
         (
             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-            1.0,
-            ((0.7407005820230608, 0.0, 0.5), 1.8936651230798374),
         ),
     ],
 )
-def test_spherical_contour(
-    molecule1, molecule2, tolerance_radius, expecteted_contour_value
-):
-    """
-    Test spherical contour cluster method in Cluster clase
-    """
-    obj = SearchConfig(Cluster(molecule1, molecule2))
-    obj.spherical_contour_cluster(tolerance_radius)
-
-    assert obj.sphere_center, obj.sphere_radius == expecteted_contour_value
-
-
-def test_SC_init_first_value_error():
+def test_SC_init_first_value_error(molecule1, molecule2):
     """
     Test first TypeError into __init__ method of SearchConfig class
     when cluster object is None
     """
     with pytest.raises(TypeError) as e:
-        SearchConfig()
+        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+        obj_sc.system_object = None
     assert str(e.value) == "System_object isn't difinite\n" "It's NoneType"
 
 
 @pytest.mark.parametrize(
-    "molecule1",
+    "molecule1, molecule2",
     [
-        ([("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)]),
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+        ),
     ],
 )
-def test_SC_init_second_value_error(molecule1):
+def test_SC_init_second_value_error(molecule1, molecule2):
     """
     Test second TypeError into __init__ method of SearchConfig class
     when cluster object is not object type
     """
+    obj_sc = SearchConfig(Cluster(molecule1, molecule2))
     with pytest.raises(TypeError) as e:
-        SearchConfig(1.0)
+        obj_sc.system_object = 1.0
     assert (
         str(e.value) == "System_object isn't difinite as an object Cluster\n"
         f"please, check:\n'{1.0}'"
     )
     with pytest.raises(TypeError) as e:
-        SearchConfig(1)
+        obj_sc.system_object = 1
     assert (
         str(e.value) == "System_object isn't difinite as an object Cluster\n"
         f"please, check:\n'{1}'"
     )
     with pytest.raises(TypeError) as e:
-        SearchConfig((1.0,))
+        obj_sc.system_object = (1.0,)
     assert (
         str(e.value) == "System_object isn't difinite as an object Cluster\n"
         f"please, check:\n'{(1.0,)}'"
     )
     with pytest.raises(TypeError) as e:
-        SearchConfig([1.0])
+        obj_sc.system_object = [1.0]
     assert (
         str(e.value) == "System_object isn't difinite as an object Cluster\n"
         f"please, check:\n'{[1.0]}'"
     )
     with pytest.raises(TypeError) as e:
-        SearchConfig(Molecule(molecule1))
+        obj_sc.system_object = Molecule(molecule1)
     assert (
         str(e.value) == "System_object isn't difinite as an object Cluster\n"
         f"please, check:\n'{Molecule(molecule1)}'"
@@ -180,28 +171,32 @@ def test_SC_init_second_value_error(molecule1):
 
 
 @pytest.mark.parametrize(
-    "molecule1, molecule2, expected_bounds",
+    "molecule1, molecule2, radius, expected_bounds",
     [
         (
             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            2.07335921293852,
             [
                 (-2.07335921293852, 2.07335921293852),
                 (-2.07335921293852, 2.07335921293852),
                 (-2.07335921293852, 2.07335921293852),
-                (0, scipy.pi),
-                (0, scipy.pi),
-                (0, scipy.pi),
+                (-180.0, 180.0),
+                (-180.0, 180.0),
+                (-180.0, 180.0),
             ],
         ),
     ],
 )
-def test_SC_bounds_grep(molecule1, molecule2, expected_bounds):
+def test_SC_bounds_grep(molecule1, molecule2, radius, expected_bounds):
     """
     Test @property associated with bounds variable
     """
     assert (
-        SearchConfig(Cluster(molecule1, molecule2)).bounds == expected_bounds
+        SearchConfig(
+            Cluster(molecule1, molecule2, sphere_radius=radius)
+        ).bounds
+        == expected_bounds
     )
 
 
@@ -490,193 +485,6 @@ def test_SC_basis_set_set(molecule1, molecule2):
 
 
 @pytest.mark.parametrize(
-    "molecule1, molecule2, new_sphere_center",
-    [
-        (
-            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-            (2.0, 0.0, 1.0),
-        ),
-    ],
-)
-def test_SC_new_sphere_center_set(molecule1, molecule2, new_sphere_center):
-    """
-    Test new sphere center @sphere_center.setter
-    """
-    obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-    obj_sc.sphere_center = new_sphere_center
-    assert obj_sc.sphere_center == new_sphere_center
-
-
-@pytest.mark.parametrize(
-    "molecule1, molecule2",
-    [
-        (
-            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-        ),
-    ],
-)
-def test_SC_sphere_center_TE_set(molecule1, molecule2):
-    """
-    Test TypeError @sphere_center.setter
-    """
-    with pytest.raises(TypeError) as e:
-        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-        obj_sc.sphere_center = 1.0
-    assert (
-        str(e.value)
-        == "\n\nThe Sphere center must be a tuple with three elements: "
-        "(float, float, float)"
-        f"\nplease, check: '{type(1.0)}'\n"
-    )
-    with pytest.raises(TypeError) as e:
-        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-        obj_sc.sphere_center = 1
-    assert (
-        str(e.value)
-        == "\n\nThe Sphere center must be a tuple with three elements: "
-        "(float, float, float)"
-        f"\nplease, check: '{type(1)}'\n"
-    )
-    with pytest.raises(TypeError) as e:
-        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-        obj_sc.sphere_center = "1.0"
-    assert (
-        str(e.value)
-        == "\n\nThe Sphere center must be a tuple with three elements: "
-        "(float, float, float)"
-        f"\nplease, check: '{type('1.0')}'\n"
-    )
-    with pytest.raises(TypeError) as e:
-        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-        obj_sc.sphere_center = [1.0]
-    assert (
-        str(e.value)
-        == "\n\nThe Sphere center must be a tuple with three elements: "
-        "(float, float, float)"
-        f"\nplease, check: '{type([1.0])}'\n"
-    )
-
-
-@pytest.mark.parametrize(
-    "molecule1, molecule2",
-    [
-        (
-            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-        ),
-    ],
-)
-def test_SC_sphere_center_VE_set(molecule1, molecule2):
-    """
-    Test ValueError @sphere_center.setter is a tuple with amount
-    elements different to 3
-    """
-    with pytest.raises(ValueError) as e:
-        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-        obj_sc.sphere_center = (1.0,)
-    assert (
-        str(e.value)
-        == "\n\nThe Sphere center must be a tuple with three elements: "
-        "(float, float, float)"
-        f"\nplease, check: '{(1.0,)}'\n"
-    )
-    with pytest.raises(ValueError) as e:
-        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-        obj_sc.sphere_center = (
-            1.0,
-            1.0,
-        )
-    assert (
-        str(e.value)
-        == "\n\nThe Sphere center must be a tuple with three elements: "
-        "(float, float, float)"
-        f"\nplease, check: '{(1.0,1.0,)}'\n"
-    )
-    with pytest.raises(ValueError) as e:
-        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-        obj_sc.sphere_center = (
-            1.0,
-            1.0,
-            1.0,
-            1.0,
-        )
-    assert (
-        str(e.value)
-        == "\n\nThe Sphere center must be a tuple with three elements: "
-        "(float, float, float)"
-        f"\nplease, check: '{(1.0,1.0,1.0,1.0,)}'\n"
-    )
-
-
-@pytest.mark.parametrize(
-    "molecule1, molecule2, new_radius, expected_radius_more_tol",
-    [
-        (
-            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-            2.5,
-            3.5,
-        ),
-    ],
-)
-def test_SC_new_sphere_radius_set(
-    molecule1, molecule2, new_radius, expected_radius_more_tol
-):
-    """
-    Test new spehre radius  @sphere_radius.setter
-    """
-    obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-    obj_sc.sphere_radius = new_radius
-    assert obj_sc.sphere_radius == expected_radius_more_tol
-
-
-@pytest.mark.parametrize(
-    "molecule1, molecule2",
-    [
-        (
-            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-        ),
-    ],
-)
-def test_SC_sphere_radius_TE_set(molecule1, molecule2):
-    """
-    Test TypeError @sphere_radius.setter
-    """
-    # due to decorator for new bounds is avoid the assert
-    with pytest.raises(TypeError):
-        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-        obj_sc.sphere_radius = "1.0"
-    with pytest.raises(TypeError):
-        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-        obj_sc.sphere_radius = [1.0]
-    with pytest.raises(TypeError):
-        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-        obj_sc.sphere_radius = (1.0,)
-
-
-@pytest.mark.parametrize(
-    "molecule1, molecule2",
-    [
-        (
-            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-        ),
-    ],
-)
-def test_SC_sphere_radius_VE_set(molecule1, molecule2):
-    """
-    Test ValueError @sphere_radius.setter
-    """
-    # due to decorator for new bounds is avoid the assert
-    with pytest.raises(ValueError):
-        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-        obj_sc.sphere_radius = 0.0
-
-
-@pytest.mark.parametrize(
     "molecule1, molecule2",
     [
         (
@@ -691,65 +499,85 @@ def test_SC_cost_function_TE_set(molecule1, molecule2):
     """
     with pytest.raises(TypeError) as e:
         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-        obj_sc.cost_function_number = 1.0
+        obj_sc.func_cost = 1.0
     assert (
-        str(e.value) == "\n\nThe new cost function is not a integer"
+        str(e.value) == "\n\nThe new cost function is not a string"
         f"\nplease, check: '{type(1.0)}'\n"
     )
     with pytest.raises(TypeError) as e:
         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-        obj_sc.cost_function_number = [1.0]
+        obj_sc.func_cost = [1.0]
     assert (
-        str(e.value) == "\n\nThe new cost function is not a integer"
+        str(e.value) == "\n\nThe new cost function is not a string"
         f"\nplease, check: '{type([1.0])}'\n"
     )
     with pytest.raises(TypeError) as e:
         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-        obj_sc.cost_function_number = (1.0,)
+        obj_sc.func_cost = (1.0,)
     assert (
-        str(e.value) == "\n\nThe new cost function is not a integer"
+        str(e.value) == "\n\nThe new cost function is not a string"
         f"\nplease, check: '{type((1.0,))}'\n"
     )
 
 
 @pytest.mark.parametrize(
-    "molecule1, molecule2",
+    "molecule1, molecule2, new_methodology",
     [
         (
             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            2,
         ),
     ],
 )
-def test_SC_cost_function_VE_set(molecule1, molecule2):
+def test_SC_methodology_VE_set(molecule1, molecule2, new_methodology):
     """
-    Test ValueError @sphere_radius.setter
+    Test TypeError @methodology.setter
     """
-    with pytest.raises(ValueError) as e:
+    with pytest.raises(TypeError) as e:
         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-        obj_sc.cost_function_number = 2
+        obj_sc.methodology = new_methodology
     assert (
-        str(e.value) == "\n\nThe new cost function is not implemeted "
-        "\n 1 -> Hartree Fock into pyscf"
-        f"\nplease, check: '{2}'\n"
+        str(e.value) == "\n\nThe new name to methodology is not a string"
+        f"\nplease, check: '{type(new_methodology)}'\n"
     )
 
 
 @pytest.mark.parametrize(
-    "molecule1, molecule2",
+    "molecule1, molecule2, expected",
     [
         (
             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            "HF",
         ),
     ],
 )
-def test_SC_cost_function_number_grep(molecule1, molecule2):
+def test_SC_methodology_number_grep(molecule1, molecule2, expected):
     """
-    Test default cost_function_number @property
+    Test default methodology (Hartree-Fock)
     """
     obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-    assert obj_sc.cost_function_number == 1
+    assert obj_sc.methodology == expected
+
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2, expected",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            "DFT",
+        ),
+    ],
+)
+def test_SC_methodology_number_set(molecule1, molecule2, expected):
+    """
+    Test default methodology (Hartree-Fock)
+    """
+    obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+    obj_sc.methodology = expected
+    assert obj_sc.methodology == expected
 
 
 @pytest.mark.parametrize(
@@ -758,7 +586,7 @@ def test_SC_cost_function_number_grep(molecule1, molecule2):
         (
             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-            1,
+            "pyscf",
         ),
     ],
 )
@@ -767,93 +595,7 @@ def test_SC_new_cost_function(molecule1, molecule2, expectation):
     Test ValueError @sphere_radius.setter
     """
     obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-    assert obj_sc._program_calculate_cost_function == expectation
-
-
-@pytest.mark.parametrize(
-    "molecule1, molecule2, default_tolerance_radius",
-    [
-        (
-            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-            1.0,
-        ),
-    ],
-)
-def test_SC_tolerance_radius_grep(
-    molecule1, molecule2, default_tolerance_radius
-):
-    """
-    Test ask tolerance radius
-    """
-    assert (
-        SearchConfig(Cluster(molecule1, molecule2)).tolerance_contour_radius
-        == default_tolerance_radius
-    )
-
-
-@pytest.mark.parametrize(
-    "molecule1, molecule2, new_tolerance_radius",
-    [
-        (
-            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-            2.0,
-        ),
-    ],
-)
-def test_SC_new_tolerance_radius_set(
-    molecule1, molecule2, new_tolerance_radius
-):
-    """
-    Test TypeError @radius_contour.setter
-    """
-    obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-    obj_sc.tolerance_contour_radius = new_tolerance_radius
-    assert obj_sc.tolerance_contour_radius == new_tolerance_radius
-
-
-@pytest.mark.parametrize(
-    "molecule1, molecule2",
-    [
-        (
-            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-        ),
-    ],
-)
-def test_SC_tolerance_radius_TE_set(molecule1, molecule2):
-    """
-    Test TypeError @radius_contour.setter
-    """
-    with pytest.raises(TypeError) as e:
-        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-        obj_sc.tolerance_contour_radius = 1
-    assert (
-        str(e.value) == "\n\nThe new tolerance radius is not a float"
-        f"\nplease, check: '{type(1)}'\n"
-    )
-    with pytest.raises(TypeError) as e:
-        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-        obj_sc.tolerance_contour_radius = "1.0"
-    assert (
-        str(e.value) == "\n\nThe new tolerance radius is not a float"
-        f"\nplease, check: '{type('1.0')}'\n"
-    )
-    with pytest.raises(TypeError) as e:
-        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-        obj_sc.tolerance_contour_radius = [1.0]
-    assert (
-        str(e.value) == "\n\nThe new tolerance radius is not a float"
-        f"\nplease, check: '{type([1.0])}'\n"
-    )
-    with pytest.raises(TypeError) as e:
-        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-        obj_sc.tolerance_contour_radius = (1.0,)
-    assert (
-        str(e.value) == "\n\nThe new tolerance radius is not a float"
-        f"\nplease, check: '{type((1.0,))}'\n"
-    )
+    assert obj_sc._func_cost == expectation
 
 
 @pytest.mark.parametrize(
@@ -869,7 +611,7 @@ def test_SC_run_ascec_method(molecule1, molecule2):
     """
     Test SC.run method for ascec
     """
-    kwargs = {"nT": 1, "maxCycle": 10}
+    kwargs = {"number_temperatures": 1, "maxCycles": 10}
     SearchConfig(Cluster(molecule1, molecule2)).run(**kwargs)
     with open("configurations.xyz", "r") as f:
         readl = f.readline()
@@ -921,25 +663,6 @@ def test_SC_run_shgo_method(molecule1, molecule2, search_meth):
         readl = f.readline()
     os.remove("configurations.xyz")
     assert readl == "4\n"
-
-
-@pytest.mark.parametrize(
-    "molecule1, molecule2, molecule3",
-    [
-        (
-            [("H", 0.0, 0.0, 0.0)],
-            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-            [("H", 0.0, 0.0, 3.0), ("H", 0.78, 0.0, 3.0)],
-        ),
-    ],
-)
-def test_SC_the_biggest_to_initio(molecule1, molecule2, molecule3):
-    """
-    Test of method spherical_contour_cluster, re--sort molecule
-    """
-    obj_sc = SearchConfig(Cluster(molecule1, molecule2, molecule3))
-    obj_sc.spherical_contour_cluster()
-    assert obj_sc.system_object.get_molecule(0).atoms == molecule2
 
 
 @pytest.mark.parametrize(
@@ -1030,23 +753,33 @@ def test_SC_run_MCMC_bayesian_method(
     [
         (
             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            [("H", 0.0, 0.0, 3.0), ("H", 0.78, 0.0, 3.0)],
         ),
     ],
 )
-def test_SC_sphere_radius_TE_a_set(molecule1, molecule2):
+def test_system_object_grep(molecule1, molecule2):
     """
-    Test TypeError @sphere_radius.setter
+    Test Ascec.criterion else
     """
-    with pytest.raises(TypeError) as e:
-        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-        obj_sc.sphere_radius = 1
+    obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+    obj_sc.system_object
 
-    print(e.value)
-    assert (
-        str(e.value) == "\n\nThe Sphere  Radius must be a float"
-        f"\nplease, check: '{type(1)}'\n"
-    )
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2, expected",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 3.0), ("H", 0.78, 0.0, 3.0)],
+            "pyscf",
+        ),
+    ],
+)
+def test_func_cost_grep(molecule1, molecule2, expected):
+    """
+    Test func_cost grep
+    """
+    assert SearchConfig(Cluster(molecule1, molecule2)).func_cost == expected
 
 
 # This test is for ascec criterion
@@ -1067,12 +800,11 @@ def test_Ascec_ascec_method(molecule1, molecule2):
     ascec = Ascec(
         obj_sc._system_object,
         obj_sc._search_methodology,
-        obj_sc._sphere_center,
-        obj_sc._sphere_radius,
+        obj_sc._methodology,
         obj_sc._basis_set,
-        call_function=1,
+        program="pyscf",
         bounds=obj_sc._bounds,
     )
-    ascec.e_before = -1.0
-    ascec.energy_current = 1.0
-    ascec.ascec_criterion(1.0)
+    ascec.e_before = -0.0001
+    ascec.energy_current = 0.0001
+    ascec.ascec_criterion(100.0)

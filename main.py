@@ -353,12 +353,29 @@ def test_cluster():
 
     print(w.xyz)
 
-    for i in range(3):
-        #     print(w.move_molecule(0).xyz)
-        new_w = w.move_molecule(0)
-        print(new_w.xyz)
+    # for i in range(3):
+    #     #     print(w.move_molecule(0).xyz)
+    #     new_w = w.move_molecule(0)
+    #     print(new_w.xyz)
 
-    # new_w2.freeze_molecule = 0
+    w2 = 2 * w
+
+    # print(w2.freeze_molecule)
+
+    w2.freeze_molecule = 0
+
+    print(w2.freeze_molecule)
+    print(w2.cluster_dictionary)
+
+    print(w2.xyz)
+
+    for i in range(3):
+        new_w2 = w2.move_molecule(1)
+        print(new_w2.xyz)
+
+    # new_w2 = w2.initialize_cluster(max_closeness=1.0)
+
+    # print(new_w2.xyz)
 
     # for i in range(5):
     #     new_w2 = new_w2.move_molecule(1, max_closeness=2)
@@ -368,12 +385,41 @@ def test_cluster():
 
     # # let's define the spherical boundary conditions
     # ca.sphere_center = 0, 0, 0
-    # # w2.sphere_center = 10, 10, 10
+    # w2.sphere_center = 30, 30, 30
     # ca.sphere_radius = 20
 
     # ini = ca.initialize_cluster(max_closeness=10)
 
     # print(ini.xyz)
+
+
+def move_init():
+
+    hf = {"atoms": [("H", 0, 0, 0), ("F", 1, 0, 0)]}
+    cc = {"atoms": [("C", 0, 0, 0), ("C", 1.2, 0, 0)]}
+    ab = Cluster(hf, cc)
+
+    ab_xyz = ""
+
+    ab.sphere_radius = 4
+
+    # ab.freeze_molecule = 0
+
+    for _ in range(100):
+        mol = ab.random_generator.choice(ab.total_molecules)
+
+        ab = ab.move_molecule(
+            molecule=mol,
+            max_step=3,
+            max_rotation=10,
+            max_closeness=0.5,
+        )
+        # print(ab.xyz)
+        ab_xyz += ab.xyz
+
+    file_name = "cluster_test.xyz"
+    with open(file_name, "w") as f:
+        f.write(ab_xyz)
 
 
 def old_molecule_class():
@@ -559,25 +605,25 @@ def old_cluster_class():
     # print("+--" * 30)
 
 
-# -------------------------------------------------------------------
-def run():
-    pass
-    # system_h2()
-    # system_hf()
-    # system_nano_boy()
-    # system_w_li()
-    # system_w_li_cluster()
-    # system_metal_complex()
+# # -------------------------------------------------------------------
+# def run():
+#     pass
+#     # system_h2()
+#     # system_hf()
+#     # system_nano_boy()
+#     # system_w_li()
+#     # system_w_li_cluster()
+#     # system_metal_complex()
 
-    # ##test
-    # test_atom()
-    # test_molecule()
-    test_cluster()
+#     # ##test
+#     # test_atom()
+#     # test_molecule()
+#     test_cluster()
 
 
 def pipeline_andy():
     from amcess.base_molecule import Cluster, Molecule
-    from amcess.search_configuration import SearchConfig
+    from amcess import engine as SearchConfig
 
     HF = [("H", 0, 0, 0), ("F", 0.917, 0, 0)]
     HF1 = {"atoms": [("H", 0, 0, 1), ("F", 0.918, 0.0, 1)]}
@@ -598,41 +644,143 @@ def pipeline_andy():
     SC.run(nT=1, maxCycle=3)  #
 
 
-def pipeline_ascec():
-    from amcess import Cluster
-    from amcess import engine
-
-    hf = [("H", 0, 0, 0), ("F", 0.917, 0, 0)]
-    hf_1 = {"atoms": [("H", 0, 0, 1), ("F", 0.918, 0.0, 1)]}
-
-    hf_dimer = Cluster(hf, hf_1)
-
-    simulation = engine(
-        hf_dimer,
-        search_methodology="ASCEC",
-    )
-
-    simulation.run(nT=10, maxCycle=100)
-
-
+# -------------------------------------------------------------------
 def pipeline_dual():
     from amcess import Cluster
     from amcess import engine
 
-    hf = [("H", 0, 0, 0), ("F", 0.917, 0, 0)]
-    hf_1 = {"atoms": [("H", 0, 0, 1), ("F", 0.918, 0.0, 1)]}
+    # hf = [("H", 0, 0, 0), ("F", 0.917, 0, 0)]
+    # hf_1 = {"atoms": [("H", 0, 0, 1), ("F", 0.918, 0.0, 1)]}
 
-    hf_dimer = Cluster(hf, hf_1)
+    # hf_dimer = Cluster(hf, hf_1)
+
+    # water = {
+    #     "atoms": [
+    #         ("O", 0, 0, 0),
+    #         ("H", 0.58708, 0.75754, 0),
+    #         ("H", -0.58708, 0.75754, 0),
+    #     ],
+    #     "charge": 0,
+    #     "multiplicity": 1,
+    # }
+
+    # water_dimer = Cluster(water, water)
+    # water_dimer.initialize_cluster
+
+    # print(water_dimer.xyz)
+
+    oxygen = [("O", 0, 0, 0)]
+    hydrogen = [("H", 0, 0, 0)]
+
+    water = Cluster(oxygen, hydrogen, hydrogen)
+
+    water.sphere_center = (0, 0, 0)
+    water.sphere_radius = 1.0
+
+    water.initialize_cluster()
+
+    search = ["ASCEC", "dual_annealing", "SHGO", "Bayesian"]
 
     simulation = engine(
-        hf_dimer,
-        search_methodology="dual_annealing",
+        water,
+        # water_dimer,
+        search_methodology=search[0],
     )
 
-    simulation.run()
+    simulation.run(T0=1000, dT=0.2, nT=5, maxCycle=10)  # ASCEC
+    # simulation.run(maxfun=10, maxiter=10)  #!da
+    # simulation.run(sampling_method="sobol", n=1)
+    # simulation.run(gp_params={"initer": 10, "maxiter": 10})  # Bayesian
+    # simulation.run(initer=10, maxiter=10)  # bayesian
 
 
+# -------------------------------------------------------------------
+def temperature_grid():
+    t_ini = 10
+    t_end = 1000
+    n = 4
+
+    # warmming up
+    geometric = [t_ini * (t_end / t_ini) ** (i / (n - 1)) for i in range(n)]
+    arithmetic = [t_ini + i * (t_end - t_ini) / (n - 1) for i in range(n)]
+
+    # cooling down (ANNEALING)
+    geometric = [t_end * (t_ini / t_end) ** (i / (n - 1)) for i in range(n)]
+    arithmetic = [t_end + i * (t_ini - t_end) / (n - 1) for i in range(n)]
+
+    print("\n")
+    print(geometric)
+    print("\n")
+    print(arithmetic)
+
+
+# -------------------------------------------------------------------
+def run():
+    from amcess import Cluster
+    from time import time
+    from amcess.search_engine import simulated_annealing
+
+    water = {
+        "atoms": [
+            ("O", 0, 0, 0),
+            ("H", 0.58708, 0.75754, 0),
+            ("H", -0.58708, 0.75754, 0),
+        ],
+        "charge": 0,
+        "multiplicity": 1,
+    }
+
+    water_dimer = Cluster(water, water)
+    water_dimer.sphere_radius = 1.5
+    water_dimer.sphere_center = (0, 0, 0)
+
+    water_dimer = water_dimer.initialize_cluster(max_closeness=0.5)
+
+    print("\n")
+    start_time = time()
+
+    simulation = simulated_annealing(
+        cluster_settings={
+            "cluster": water_dimer,
+            "max_closeness": 0.5,
+            "max_step": 0.6,
+            "max_rotation": 30,
+        },
+        energy_settings={
+            "energy": "pyscf",
+            "hamiltonian": "b3lyp",
+            "basis": "aug-cc-pvdz",
+            "cpu": 4,
+        },
+        annealing_settings={
+            "criterion": "metropolis",  # 'metropolis' or 'delta_energy'
+            "file_name": "water_dimer",
+            "temperature_grid": "geometric",
+            "max_cycle": 1000,
+        },
+        temperature_settings={
+            "initial_temperature": 2.0,
+            "final_temperature": 700.0,
+            "total_temperatures": 10,
+        },
+    )
+
+    print(simulation)
+
+    end_time = time()
+    print(f"\n elapsed time: {end_time - start_time:.2f} seconds")
+    print("+--" * 30)
+    print("\n")
+
+
+# -------------------------------------------------------------------
 if __name__ == "__main__":
-    pipeline_ascec()
-    # pipeline_dual()
+
+    # run()
+
+    # move_init()
+
+    # temperature_grid()
+
+    pipeline_dual()
     # pipeline_andy()

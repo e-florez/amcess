@@ -1,0 +1,28 @@
+
+include LICENSE
+include README.md
+recursive-include amcess *
+
+exclude tox.ini
+exclude requirements.txt
+exclude requirements_dev.txt
+exclude preWork.txt
+recursive-exclude tests *
+recursive-exclude docs *
+recursive-exclude workflow *
+recursive-exclude ASCECV3 *
+recursive-exclude data *
+
+
+## ------------------------------------
+## Removing files from the distribution
+##
+## Setuptools is pretty good about excluding appropriate bits, but you may need to
+## remove files that were added in the commands above
+
+global-exclude \
+  *.py[co] \          # Only required if including files / grafting trees that may contain bytecode.
+  .DS_Store \
+
+prune **/__pycache__  # Same as *.py[co] above.
+prune docs/build
