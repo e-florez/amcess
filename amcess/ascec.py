@@ -6,6 +6,8 @@ from amcess.electronic_energy import ElectronicEnergy
 class Ascec(ElectronicEnergy):
     """
     ASCEC algorithm
+    J. F. Pérez, C. Z. Hadad, A. Restrepo.
+    Int. J. Quantum Chem. 2008, 108, 1653--1659
     """
 
     def __init__(
@@ -17,10 +19,10 @@ class Ascec(ElectronicEnergy):
         program: str,
         bounds: list,
         seed: int = None,
-        T0: float = 1000.0,
-        nT: int = 100,
-        dT: float = 0.1,
-        maxCycle: int = 3000,
+        initial_temperature: float = 1000.0,
+        number_temperatures: int = 100,
+        step_temperature: float = 0.1,
+        maxCycles: int = 3000,
     ) -> None:
         """
         Initialize the Ascec class
@@ -31,13 +33,13 @@ class Ascec(ElectronicEnergy):
             The function to calculate electronic energy
         bounds : array, float
             The bounds of the search space
-        T0 : float
+        initial_temperature : float
             Initial temperature
-        nT : int
+        number_temperatures : int
             Number of temperature steps
-        dT : float
+        step_temperature : float
             Temperature step
-        maxCylce : int
+        maxCylces : int
             Maximum number of cycles
         """
         super().__init__(
@@ -50,10 +52,10 @@ class Ascec(ElectronicEnergy):
         self._bounds = bounds
         self._call_program = program
 
-        self._T0 = T0
-        self._nT = nT
-        self._dT = dT
-        self._maxCylce = maxCycle
+        self._initial_temperature = initial_temperature
+        self._number_temperature = number_temperatures
+        self._step_temperature = step_temperature
+        self._maxCylces = maxCycles
 
         # initial energy
         self.electronic_e(np.zeros(len(bounds)))
@@ -64,13 +66,10 @@ class Ascec(ElectronicEnergy):
     # Methods
     # ===============================================================
     def electronic_e(self, x):
-        """
-        Evaluate the electronic energy
+        """Evaluate the electronic energy
 
         .. rubric:: Parameters
 
-        function : callable
-            The function to calculate electronic energy
         x : array, float
             Value to move the molecules, in the 1D array
 
@@ -104,68 +103,86 @@ class Ascec(ElectronicEnergy):
         rotate = np.random.uniform(low=-180.0, high=180.0, size=(int(n / 2),))
         return np.concatenate((translate, rotate))
 
-    def ascec_criterion(self, T):
+    def ascec_criterion(self, temperature):
         """
         ASCEC criterion for acceptance, based in Markov Chain Monte Carlo
 
         .. rubric:: Parameters
 
-        e : float
-            Value of the cost function
-
-        T : float
+        temperature : float
             Annealing temperature
+
+        .. rubric:: Returns
+
+        accepted : boolean
+            True if the configuration is accepted
+        lower_energy : boolean
+            True if the new energy is lower than the previous one
         """
 
         KB: float = 3.166811563e-6  # Eh/K
         accepted = False
         lower_energy = False
+        # ------------------------------------------------------------
+        # 1) Accepted: if the new energy is lower than the previous one
         if self.energy_current < self.e_before:
             accepted = True
             lower_energy = True
         else:
             DE = self.energy_current - self.e_before
-            TKb = T * KB
+            TKb = temperature * KB
             boltzmann = np.exp(-DE / TKb)
+            # 2) Accepted: if DE is lower than the Boltzmann distribution
             if boltzmann > np.abs(DE):
                 accepted = True
-                # print(f"Boltzmann Accepted {boltzmann:.3e}")
 
         return accepted, lower_energy
 
     def ascec_run(self):
         """
-        Run ASCEC algoritm
+        Run ASCEC algoritm.
         """
-
         iT = 0
-        T = self._T0
+        temperature = self._initial_temperature
         configurations_accepted = 0
-        while iT <= self._nT:
+        while iT <= self._number_temperature:
             count = 0
-            while count <= self._maxCylce:
-
+            while count <= self._maxCylces:
+                # --------------------------------------------------------------
+                # Information about the before cycle
                 print(
-                    f"\r Current temperature {T:7.2f} K, progress:"
-                    f" {100*iT/self._nT:.2f}%, with "
+                    f"\r Current temperature {temperature:7.2f} K, progress:"
+                    f" {100*iT/self._number_temperature:.2f}%, with "
                     f" {configurations_accepted:3d} configurations accepted"
-                    f" (cycle {count:>4d}/{self._maxCylce:<4d})",
+                    f" (cycle {count:>4d}/{self._maxCylces:<4d})",
                     end="",
                 )
-
-                # 3 values to translate and another 3 to rotate
+                # ------------------------------------------------------------
+                # Generate 3 random values to translate and other 3 to rotate
                 x = self.random_mov(len(self._bounds))
+                # ------------------------------------------------------------
+                # Electronic energy calculation
                 self.electronic_e(x)
-                accepted, lower_energy = self.ascec_criterion(T)
+                # ------------------------------------------------------------
+                # ASCEC criterion
+                accepted, lower_energy = self.ascec_criterion(temperature)
                 if accepted:
+                    # --------------------------------------------------------
+                    # -- Counter of accepted configurations
                     configurations_accepted += 1
+                    # -- Store the new energy
                     self.e_before = self.energy_current
+                    # -- Store the new configuration
                     self.store_structure()
-                    # print("Configuration Temperature ", T)
-
+                    # --------------------------------------------------------
+                    # Skip to the next temperature
                     if lower_energy:
                         count = float("inf")
-
+                # ------------------------------------------------------------
+                # Counter of cycles
                 count += 1
-            T = T - T * self._dT
+            # ------------------------------------------------------------
+            # -- Update the temperature
+            temperature = temperature - temperature * self._step_temperature
+            # -- Counter of temperature steps
             iT += 1

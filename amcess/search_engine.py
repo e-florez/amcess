@@ -213,12 +213,15 @@ class SearchConfig:
             Dictionary with the parameters to be used in the search
             methodologies
         """
+        # ---------------------------------------------------------------
+        # Choose the search methodologies
         func = (
             self._search_methodology
             if callable(self._search_methodology)
             else METHODS[self._search_methodology]
         )
-
+        # ---------------------------------------------------------------
+        # Execute the search methodologies
         if self._search_methodology == "ASCEC":
             print("*** Minimization: ASCEC ***")
             self._search = func(
