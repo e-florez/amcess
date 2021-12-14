@@ -15,7 +15,6 @@ class Ascec(ElectronicEnergy):
         basis_set: str,
         program: str,
         bounds: list,
-        max_closeness: float = 1.0,
         seed: int = None,
         T0: float = 1000.0,
         nT: int = 100,
@@ -119,6 +118,7 @@ class Ascec(ElectronicEnergy):
         KB: float = 3.166811563e-6  # Eh/K
         accepted = False
         lower_energy = False
+        print(" vamos ")
         if self.energy_current < self.e_before:
             accepted = True
             lower_energy = True
@@ -126,10 +126,9 @@ class Ascec(ElectronicEnergy):
             DE = self.energy_current - self.e_before
             TKb = T * KB
             boltzmann = np.exp(-DE / TKb)
-            delta_energy = np.abs(DE / self.energy_current)
-            if boltzmann > delta_energy:
-                # print(f"Boltzmann Accepted {boltzmann:.3e}")
+            if boltzmann > np.abs(DE):
                 accepted = True
+                # print(f"Boltzmann Accepted {boltzmann:.3e}")
 
         return accepted, lower_energy
 
