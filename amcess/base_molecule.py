@@ -1188,7 +1188,7 @@ class Cluster(Molecule):
             sphere_center=new_cluster.sphere_center,
         )
 
-    def center_radius_sphere(self, add_tolerance_radius: float = 0.5):
+    def center_radius_sphere(self, add_tolerance_radius: float = 1.0):
         """
         Define a spherical outline that contains our cluster
 
@@ -1213,6 +1213,10 @@ class Cluster(Molecule):
                 "\n\nThe tolerance for radius is not a float"
                 f"\nplease, check: '{type(add_tolerance_radius)}'\n"
             )
+        # ----------------------------------------------------------------
+        # Initialize cluster to avoid overlaping, then can calculate of
+        # radius
+        self.initialize_cluster()
         # ---------------------------------------------------------------
         maximum_r_cm = 0.0
         molecule = 0
@@ -1250,13 +1254,13 @@ class Cluster(Molecule):
             # ---------------------------------------------------------------
             # Instantiation of Cluster object with radius and center sphere
             return Cluster(
-                *new_geom.values(),
+                *new_geom._cluster_dict.values(),
                 sphere_center=center,
                 sphere_radius=maximum_r_cm,
             )
         else:
             return Cluster(
-                self.atoms,
+                *self._cluster_dict.values(),
                 sphere_center=center,
                 sphere_radius=maximum_r_cm,
             )

@@ -86,40 +86,41 @@ class SearchConfig:
         outxyz: str = "configurations.xyz",
         cost_function="pyscf",
     ) -> None:
-
-        # Verfication and assigment of variables (type, value)
+        # ---------------------------------------------------------------
+        # Verfication and instantiation (type, value)
         # -- Cluster Object
         #    Calculate center and radius sphere when are null
         if system_object._sphere_radius is None:
             self.system_object = system_object.center_radius_sphere()
         else:
             self.system_object = system_object
-
+        # -- Search Methodology: ASCEC, SHGO, dual_annealing, Bayesian
         self.search_type = search_methodology
+        # -- Methodology: HF, DFT, MP2, etc.
         self.methodology = methodology
+        # -- Basis Set: sto-3g, 6-31g, 6-31g**, etc.
         self.basis_set = basis
+        # -- Output name: xyz
         self.output_name = outxyz
-        # self.tolerance_contour_radius = tolerance_contour_radius
+        # -- Cost function: pyscf, Lennard_Jones
         self.func_cost = cost_function
-
-        # Check Overlaping
-        self._system_object.initialize_cluster()
-
+        # ---------------------------------------------------------------
         # Build bounds, format for scipy functions
         sphere_radius = self._system_object._sphere_radius
-
+        # -- translate bounds
         bound_translate = [
             (-sphere_radius, sphere_radius),
             (-sphere_radius, sphere_radius),
             (-sphere_radius, sphere_radius),
         ]
+        # -- rotate bounds
         bound_rotate = [(-180, 180), (-180, 180), (-180, 180)]
-
+        # -- Multiply bounds by the amount of molecules
         bound_translate = bound_translate * (
             self._system_object.total_molecules - 1
         )
         bound_rotate = bound_rotate * (self._system_object.total_molecules - 1)
-
+        # -- concatenate bounds
         self._bounds = bound_translate + bound_rotate
 
     # ===============================================================
@@ -251,7 +252,7 @@ class SearchConfig:
                 search_type=self._search_methodology,
                 methodology=self._methodology,
                 basis_set=self._basis_set,
-                call_function=1,
+                program=self._func_cost,
                 bounds=self._bounds,
                 **kwargs,
             )

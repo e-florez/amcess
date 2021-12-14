@@ -15,7 +15,7 @@ class Ascec(ElectronicEnergy):
         search_type: str,
         methodology: str,
         basis_set: str,
-        call_function: int,
+        program: str,
         bounds: list,
         max_closeness: float = 1.0,
         seed: int = None,
@@ -23,7 +23,7 @@ class Ascec(ElectronicEnergy):
         nT: int = 100,
         dT: float = 0.1,
         maxCycle: int = 3000,
-    ):
+    ) -> None:
         """
         Initialize the Ascec class
 
@@ -47,19 +47,15 @@ class Ascec(ElectronicEnergy):
             search_type,
             methodology,
             basis_set,
-            max_closeness,
             seed,
         )
-        self._object_system_current = object_system
         self._bounds = bounds
-        self._call_function = call_function
+        self._call_program = program
 
         self._T0 = T0
         self._nT = nT
         self._dT = dT
         self._maxCylce = maxCycle
-
-        self.store_structures = []
 
         # initial energy
         self.electronic_e(np.zeros(len(bounds)))
@@ -85,7 +81,7 @@ class Ascec(ElectronicEnergy):
         energy :
             Electronic energy of the new configuration
         """
-        if self._call_function == 1:
+        if self._call_program == "pyscf":
             self.energy_current = self.pyscf(x)
 
     def random_mov(self, n):
@@ -103,8 +99,8 @@ class Ascec(ElectronicEnergy):
             Random value to move the molecules, in the 1D array
         """
         translate = np.random.uniform(
-            low=-self._object_system_current._sphere_radius,
-            high=self._object_system_current._sphere_radius,
+            low=self._bounds[0][0],
+            high=-self._bounds[0][0],
             size=(int(n / 2),),
         )
         rotate = np.random.uniform(low=-180.0, high=180.0, size=(int(n / 2),))
@@ -130,12 +126,9 @@ class Ascec(ElectronicEnergy):
             lower_energy = True
         else:
             DE = self.energy_current - self.e_before
-            TKb = T * KB  # Boltzmann constant [Eh/K]
+            TKb = T * KB
             boltzmann = np.exp(-DE / TKb)
             delta_energy = np.abs(DE / self.energy_current)
-
-            # random = np.random.uniform(0, 1)
-            # if boltzmann > random:
             if boltzmann > delta_energy:
                 # print(f"Boltzmann Accepted {boltzmann:.3e}")
                 accepted = True
@@ -165,7 +158,6 @@ class Ascec(ElectronicEnergy):
                 # 3 values to translate and another 3 to rotate
                 x = self.random_mov(len(self._bounds))
                 self.electronic_e(x)
-                # self.store_structure()
                 accepted, lower_energy = self.ascec_criterion(T)
                 if accepted:
                     configurations_accepted += 1

@@ -11,7 +11,6 @@ class ElectronicEnergy:
         search_type: str,
         methodology: str,
         basis_set: str,
-        max_closeness: float = 1.0,
         seed: int = None,
     ) -> None:
         """
@@ -19,12 +18,8 @@ class ElectronicEnergy:
 
         Attributes
         ----------
-        molecule_object : object
+        object_system : object
             Object initialized with Molecule or Cluster class
-        sphere_center : list
-            Center of the sphere where evolve the system
-        sphere_radius : float
-            Radius of the sphere where should evolve the system
         """
 
         self._object_system_initial = object_system
@@ -38,7 +33,6 @@ class ElectronicEnergy:
             self._functional = methodology.split()[1]
         self._basis_set = basis_set
 
-        self._max_closeness = max_closeness
         self._move_seed = seed
 
         self.store_structures = []
@@ -105,7 +99,6 @@ class ElectronicEnergy:
                 sphere_radius=system_object._sphere_radius,
                 sphere_center=system_object._sphere_center
             )
-
             # ------------------------------------------------------------
             # Build input to pyscf
             self.input_atom_mol_pyscf()
