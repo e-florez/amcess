@@ -15,7 +15,7 @@ REQUIREMENTS = [
     "scipy==1.7.1",
     "numpy==1.21.2",
     "pyscf==1.7.6.post1",
-    "h5py==2.10.0",
+    "h5py==3.1.0",
     "pyberny==0.6.3",
     "geomeTRIC==0.9.7.2",
     "GPyOpt==1.2.6",

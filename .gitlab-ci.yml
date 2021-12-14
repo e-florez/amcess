@@ -16,7 +16,6 @@ cache:
     - venv/
 
 before_script:
-  - apt install python3-h5py
   - python --version
   - python -m venv venv
   - source venv/bin/activate
