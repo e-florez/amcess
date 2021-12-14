@@ -1166,3 +1166,63 @@ def test_the_biggest_to_initio(molecule1, molecule2, molecule3):
     obj_cluster = Cluster(molecule1, molecule2, molecule3)
     obj_cluster = obj_cluster.center_radius_sphere()
     assert obj_cluster.get_molecule(0).atoms == molecule2
+
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2",
+    [
+        (
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            [("H", 0.0, 0.0, 3.0), ("H", 0.78, 0.0, 3.0)],
+        ),
+    ],
+)
+def test_TE_center_radius_sphere(molecule1, molecule2):
+    """
+    Test of TE of the tolerance argument in the method center_radius_sphere
+    """
+    with pytest.raises(TypeError) as e:
+        obj_cluster = Cluster(molecule1, molecule2)
+        obj_cluster.center_radius_sphere(add_tolerance_radius=[1])
+    assert (
+        str(e.value) == "\n\nThe tolerance for radius is not a float"
+        f"\nplease, check: '{type([1])}'\n"
+    )
+
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2, new_seed, expected",
+    [
+        (
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            [("H", 0.0, 0.0, 3.0), ("H", 0.78, 0.0, 3.0)],
+            2,
+            0.2616121342493164,
+        ),
+    ],
+)
+def test_Cluster_seed_set(molecule1, molecule2, new_seed, expected):
+    """
+    Test for the setter seed
+    """
+    obj_cluster = Cluster(molecule1, molecule2)
+    obj_cluster.seed = new_seed
+    assert obj_cluster._random_gen.uniform() == expected
+
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2, seed",
+    [
+        (
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            [("H", 0.0, 0.0, 3.0), ("H", 0.78, 0.0, 3.0)],
+            2,
+        ),
+    ],
+)
+def test_Cluster_init_seed(molecule1, molecule2, seed):
+    """
+    Seed as argument in the instatiation of the Cluster class
+    """
+    obj_cluster = Cluster(molecule1, molecule2, seed=seed)
+    assert obj_cluster._seed == seed
