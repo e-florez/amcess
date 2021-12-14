@@ -1,5 +1,5 @@
 import numpy as np
-from pyscf import gto, scf, dft, mp, cc
+from pyscf import cc, dft, gto, mp, scf
 
 from amcess.base_molecule import Cluster
 
@@ -54,15 +54,15 @@ class ElectronicEnergy:
             """
             Build input to pyscf
 
-            Parameters
-            ----------
+            .. rubric:: Parameters
+
             x : array 1D
                 possible new positions and angles.
             system_object : object Cluster
                 Object initialized with Molecule or Cluster class
 
-            Returns
-            -------
+            .. rubric:: Returns
+
             input_gto_pyscf: list
                 Atom's symbols and coordinates
             system_object: Cluster
@@ -147,10 +147,10 @@ class ElectronicEnergy:
         Build a portion of the input for the gto object of pyscf
             'X 0.0 0.0 0.0; X 0.0 0.0 1.0'
 
-        Returns
-        -------
-            input_gto_pyscf: list
-                Atom's symbols and coordinates
+        .. rubric:: Returns
+
+        input_gto_pyscf: list
+            Atom's symbols and coordinates
         """
 
         symbols = self._object_system_current.symbols
@@ -171,8 +171,8 @@ class ElectronicEnergy:
         """
         Write all accepted structures to a file
 
-        Parameters
-        ----------
+        .. rubric:: Parameters
+
         filename: str
             File name where is save structure and energy
         """
@@ -200,13 +200,13 @@ class ElectronicEnergy:
         """
         Calculate electronic energy with pyscf
 
-        Parameters
-        ----------
+        .. rubric:: Parameters
+
         mol: object
             gto pyscf object
 
-        Returns
-        -------
+        .. rubric:: Returns
+
         Electronic energy
         """
         try:

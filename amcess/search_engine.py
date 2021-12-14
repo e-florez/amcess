@@ -1,6 +1,4 @@
-from scipy.optimize import shgo
-from scipy.optimize import dual_annealing
-
+from scipy.optimize import dual_annealing, shgo
 
 from amcess.ascec import Ascec
 from amcess.base_molecule import Cluster
@@ -20,8 +18,7 @@ class SearchConfig:
     Interface to articulate the cluster object with type of search
     and the calculation of energy
 
-    Parameters
-    ----------
+    .. rubric:: Parameters
 
     system_object : object
         Object made with the Cluster class
@@ -36,16 +33,15 @@ class SearchConfig:
         Name of the output xyz with coordinates of the
         configurations accepts
 
-    Returns
-    -------
+    .. rubric:: Returns
+
     Output xyz with coordinates and electronic structure
 
-    Raises
-    ------
+    .. rubric:: Raises
+
     TypeError
-        System_object isn't difinite
-        AttributeError system_object isn't difinite as
-        an object Cluster
+        System_object isn't define. AttributeError system_object isn't
+        define as an object Cluster
     """
 
     def __init__(
@@ -87,9 +83,10 @@ class SearchConfig:
         # -- rotate bounds
         bound_rotate = [(-180, 180), (-180, 180), (-180, 180)]
         # -- Multiply bounds by the amount of molecules
-        bound_translate = bound_translate * (
+        bound_translate = (  # noqa
             self._system_object.total_molecules - 1
-        )
+        ) * bound_translate
+
         bound_rotate = bound_rotate * (self._system_object.total_molecules - 1)
         # -- concatenate bounds
         self._bounds = bound_translate + bound_rotate
@@ -210,8 +207,8 @@ class SearchConfig:
         """
         Alternative to execute the searching methodologies in METHODS
 
-        Parameters
-        ----------
+        .. rubric:: Parameters
+
         kwargs : dict
             Dictionary with the parameters to be used in the search
             methodologies

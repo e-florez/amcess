@@ -1,4 +1,5 @@
 import numpy as np
+
 from amcess.electronic_energy import ElectronicEnergy
 
 
@@ -66,15 +67,15 @@ class Ascec(ElectronicEnergy):
         """
         Evaluate the electronic energy
 
-        Parameters
-        ----------
+        .. rubric:: Parameters
+
         function : callable
             The function to calculate electronic energy
         x : array, float
             Value to move the molecules, in the 1D array
 
-        Returns
-        -------
+        .. rubric:: Returns
+
         energy :
             Electronic energy of the new configuration
         """
@@ -85,13 +86,13 @@ class Ascec(ElectronicEnergy):
         """
         Randomly move the molecules
 
-        Parameters
-        ----------
+        .. rubric:: Parameters
+
         n : int
             dimension of the 1D array
 
-        Returns
-        -------
+        .. rubric:: Returns
+
         x : array, float
             Random value to move the molecules, in the 1D array
         """
@@ -107,14 +108,15 @@ class Ascec(ElectronicEnergy):
         """
         ASCEC criterion for acceptance, based in Markov Chain Monte Carlo
 
-        Parameters
-        ----------
+        .. rubric:: Parameters
+
         e : float
             Value of the cost function
 
         T : float
             Annealing temperature
         """
+
         KB: float = 3.166811563e-6  # Eh/K
         accepted = False
         lower_energy = False

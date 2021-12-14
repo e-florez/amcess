@@ -22,13 +22,13 @@ def define_optimization_args(**kargs):
     Define arguments for optimization. If no values are given by user,
     it returns default values.
 
-    Parameters
-    ----------
+    .. rubric:: Parameters
+
     kargs : dictionary
         parameters given by user
 
-    Returns
-    -------
+    .. rubric:: Returns
+
     dictionary
         output with model parameters
     """
@@ -51,13 +51,13 @@ def define_run_optimization_args(**kargs):
     Define arguments for run_optimization method. If no values are
     given by user, it returns default values.
 
-    Parameters
-    ----------
+    .. rubric:: Parameters
+
     kargs : dictionary
         parameters given by user
 
-    Returns
-    -------
+    .. rubric:: Returns
+
     dictionary
         output with model parameters
     """
@@ -79,13 +79,13 @@ def define_run_parallel_optimization_args(**kargs):
     Define arguments for parallel computation. If no values are given,
     it returns default values.
 
-    Parameters
-    ----------
+    .. rubric:: Parameters
+
     kargs : dictionary
         parameters given by user
 
-    Returns
-    -------
+    .. rubric:: Returns
+
     dictionary
         output with parallel computation parameters
     """
@@ -113,8 +113,8 @@ class SingleObjective_Edited(Objective):
     """
     Class to handle problems with one single objective function.
 
-    Parameters
-    ----------
+    .. rubric:: Parameters
+
     param func:
         objective function.
     param batch_size:
@@ -130,8 +130,8 @@ class SingleObjective_Edited(Objective):
     param space:
         Not in use.
 
-    Notes
-    -----
+    .. rubric:: Notes
+
     the objective function should take 2-dimensional numpy arrays
     as input and outputs. Each row should contain a location (in the case of
     the inputs) or a function evaluation (in the case of the outputs).
@@ -206,8 +206,8 @@ def solve_gaussian_processes(
     Find the global minimum of a function using Bayesian Optimization
     with Gaussian Processes [1].
 
-    Parameters
-    ----------
+    .. rubric:: Parameters
+
     func : callable
         The objective function to be minimized. Must be in the form
         `f(x, *args)`, where x is the argument in the form of a 1-D array and
@@ -227,8 +227,8 @@ def solve_gaussian_processes(
     kargs : dict
         Dictionary with Gaussian process parameters.
 
-    Notes
-    -----
+    .. rubric:: Notes
+
     For more specific parameters, see `GPyOpt`_ official documentation
 
     [1] Gaussian Processes for Machine Learning. C. E. Rasmussen and

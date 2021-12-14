@@ -12,21 +12,21 @@ class Atom:
     """
     Representation of an individual atomas (<element> <X> <Y> <Z>)
 
-    Examples
-    --------
+    .. rubric:: Examples
+
     >>> Atom(element='H', x=0, y=0, z=0)
     {'element': 'H', 'x': 0, 'y': 0, 'z': 0}
 
     >>> Atom('F', 0, 0, 1.97)
     {'element': 'F', 'x': 0, 'y': 0, 'z': 1.97}
 
-    Returns
-    -------
+    .. rubric:: Returns
+
     atom : object
         object like dict {'element': str, 'x': float, 'y': float, 'z': float}
 
-    Raises
-    ------
+    .. rubric:: Raises
+
     ValueError
         format MUST be (str, float, float, float) with NOT empty filed
     """
@@ -89,8 +89,8 @@ class Molecule:
 
     {"atoms": [(<element> <X> <Y> <Z>), (<element> <X> <Y> <Z>), ...]}
 
-    Parameters
-    ----------
+    .. rubric:: Parameters
+
     atoms : list[tuple(str, float, float, float)]
         Cartesian coordinates of each atom, by default empty list
 
@@ -127,7 +127,7 @@ class Molecule:
         """check if the charge is valid"""
         if not isinstance(charge, int):
             raise ValueError(
-                "\n\ncharge must be an integer "
+                "\n\ncharge must be an integer "  # noqa
                 f"\nyou get --> 'charge = {charge}'\n"
             )
 
@@ -255,8 +255,8 @@ class Molecule:
     def elements(self) -> list:
         """Show a list of unique symbols
 
-        Returns
-        -------
+        .. rubric:: Returns
+
         list
             list of unique symbols
         """
@@ -281,8 +281,8 @@ class Molecule:
     def numbering_atoms(self) -> str:
         """show atom number line by line
 
-        Returns
-        -------
+        .. rubric:: Returns
+
         str
             atom number line by line
         """
@@ -316,13 +316,13 @@ class Molecule:
     def center_of_mass(self) -> tuple:
         """Center of mass for a N-body problem. `Jacobi coordinates`_
 
-        Notes
-        -----
-            total mass for dummy atoms (not in the Periodic Table) is equal
-            to ONE (1)
+        .. rubric:: Notes
 
-        Returns
-        -------
+        total mass for dummy atoms (not in the Periodic Table) is equal
+        to ONE (1)
+
+        .. rubric:: Returns
+
         tuple : (float, float, float)
             List of N 3D tuples, where N is equal to the number of atoms
 
@@ -345,7 +345,7 @@ class Molecule:
         """Principal axes for according to Jacobi coordinates"""
         return [
             tuple(c)
-            for c in (
+            for c in (  # noqa
                 np.asarray(self.coordinates) - np.asarray(self.center_of_mass)
             )
         ]
@@ -369,18 +369,18 @@ class Molecule:
     def add_atoms(self, new_atoms: list) -> object:
         """adding extra atoms can NOT be MOVED or ROTATED
 
-        Parameters
-        ----------
+        .. rubric:: Parameters
+
         other : list
             cartesian coordinates; like [(<element>, <X>, <Y>, <Y>), ...]
 
-        Returns
-        -------
+        .. rubric:: Returns
+
         Molecule : object
             a new Molecule
 
-        Raises
-        ------
+        .. rubric:: Raises
+
         TypeError
             for anything else
         """
@@ -407,18 +407,18 @@ class Molecule:
         """
         Getting catesian coordinate for an atom
 
-        Parameters
-        ----------
+        .. rubric:: Parameters
+
         atom : int
             atom index
 
-        Returns
-        -------
+        .. rubric:: Returns
+
         list
             ["element", "X", "Y", "Z"]
 
-        Raises
-        ------
+        .. rubric:: Raises
+
         IndexError
         """
         if not isinstance(atom, int) or atom >= self.total_atoms:
@@ -458,8 +458,8 @@ class Cluster(Molecule):
     2. List type: [(<element> <X> <Y> <Z>), ...]
     3. Molecule/Cluster type (Objects)
 
-    Parameters
-    ----------
+    .. rubric:: Parameters
+
     args : List, Dict, Molecule, Cluster
         coordinates of each molecule/atom comma separates (support +,-,*)
     freeze_molecule : integer, optional
@@ -472,8 +472,8 @@ class Cluster(Molecule):
     seed : int, optional
         seed to initialize the random generator function, by default None
 
-    Raises
-    ------
+    .. rubric:: Raises
+
     TypeError
         for a wrong input argument
     """
@@ -492,7 +492,7 @@ class Cluster(Molecule):
 
         # fixing molecule to NOT move or rotate
         # initialize with an empty list
-        self._freeze_molecule = (
+        self._freeze_molecule = (  # noqa
             [] if freeze_molecule is None else freeze_molecule
         )
 
@@ -693,8 +693,8 @@ class Cluster(Molecule):
         """pair-wise checking if any overlapping among points
         with a radius defined by `max_closeness`
 
-        Parameters
-        ----------
+        .. rubric:: Parameters
+
         first_coordinates : list
             list of tuples [(float, float, float), ...]
         second_coordinates : list
@@ -702,8 +702,8 @@ class Cluster(Molecule):
         max_closeness : float, optional
             maximun closeness between two pairs, by default 1.0
 
-        Returns
-        -------
+        .. rubric:: Returns
+
         bool
             True if two point are closer than `max_closeness`
         """
@@ -733,13 +733,13 @@ class Cluster(Molecule):
     def initialize_cluster(self, max_closeness: float = 1.0) -> object:
         """Create a new cluster object which any atom is overlapped
 
-        Parameters
-        ----------
+        .. rubric:: Parameters
+
         max_closeness : float, optional
             maximun closeness between two pairs, by default 1.0
 
-        Returns
-        -------
+        .. rubric:: Returns
+
         Cluster : object
             returns a new Cluster object
         """
@@ -757,7 +757,7 @@ class Cluster(Molecule):
             # moving the next single molecule into the cluster sphere
             molecule = self.get_molecule(i).translate(0, sc_x, sc_y, sc_z)
 
-            if Cluster.overlapping(
+            if Cluster.overlapping(  # noqa
                 molecule.coordinates, new_cluster.coordinates
             ):
                 new_cluster += molecule
@@ -807,8 +807,8 @@ class Cluster(Molecule):
         """Moving (translating and rotating) randomly without overlapping
         any atom
 
-        Parameters
-        ----------
+        .. rubric:: Parameters
+
         molecule : int, optional
             molecule to move randomly, by default molecule with index zero (0)
         max_step : float, optional
@@ -818,14 +818,14 @@ class Cluster(Molecule):
         max_closeness : float
             maximun closeness between any pair of atoms, by default 1.0 A
 
-        Returns
-        -------
+        .. rubric:: Returns
+
         object : Cluster
             returns a Cluster object whit a molecule moved to a random place
             without overlapping any other
 
-        Raises
-        ------
+        .. rubric:: Raises
+
         AttributeError : OverlappingError
             After serching for max_overlap_cycle and no place found for the
             molecule without overlapping any other
@@ -933,7 +933,7 @@ class Cluster(Molecule):
             sphere_center=new_cluster.sphere_center,
         )
 
-    def rotate(
+    def rotate(  # noqa
         self, molecule: int = None, x: float = 0, y: float = 0, z: float = 0
     ):
         """
@@ -976,13 +976,13 @@ class Cluster(Molecule):
         ).as_matrix()
 
         rotatedcoordinates = (
-            np.dot(molecule_principal_axes, rotation_matrix)
+            np.dot(molecule_principal_axes, rotation_matrix)  # noqa
             + molecule_center_of_mass
         )
 
         rotated_molecule = list()
         for i, atom in enumerate(molecule_symbols):
-            rotated_molecule.append(
+            rotated_molecule.append(  # noqa
                 tuple([atom] + rotatedcoordinates[i].tolist())
             )
 
@@ -996,7 +996,7 @@ class Cluster(Molecule):
             sphere_center=new_cluster.sphere_center,
         )
 
-    def translate(
+    def translate(  # noqa
         self, molecule: int = None, x: float = 0, y: float = 0, z: float = 0
     ):
         """Returns a NEW Molecule Object with a TRANSLATED fragment"""
@@ -1022,7 +1022,7 @@ class Cluster(Molecule):
         molecule_center_of_mass = molecule_to_move.center_of_mass
         molecule_principal_axes = molecule_to_move.principal_axes
 
-        translatedcoordinates = np.asarray(
+        translatedcoordinates = np.asarray(  # noqa
             molecule_center_of_mass
         ) + np.asarray([x, y, z])
 
@@ -1064,18 +1064,18 @@ class Cluster(Molecule):
         """
         Define a spherical outline that contains our cluster
 
-        Parameters
-        ----------
-            add_tolerance_radius : float
-                Tolerance with the radius between the mass center to the
-                furthest atom
+        .. rubric:: Parameters
 
-        Returns
-        -------
-            sphere_center : tuple
-                Mass center of the biggest molecule
-            sphere_radius : float
-                Radius between the sphere center to the furthest atom
+        add_tolerance_radius : float
+            Tolerance with the radius between the mass center to the
+            furthest atom
+
+        .. rubric:: Returns
+
+        sphere_center : tuple
+            Mass center of the biggest molecule
+        sphere_radius : float
+            Radius between the sphere center to the furthest atom
 
         """
         # ----------------------------------------------------------------
