@@ -748,6 +748,40 @@ def test_SC_run_MCMC_bayesian_method(
     assert readl == "4\n"
 
 
+@pytest.mark.parametrize(
+    "molecule1, molecule2",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 3.0), ("H", 0.78, 0.0, 3.0)],
+        ),
+    ],
+)
+def test_system_object_grep(molecule1, molecule2):
+    """
+    Test Ascec.criterion else
+    """
+    obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+    obj_sc.system_object
+
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2, expected",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 3.0), ("H", 0.78, 0.0, 3.0)],
+            "pyscf",
+        ),
+    ],
+)
+def test_func_cost_grep(molecule1, molecule2, expected):
+    """
+    Test func_cost grep
+    """
+    assert SearchConfig(Cluster(molecule1, molecule2)).func_cost == expected
+
+
 # This test is for ascec criterion
 @pytest.mark.parametrize(
     "molecule1, molecule2",

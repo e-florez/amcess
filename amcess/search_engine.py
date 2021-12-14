@@ -15,33 +15,6 @@ METHODS = {
 }
 
 
-def lennard_jones(r, epsilon=1.0, sigma=1.0) -> float:
-    """Lennard-Jones potential
-
-    Parameters
-    ----------
-    r : float
-        Distance between two atoms.
-    epsilon : float, optional
-        Depth of potential well, by default 1.0
-    sigma : float, optional
-        Width of potential well, by default 1.0
-
-    Returns
-    -------
-    float
-        Lennard-Jones potential
-    """
-
-    return 4 * epsilon * ((sigma / r) ** 12 - (sigma / r) ** 6)
-
-
-COST_FUNCTIONS = {
-    "pyscf": ElectronicEnergy.pyscf,
-    "Lennard_Jones": lennard_jones,
-}
-
-
 class SearchConfig:
     """
     Interface to articulate the cluster object with type of search
@@ -277,10 +250,7 @@ class SearchConfig:
                     self._basis_set,
                 )
 
-                if self._func_cost == "pyscf":
-                    cost_func = obj_ee.pyscf
-                else:
-                    cost_func = COST_FUNCTIONS[self._func_cost]
+            cost_func = obj_ee.pyscf
 
             self._search = func(
                 cost_func,
