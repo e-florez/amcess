@@ -72,6 +72,10 @@ class Atom:
         """Atomic symbol of the atom"""
         return self.element
 
+    def to_tuple(self) -> tuple:
+        """Atomic coordinates as tuple"""
+        return (self.element, self.x, self.y, self.z)
+
     # ===============================================================
     # MAGIC METHODS
     # ===============================================================
