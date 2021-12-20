@@ -200,7 +200,7 @@ class SearchConfig:
         self._func_cost = new_func_cost
 
     # ===============================================================
-    # Methods
+    # METHODS
     # ===============================================================
 
     def run(self, **kwargs):

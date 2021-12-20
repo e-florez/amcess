@@ -53,19 +53,19 @@ class Ascec(ElectronicEnergy):
         self._call_program = program
 
         self._initial_temperature = initial_temperature
-        self._number_temperature = number_temperatures
+        self._number_temperatures = number_temperatures
         self._step_temperature = step_temperature
         self._maxCylces = maxCycles
 
         # initial energy
-        self.electronic_e(np.zeros(len(bounds)))
+        self.electronic_energy(np.zeros(len(bounds)))
         self._e0 = self.energy_current
         self.e_before = self._e0
 
     # ===============================================================
     # Methods
     # ===============================================================
-    def electronic_e(self, x):
+    def electronic_energy(self, x):
         """Evaluate the electronic energy
 
         .. rubric:: Parameters
@@ -81,7 +81,7 @@ class Ascec(ElectronicEnergy):
         if self._call_program == "pyscf":
             self.energy_current = self.pyscf(x)
 
-    def random_mov(self, n):
+    def random_movement(self, n):
         """
         Randomly move the molecules
 
@@ -145,24 +145,24 @@ class Ascec(ElectronicEnergy):
         iT = 0
         temperature = self._initial_temperature
         configurations_accepted = 0
-        while iT <= self._number_temperature:
+        while iT <= self._number_temperatures:
             count = 0
             while count <= self._maxCylces:
                 # --------------------------------------------------------------
                 # Information about the before cycle
                 print(
                     f"\r Current temperature {temperature:7.2f} K, progress:"
-                    f" {100*iT/self._number_temperature:.2f}%, with "
+                    f" {100*iT/self._number_temperatures:.2f}%, with "
                     f" {configurations_accepted:3d} configurations accepted"
                     f" (cycle {count:>4d}/{self._maxCylces:<4d})",
                     end="",
                 )
                 # ------------------------------------------------------------
                 # Generate 3 random values to translate and other 3 to rotate
-                x = self.random_mov(len(self._bounds))
+                x = self.random_movement(len(self._bounds))
                 # ------------------------------------------------------------
                 # Electronic energy calculation
-                self.electronic_e(x)
+                self.electronic_energy(x)
                 # ------------------------------------------------------------
                 # ASCEC criterion
                 accepted, lower_energy = self.ascec_criterion(temperature)
@@ -183,6 +183,6 @@ class Ascec(ElectronicEnergy):
                 count += 1
             # ------------------------------------------------------------
             # -- Update the temperature
-            temperature = temperature - temperature * self._step_temperature
+            temperature = temperature - temperature * self._step_temperatures
             # -- Counter of temperature steps
             iT += 1

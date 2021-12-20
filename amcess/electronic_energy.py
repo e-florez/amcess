@@ -140,7 +140,7 @@ class ElectronicEnergy:
         self._object_system_current = new_object_system
 
     # ===============================================================
-    # Methods
+    # METHODS
     # ===============================================================
     def input_atom_mol_pyscf(self):
         """

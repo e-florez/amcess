@@ -32,9 +32,9 @@ class Atom:
     """
 
     element: str = attr.ib()
-    x: int = attr.ib()
-    y: int = attr.ib()
-    z: int = attr.ib()
+    x: float = attr.ib()
+    y: float = attr.ib()
+    z: float = attr.ib()
 
     # ===============================================================
     # VALIDATORS
@@ -60,7 +60,14 @@ class Atom:
             )
 
     # ===============================================================
-    # PROPERTIES
+    # MAGIC METHODS
+    # ===============================================================
+    def __str__(self):
+        """Magic method '__str__' to print the object as a dictionary"""
+        return str(attr.asdict(self))
+
+    # ===============================================================
+    # METHODS
     # ===============================================================
     @property
     def atomic_mass(self) -> list:
@@ -71,13 +78,6 @@ class Atom:
     def symbol(self) -> list:
         """Atomic symbol of the atom"""
         return self.element
-
-    # ===============================================================
-    # MAGIC METHODS
-    # ===============================================================
-    def __str__(self):
-        """Magic method '__str__' to print the object as a dictionary"""
-        return str(attr.asdict(self))
 
 
 # -------------------------------------------------------------
@@ -200,7 +200,7 @@ class Molecule:
         return self.xyz
 
     # ===============================================================
-    # PROPERTIES
+    # PROPERTIES/METHODS
     # ===============================================================
     @property
     def atoms(self) -> list:
@@ -228,7 +228,7 @@ class Molecule:
 
     @property
     def atomic_masses(self) -> list:
-        """Atomic mass of the molecule"""
+        """List of the atomic mass of each one of the atoms of the molecule"""
         return [Atom(*atom).atomic_mass for atom in self.atoms]
 
     @property
@@ -676,14 +676,14 @@ class Cluster(Molecule):
 
         self._sphere_radius = new_radius
 
+    # ===============================================================
+    # METHODS
+    # ===============================================================
     @property
     def total_molecules(self) -> int:
         """return the total number of molecules in the cluster"""
         return len(self._cluster_dict)
 
-    # ===============================================================
-    # METHODS
-    # ===============================================================
     @staticmethod
     def overlapping(
         first_coordinates: list,
