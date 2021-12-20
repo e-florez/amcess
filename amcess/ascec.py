@@ -183,6 +183,6 @@ class Ascec(ElectronicEnergy):
                 count += 1
             # ------------------------------------------------------------
             # -- Update the temperature
-            temperature = temperature - temperature * self._step_temperatures
+            temperature = temperature - temperature * self._step_temperature
             # -- Counter of temperature steps
             iT += 1

@@ -1,11 +1,11 @@
 <!-- [![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-390/)
-![Gitlab pipeline status](https://img.shields.io/gitlab/pipeline/ADanianZE/ascec/main?style=plastic)
-[![pipeline status](https://gitlab.com/ADanianZE/ascec/badges/main/pipeline.svg)](https://gitlab.com/ADanianZE/ascec/-/commits/main)
-![Gitlab code coverage](https://img.shields.io/gitlab/coverage/ADanianZE/ascec/main?style=plastic)
-[![Coverage Status](https://coveralls.io/repos/gitlab/ADanianZE/ascec/badge.svg?branch=main)](https://coveralls.io/gitlab/ADanianZE/ascec?branch=main)
-[![coverage report](https://gitlab.com/ADanianZE/ascec/badges/main/coverage.svg)](https://gitlab.com/ADanianZE/ascec/-/commits/main)
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gl/ADanianZE%2Fascec/main?filepath=workflow%2F01_importing_atoms_and_molecules.ipynb)
-![GitLab tag (latest by date)](https://img.shields.io/gitlab/v/tag/ADanianZE/ascec?style=plastic)
+![Gitlab pipeline status](https://img.shields.io/gitlab/pipeline/ADanianZE/amcess/main?style=plastic)
+[![pipeline status](https://gitlab.com/ADanianZE/amcess/badges/main/pipeline.svg)](https://gitlab.com/ADanianZE/amcess/-/commits/main)
+![Gitlab code coverage](https://img.shields.io/gitlab/coverage/ADanianZE/amcess/main?style=plastic)
+[![Coverage Status](https://coveralls.io/repos/gitlab/ADanianZE/amcess/badge.svg?branch=main)](https://coveralls.io/gitlab/ADanianZE/amcess?branch=main)
+[![coverage report](https://gitlab.com/ADanianZE/amcess/badges/main/coverage.svg)](https://gitlab.com/ADanianZE/amcess/-/commits/main)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gl/ADanianZE%2Famcess/main?filepath=workflow%2F01_importing_atoms_and_molecules.ipynb)
+![GitLab tag (latest by date)](https://img.shields.io/gitlab/v/tag/ADanianZE/amcess?style=plastic)
 [![mypy: checked](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 ![Pod License](https://img.shields.io/badge/license-MIT-blue.svg)  -->
@@ -23,17 +23,17 @@
   <img src=https://img.shields.io/badge/python-3.9-blue.svg></a>
   <a href=https://www.gnu.org/licenses/gpl-3.0>
   <img src="https://img.shields.io/badge/License-GPLv3-blue.svg"></a>
-  <a href=https://mybinder.org/v2/gl/ADanianZE%2Fascec/main?filepath=workflow%2F01_importing_atoms_and_molecules.ipynb>
+  <a href=https://mybinder.org/v2/gl/ADanianZE%2Famcess/main?filepath=workflow%2F01_importing_atoms_and_molecules.ipynb>
   <img src="https://mybinder.org/badge_logo.svg"></a>
   <br>  
-  <a href=https://img.shields.io/gitlab/pipeline/ADanianZE/ascec/main?style=plastic>
-  <img src="https://img.shields.io/gitlab/pipeline/ADanianZE/ascec/main?style=plastic"></a>
-  <a href=https://gitlab.com/ADanianZE/ascec/-/commits/main>
-  <img src="https://gitlab.com/ADanianZE/ascec/badges/main/pipeline.svg"></a>
-  <a href=https://img.shields.io/gitlab/coverage/ADanianZE/ascec/main?style=plastic>
-  <img src="https://img.shields.io/gitlab/coverage/ADanianZE/ascec/main?style=plastic"></a>
-  <a href=https://coveralls.io/gitlab/ADanianZE/ascec?branch=main>
-  <img src="https://coveralls.io/repos/gitlab/ADanianZE/ascec/badge.svg?branch=main"></a>
+  <a href=https://img.shields.io/gitlab/pipeline/ADanianZE/amcess/main?style=plastic>
+  <img src="https://img.shields.io/gitlab/pipeline/ADanianZE/amcess/main?style=plastic"></a>
+  <a href=https://gitlab.com/ADanianZE/amcess/-/commits/main>
+  <img src="https://gitlab.com/ADanianZE/amcess/badges/main/pipeline.svg"></a>
+  <a href=https://img.shields.io/gitlab/coverage/ADanianZE/amcess/main?style=plastic>
+  <img src="https://img.shields.io/gitlab/coverage/ADanianZE/amcess/main?style=plastic"></a>
+  <a href=https://coveralls.io/gitlab/ADanianZE/amcess?branch=main>
+  <img src="https://coveralls.io/repos/gitlab/ADanianZE/amcess/badge.svg?branch=main"></a>
 </div>
 
 ---
@@ -95,7 +95,7 @@ GAMESS
 - Relativistic: DIRAC, ADF
 
 ### Technical Documentation
-Technical documents behind this project can be accessed [here](https://adanianze.gitlab.io/ascec).
+Technical documents behind this project can be accessed [here](https://adanianze.gitlab.io/amcess).
 
 
 ### Requirements
@@ -136,15 +136,15 @@ A detail workflow is provide into `workflow` directory. It has a list of Jupyter
 
 Workflow:
 1. Getting starting with atoms and molecules properties. 
-      - Notebook ([binder](https://mybinder.org/v2/gl/ADanianZE%2Fascec/main?filepath=workflow%2F01_importing_atoms_and_molecules.ipynb)): `01_importing_atoms_and_molecules.ipynb` 
+      - Notebook ([binder](https://mybinder.org/v2/gl/ADanianZE%2Famcess/main?filepath=workflow%2F01_importing_atoms_and_molecules.ipynb)): `01_importing_atoms_and_molecules.ipynb` 
 2. Translating and rotating atoms and molecules. 
-      - Notebook ([binder](https://mybinder.org/v2/gl/ADanianZE%2Fascec/main?filepath=workflow%2F02_move_rotate_molecules.ipynb)): `02_move_rotate_molecules.ipynb` 
+      - Notebook ([binder](https://mybinder.org/v2/gl/ADanianZE%2Famcess/main?filepath=workflow%2F02_move_rotate_molecules.ipynb)): `02_move_rotate_molecules.ipynb` 
 3. Moving Molecules randomly from a Cluster. 
-      - Notebook ([binder](https://mybinder.org/v2/gl/ADanianZE%2Fascec/main?filepath=workflow%2F03_move_rotate_cluster.ipynb)): `03_move_rotate_cluster.ipynb` 
+      - Notebook ([binder](https://mybinder.org/v2/gl/ADanianZE%2Famcess/main?filepath=workflow%2F03_move_rotate_cluster.ipynb)): `03_move_rotate_cluster.ipynb` 
 4. Freezing any molecule and redefine its sphere center. 
-      - Notebook ([binder](https://mybinder.org/v2/gl/ADanianZE%2Fascec/main?filepath=workflow%2F04_freeze_molecule_redefine_center.ipynb)): `04_freeze_molecule_redefine_center.ipynb` 
+      - Notebook ([binder](https://mybinder.org/v2/gl/ADanianZE%2Famcess/main?filepath=workflow%2F04_freeze_molecule_redefine_center.ipynb)): `04_freeze_molecule_redefine_center.ipynb` 
 5. Initialize a cluster avoiding atomic overlapping
-      - Notebook ([binder](https://mybinder.org/v2/gl/ADanianZE%2Fascec/main?filepath=workflow%2F05_initialize_cluster_and_move_molecule.ipynb)): `05_initialize_cluster_and_move_molecule.ipynb` 
+      - Notebook ([binder](https://mybinder.org/v2/gl/ADanianZE%2Famcess/main?filepath=workflow%2F05_initialize_cluster_and_move_molecule.ipynb)): `05_initialize_cluster_and_move_molecule.ipynb` 
 
 ## Support
 Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
@@ -183,7 +183,7 @@ From atomic cluster to molecular cluster, the ASCEC package has produced
 novel results (structure never seen before) published in the literature. Read more on [ASCEC publications](https://scholar.google.com/scholar?start=0&q=%22ascec%22,+annealing&hl=en&as_sdt=0,5).
 
 
-You could check the directory [ASCECV3](https://gitlab.com/ADanianZE/ascec/-/tree/main/ASCECV3)
+You could check the directory [ASCECV3](https://gitlab.com/ADanianZE/amcess/-/tree/main/ASCECV3)
 
 ```
 ASCECV3/
