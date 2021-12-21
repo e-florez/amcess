@@ -59,8 +59,8 @@ class Ascec(ElectronicEnergy):
 
         # initial energy
         self.electronic_energy(np.zeros(len(bounds)))
-        self._e0 = self.energy_current
-        self.e_before = self._e0
+        self._energy_initial = self.energy_current
+        self.energy_before = self._energy_initial
 
     # ===============================================================
     # Methods
@@ -125,11 +125,12 @@ class Ascec(ElectronicEnergy):
         lower_energy = False
         # ------------------------------------------------------------
         # 1) Accepted: if the new energy is lower than the previous one
-        if self.energy_current < self.e_before:
+        if self.energy_current < self.energy_before:
             accepted = True
             lower_energy = True
         else:
-            DE = self.energy_current - self.e_before
+            DE = self.energy_current - self.energy_before
+            DE = DE / self.energy_current
             TKb = temperature * KB
             boltzmann = np.exp(-DE / TKb)
             # 2) Accepted: if DE is lower than the Boltzmann distribution
@@ -171,7 +172,7 @@ class Ascec(ElectronicEnergy):
                     # -- Counter of accepted configurations
                     configurations_accepted += 1
                     # -- Store the new energy
-                    self.e_before = self.energy_current
+                    self.energy_before = self.energy_current
                     # -- Store the new configuration
                     self.store_structure()
                     # --------------------------------------------------------

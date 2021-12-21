@@ -805,6 +805,6 @@ def test_Ascec_ascec_method(molecule1, molecule2):
         program="pyscf",
         bounds=obj_sc._bounds,
     )
-    ascec.e_before = -0.0001
+    ascec.energy_before = -0.0001
     ascec.energy_current = 0.0001
     ascec.ascec_criterion(100.0)
