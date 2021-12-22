@@ -33,29 +33,21 @@
 AMCESS
 ======
 
-is an object-oriented Python package to sample the Potential Energy 
-Surface (PES) for atomic and molecular cluster. The main goal of the AMCESS 
-project is to provide a simple, lightweight, and efficient platform to explore
-the PES. The package is designed to be used in a Python environment. 
-
-Here we present a user-friendly, simple, and efficient Python package to
-sample the Potential Energy Surface (PES) for atomic and molecular cluster.
-It is a fast and affordable tool for novice users and for experts who want
-to produce high-quality PES samples. 
-
-The package only requires a a minimal input information, such as the 
-number of atoms and their coordinates. Despite its click-and-go appeal, 
-the package is designed to be used and customized for any specific case. 
-
-AMCESS can explore the the potential energy surface using the following 
-techniques:
-
-   * Stochastic methods: Simulated Annealing and Parallel Tempering
-
-      * Metropolis or Delta Energy acceptance criteria   
-
-   * Response methods: Bayesian Optimization
-   * Combinatorial topology: simplicial homology global optimization (SHGO)
+Exploration of the Potential Energy Surface (PES) of molecules or atoms clusters is
+a crucial step to analyze physical–chemistry properties and processes. The Atomic and
+Molecular Energy Surface Sampler (AMCESS) is an end-to-end package implemented
+in Python 3.9 to generate candidate structures for the critical points sampling of the
+PES. The amcess package uses simple input files and automates common procedures to
+explore the PES using the Simulated Annealing, Simplicial Homology Global Optimiza-
+tion (SHGO), and Bayesian Optimization to generate candidate structures for any kind
+of critical point, such as local minima or transition states. The package also allows the
+user to perform local searches around defined regions. The PES is generated computing
+the electronic energy using standard and powerful quantum chemistry packages such as
+PySCF and Psi4, also implemented in Python. The amcess main purpose is to be a
+user friendly package, easy to install, import, and run, available in most platforms and
+open-source. As a Python module, amcess can be integrated into any workflow. This
+package has code reviews with unit testing and continuous integration, code coverage
+tools, and automatically keeps documentation up–to–date. 
 
 AMCESS calculates the energy using `PySCF <https://pyscf.org/>`_, the 
 Python-based Simulations of Chemistry Framework. PySCF is an efficient 
@@ -103,7 +95,7 @@ Participating
 
 Ask questions on the AMCESS Discord Server to talk with other users and 
 developers. (In order to join our Discord server, use the invitation link 
-https://discord.gg/AxxTsfDJwxE)
+https://discord.gg/vxQQCjpg)
 
 Please report bugs or enhancement requests through the Issue Tracker.
 
