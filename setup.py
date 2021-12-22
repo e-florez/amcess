@@ -39,7 +39,7 @@ with open("README.md", "r") as readme:
 
 setup(
     name="amcess",
-    version="0.1.0",
+    version="0.1.1",
     author="""
     Edison Florez,
     Andy Zapata,
@@ -54,10 +54,11 @@ setup(
     """,
     packages=["amcess"],
     install_requires=REQUIREMENTS,
-    url="https://gitlab.com/ADanianZE/amcess",
     license="The GPLv3 License",
     description="Atomic and Molecular Cluster Energy Surface Sampler",
+    long_description_content_type="text/markdown",
     long_description=LONG_DESCRIPTION,
+    url="https://gitlab.com/ADanianZE/amcess",
     keywords=[
         "Atomic Cluster",
         "Molecular Cluster",
@@ -72,10 +73,10 @@ setup(
         "Development Status :: 4 - Beta",
         "Intended Audience :: Education",
         "Intended Audience :: Science/Research",
-        "License :: OSI Approved :: GPLv3 License",
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: Implementation :: CPython",
         "Topic :: Scientific/Engineering",
     ],
