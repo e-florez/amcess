@@ -143,9 +143,6 @@ Workflow:
 5. Initialize a cluster avoiding atomic overlapping
       - Notebook ([binder](https://mybinder.org/v2/gl/ADanianZE%2Fascec/main?filepath=workflow%2F05_initialize_cluster_and_move_molecule.ipynb)): `05_initialize_cluster_and_move_molecule.ipynb` 
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
 ## Roadmap
 Some of the ideas to keep growing are:
 
@@ -161,8 +158,7 @@ The other good way is to open an issue on GitLab.
 
 - Discord: https://discord.gg/vxQQCjpg
 
-- GitLub: gitlab.com/ADanianZE/amcess/issues
-
+- GitLub:  https://gitlab.com/ADanianZE/amcess/issues
 
 ### Licence
 GNU General Public License v3 (GLPv3)
