@@ -159,8 +159,9 @@ channel on Discord.
 We hang out there and you can get real-time help with your projects.
 The other good way is to open an issue on GitLab.
 
-Discord: https://discord.gg/vxQQCjpg
-GitLub: gitlab.com/ADanianZE/amcess/issues
+- Discord: https://discord.gg/vxQQCjpg
+
+- GitLub: gitlab.com/ADanianZE/amcess/issues
 
 
 ### Licence
