@@ -37,16 +37,21 @@ Exploration of the Potential Energy Surface (PES) of molecules or atoms clusters
 a crucial step to analyze physical–chemistry properties and processes. The Atomic and
 Molecular Energy Surface Sampler (AMCESS) is an end-to-end package implemented
 in Python 3.9 to generate candidate structures for the critical points sampling of the
-PES. The amcess package uses simple input files and automates common procedures to
+PES. 
+
+The amcess package uses simple input files and automates common procedures to
 explore the PES using the Simulated Annealing, Simplicial Homology Global Optimiza-
 tion (SHGO), and Bayesian Optimization to generate candidate structures for any kind
-of critical point, such as local minima or transition states. The package also allows the
-user to perform local searches around defined regions. The PES is generated computing
-the electronic energy using standard and powerful quantum chemistry packages such as
-PySCF and Psi4, also implemented in Python. The amcess main purpose is to be a
-user friendly package, easy to install, import, and run, available in most platforms and
-open-source. As a Python module, amcess can be integrated into any workflow. This
-package has code reviews with unit testing and continuous integration, code coverage
+of critical point, such as local minima or transition states. The package also 
+allows the user to perform local searches around defined regions. 
+
+The PES is generated computing the electronic energy using standard and powerful
+quantum chemistry packages such as PySCF and Psi4, also implemented in Python. 
+
+The amcess main purpose is to be a user friendly package, easy to install, 
+import, and run, available in most platforms and open-source. 
+As a Python module, amcess can be integrated into any workflow. This package 
+has code reviews with unit testing and continuous integration, code coverage
 tools, and automatically keeps documentation up–to–date. 
 
 AMCESS calculates the energy using `PySCF <https://pyscf.org/>`_, the 

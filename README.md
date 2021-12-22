@@ -40,7 +40,7 @@
 
 <div align="center">
   <a href="Atomic and Molecular Cluster Energy Surface Sampler">
-  <img width="400" height="200" src="./docs/source/_static/amcess_logo.png"></a>
+  <img width="400" height="200" src="https://gitlab.com/ADanianZE/amcess/-/raw/main/docs/source/_static/amcess_logo.png"></a>
   <br>
 </div>
 
@@ -62,8 +62,8 @@ tools, and automatically keeps documentation up–to–date.
 
 
 <div align="center">
-  <img width="200" height="80" src="./docs/source/_static/ibuprofen.png" VSPACE=50 HSPACE=10>
-  <img width="350" height="200" src="./docs/source/_static/ibu_w6_white.gif" HSPACE=20>
+  <img width="200" height="80" src="https://gitlab.com/ADanianZE/amcess/-/raw/main/docs/source/_static/ibuprofen.png" VSPACE=50 HSPACE=10>
+  <img width="350" height="200" src="https://gitlab.com/ADanianZE/amcess/-/raw/main/docs/source/_static/ibu_w6_white.gif" HSPACE=20>
   <br>
   Molecular cluster of ibuprofen and six water molecules
   [<a href="http://www.doi.org/10.1063/1.4874258">doi: 10.1063/1.4874258</a>]
@@ -131,17 +131,18 @@ AMCESS is **Python 3.9** package
 
 A detail workflow is provide into `workflow` directory. It has a list of Jupyter notebook with detail examples about AMCESS tools and capabilities.
 
-Workflow:
+Workflow ([Binder](https://mybinder.org/v2/gl/ADanianZE%2Famcess/main?labpath=https%3A%2F%2Fgitlab.com%2FADanianZE%2Famcess%2F-%2Ftree%2Fmain%2Fworkflow)):
+
 1. Getting starting with atoms and molecules properties. 
-      - Notebook ([binder](https://mybinder.org/v2/gl/ADanianZE%2Fascec/main?filepath=workflow%2F01_importing_atoms_and_molecules.ipynb)): `01_importing_atoms_and_molecules.ipynb` 
+      - `01_importing_atoms_and_molecules.ipynb` 
 2. Translating and rotating atoms and molecules. 
-      - Notebook ([binder](https://mybinder.org/v2/gl/ADanianZE%2Fascec/main?filepath=workflow%2F02_move_rotate_molecules.ipynb)): `02_move_rotate_molecules.ipynb` 
+      - `02_move_rotate_molecules.ipynb` 
 3. Moving Molecules randomly from a Cluster. 
-      - Notebook ([binder](https://mybinder.org/v2/gl/ADanianZE%2Fascec/main?filepath=workflow%2F03_move_rotate_cluster.ipynb)): `03_move_rotate_cluster.ipynb` 
+      - `03_move_rotate_cluster.ipynb` 
 4. Freezing any molecule and redefine its sphere center. 
-      - Notebook ([binder](https://mybinder.org/v2/gl/ADanianZE%2Fascec/main?filepath=workflow%2F04_freeze_molecule_redefine_center.ipynb)): `04_freeze_molecule_redefine_center.ipynb` 
+      - `04_freeze_molecule_redefine_center.ipynb` 
 5. Initialize a cluster avoiding atomic overlapping
-      - Notebook ([binder](https://mybinder.org/v2/gl/ADanianZE%2Fascec/main?filepath=workflow%2F05_initialize_cluster_and_move_molecule.ipynb)): `05_initialize_cluster_and_move_molecule.ipynb` 
+      - `05_initialize_cluster_and_move_molecule.ipynb` 
 
 ## Roadmap
 Some of the ideas to keep growing are:
@@ -158,7 +159,7 @@ The other good way is to open an issue on GitLab.
 
 - Discord: https://discord.gg/vxQQCjpg
 
-- GitLub:  https://gitlab.com/ADanianZE/amcess/issues
+- GitLab:  https://gitlab.com/ADanianZE/amcess/issues
 
 ### Licence
 GNU General Public License v3 (GLPv3)
