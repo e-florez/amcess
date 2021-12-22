@@ -50,9 +50,15 @@
   <h1> Atomic and Molecular Cluster Energy Surface Sampler (AMCESS) </h1>
 </div>
 
-Tools to explore the Potential Energy Surface (PES) for atomic and molecular 
-systems and generate candidate structures for the local and global minima.
-
+Exploration of the Potential Energy Surface (PES) of molecules or atoms clusters is
+a crucial step to analyze physical–chemistry properties and processes. The Atomic and
+Molecular Energy Surface Sampler (AMCESS) is an end-to-end package implemented
+in Python 3.9 to generate candidate structures for the critical points sampling of the
+PES. The amcess main purpose is to be a
+user friendly package, easy to install, import, and run, available in most platforms and
+open-source. As a Python module, amcess can be integrated into any workflow. This
+package has code reviews with unit testing and continuous integration, code coverage
+tools, and automatically keeps documentation up–to–date. 
 
 
 <div align="center">
@@ -65,45 +71,39 @@ systems and generate candidate structures for the local and global minima.
   <br>
 </div>
 
-<div align="center">
-  <img width="300" height="200" src="./docs/source/_static/2d_surface_1.gif">
-  <img width="300" height="200" src="./docs/source/_static/2d_surface_2.gif">
-  <br>
-  <img width="300" height="200" src="./docs/source/_static/2d_surface_3.gif">
-  <img width="300" height="200" src="./docs/source/_static/2d_surface_4.gif">
-  <br> 
-  Example images taken from Deniz Yuret's blog on October 29, 2021 
-  <br>
-  from:
-  <a href="http://www.denizyuret.com/2015/03/alec-radfords-animations-for.html">Alec Radford's animations for optimization algorithms</a>
-</div>
-
 ### Description
-Some of the technics implemented are:
 
- * Stochastic
-      * Simulated Annealing (Metropolis-Monte Carlo)
-      * Dual Annealing
-* Bayesian Optimization
-
-To compute the energy (cost-function), one could use some of these 
-quantum chemistry packages:
-
-- Non Relativistic: NWChem, Gaussian, DALTON,
-GAMESS
-
-- Relativistic: DIRAC, ADF
+The amcess package uses simple input files and automates common procedures to
+explore the PES using the Simulated Annealing, Simplicial Homology Global Optimiza-
+tion (SHGO), and Bayesian Optimization to generate candidate structures for any kind
+of critical point, such as local minima or transition states. The package also allows the
+user to perform local searches around defined regions. The PES is generated computing
+the electronic energy using standard and powerful quantum chemistry packages such as
+PySCF and Psi4, also implemented in Python.
 
 ### Technical Documentation
-Technical documents behind this project can be accessed [here](https://adanianze.gitlab.io/ascec).
+Technical documents behind this project can be accessed [here](https://adanianze.gitlab.io/amcess).
 
 
 ### Requirements
 
-First you should install the required python packages contained in the file `requirements.txt`. For developer, you should install `requirements_dev.txt`.
+First you should install the required python packages 
+
+      - attrs==21.2
+      - scipy==1.7.1
+      - numpy==1.21.2
+      - pyscf==1.7.6.post1
+      - h5py==3.1.0
+      - pyberny==0.6.3
+      - geomeTRIC==0.9.7.2
+      - GPyOpt==1.2.6
+      - pyDOE==0.3.8
+      - matplotlib==3.4.2
+
+check the file `requirements.txt`. For developer, you should install `requirements_dev.txt`.
 
 ### Installation
-AMCESS is writyten for **Python 3.9**
+AMCESS is **Python 3.9** package
 
 1. Install virtual environment:
 
@@ -114,12 +114,9 @@ AMCESS is writyten for **Python 3.9**
     ```source venv/bin/activate```
 
 3. Install the packages:
-      ```
-      >>>pip install -e .
-      Installing collected packages: amcess
-      Running setup.py develop for amcess
-      Successfully installed amcess
-      ```
+
+      ```pip install amcess```
+
 4. Run AMCESS (check some examples below)
     
 5. For developer only, install dependencies:
@@ -128,7 +125,7 @@ AMCESS is writyten for **Python 3.9**
 
 6. Run all test:
 
-      ``tox``
+      ``tox==3.24.3``
 
 ### Usage
 
@@ -146,18 +143,22 @@ Workflow:
 5. Initialize a cluster avoiding atomic overlapping
       - Notebook ([binder](https://mybinder.org/v2/gl/ADanianZE%2Fascec/main?filepath=workflow%2F05_initialize_cluster_and_move_molecule.ipynb)): `05_initialize_cluster_and_move_molecule.ipynb` 
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
 ## Roadmap
+Some of the ideas to keep growing are:
 
+* Integration with **RDKit** (multiple format input)
+* Results: geometrical analysis (clustering, k-nearest, k-means, etc.)
 
 ## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+The easiest way to get help with the project is to join the #amcess
+channel on Discord.
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+We hang out there and you can get real-time help with your projects.
+The other good way is to open an issue on GitLab.
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+- Discord: https://discord.gg/vxQQCjpg
+
+- GitLub:  https://gitlab.com/ADanianZE/amcess/issues
 
 ### Licence
 GNU General Public License v3 (GLPv3)
