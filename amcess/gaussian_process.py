@@ -148,7 +148,7 @@ class SingleObjective_Edited(Objective):
 
         # --- parallel evaluation of the function
         # #! it is add E203 to avoid the error by :: to tox.init for flake8
-        divided_samples = [x[i :: self.n_procs] for i in range(self.n_procs)]
+        divided_samples = [x[i:: self.n_procs] for i in range(self.n_procs)]
         pipe = [Pipe() for i in range(self.n_procs)]
         proc = [
             Process(target=spawn(self._eval_func), args=(c, k))
@@ -163,7 +163,7 @@ class SingleObjective_Edited(Objective):
         cost_evals = np.ones((x.shape[0], 1))
         i = 0
         for (p, c) in pipe:
-            f_evals[i :: self.n_procs] = p.recv()[0]  # throw away costs
+            f_evals[i:: self.n_procs] = p.recv()[0]  # throw away costs
             i += 1
         return f_evals, cost_evals
 
@@ -295,9 +295,8 @@ def solve_gaussian_processes(
     opt = GPyOpt.methods.ModularBayesianOptimization(
         model, space, objective, acquisition, evaluator, initial_design
     )
-    opt.run_optimization(
-        max_iter=gp_params["maxiter"], **run_optimization_args
-    )
+    opt.run_optimization(max_iter=gp_params["maxiter"], 
+                         **run_optimization_args)
 
     # Setting the OptimizeResult values
     optimize_res = OptimizeResult()

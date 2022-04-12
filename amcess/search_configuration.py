@@ -100,8 +100,7 @@ class SearchConfig:
                 self._system_object.total_molecules - 1
             )
             bound_rotate = bound_rotate * (
-                self._system_object.total_molecules - 1
-            )
+                self._system_object.total_molecules - 1)
 
             self._bounds = bound_translate + bound_rotate
 
@@ -314,8 +313,7 @@ class SearchConfig:
                 molecule = i
 
         self._sphere_center = self._system_object.get_molecule(
-            molecule
-        ).center_of_mass
+                              molecule).center_of_mass
 
         # Move the biggest molecule to initio in the cluster object,
         # if is necessary
@@ -335,9 +333,8 @@ class SearchConfig:
 
         # Radius between the sphere center to the furthest atom
         for xyz in self._system_object.coordinates:
-            temp_r = np.linalg.norm(
-                np.asarray(self._sphere_center) - np.asarray(xyz)
-            )
+            temp_r = np.linalg.norm(np.asarray(
+                     self._sphere_center) - np.asarray(xyz))
             if temp_r > max_distance_cm:
                 max_distance_cm = temp_r
 

@@ -1,6 +1,6 @@
 import pytest
 from amcess.base_molecule import Cluster
-from amcess.local_minima_2 import LocalMinima, extra_functions
+from amcess.local_minima import LocalMinima, extra_functions
 import numpy as np
 
 
@@ -37,8 +37,7 @@ def test_center_sphere_atoms(cluster1, cluster2, expected_coordinates):
     cluster = Cluster(cluster1, cluster2)
 
     cluster_moved = extra_functions(
-        initial_cluster=cluster
-    ).center_sphere_atoms
+                    initial_cluster=cluster).center_sphere_atoms
     assert np.allclose(cluster_moved.coordinates, expected_coordinates, 0.001)
 
 

@@ -120,7 +120,7 @@ class Molecule:
     def _check_valid_charge(self, attribute, charge):
         if not isinstance(charge, int):
             raise ValueError(
-                "\n\ncharge must be an integer "
+                "\n\ncharge must be an integer " 
                 f"\nyou get --> 'charge = {charge}'\n"
             )
 
@@ -310,9 +310,8 @@ class Molecule:
     def principal_axes(self) -> list:
         return [
             tuple(c)
-            for c in (
-                np.asarray(self.coordinates) - np.asarray(self.center_of_mass)
-            )
+            for c in (np.asarray(self.coordinates) - 
+                      np.asarray(self.center_of_mass))
         ]
 
     @property
@@ -677,9 +676,8 @@ class Cluster(Molecule):
             # moving the next single molecule into the cluster sphere
             molecule = self.get_molecule(i).translate(0, sc_x, sc_y, sc_z)
 
-            if Cluster.overlapping(
-                molecule.coordinates, new_cluster.coordinates
-            ):
+            if Cluster.overlapping(molecule.coordinates, 
+                                   new_cluster.coordinates):
                 new_cluster += molecule
                 new_cluster = new_cluster.move_molecule(
                     i,
@@ -987,9 +985,8 @@ class Cluster(Molecule):
             sphere_center=new_cluster.sphere_center,
         )
 
-    def rotate(
-        self, molecule: int = None, x: float = 0, y: float = 0, z: float = 0
-    ):
+    def rotate(self, molecule: int = None,
+               x: float = 0, y: float = 0, z: float = 0):
         """
         Returns a NEW Cluster Object with a ROTATED molecule (CLOCKWISE)
         around molecule internal center of mass
@@ -1029,16 +1026,13 @@ class Cluster(Molecule):
             degrees=True,
         ).as_matrix()
 
-        rotatedcoordinates = (
-            np.dot(molecule_principal_axes, rotation_matrix)
-            + molecule_center_of_mass
-        )
+        rotatedcoordinates = (np.dot(molecule_principal_axes,
+                              rotation_matrix) + molecule_center_of_mass)
 
         rotated_molecule = list()
         for i, atom in enumerate(molecule_symbols):
-            rotated_molecule.append(
-                tuple([atom] + rotatedcoordinates[i].tolist())
-            )
+            rotated_molecule.append(tuple(
+                                    [atom] + rotatedcoordinates[i].tolist()))
 
         new_cluster = deepcopy(self)
         new_cluster._cluster_dict[molecule] = Molecule(rotated_molecule)
@@ -1050,9 +1044,8 @@ class Cluster(Molecule):
             sphere_center=new_cluster.sphere_center,
         )
 
-    def translate(
-        self, molecule: int = None, x: float = 0, y: float = 0, z: float = 0
-    ):
+    def translate(self, molecule: int = None, x: float = 0,
+                  y: float = 0, z: float = 0):
         """Returns a NEW Molecule Object with a TRANSLATED fragment"""
         # avoiding to rotate a FROZEN molecule
         if molecule in self.freeze_molecule:
@@ -1077,8 +1070,8 @@ class Cluster(Molecule):
         molecule_principal_axes = molecule_to_move.principal_axes
 
         translatedcoordinates = np.asarray(
-            molecule_center_of_mass
-        ) + np.asarray([x, y, z])
+                                molecule_center_of_mass) + np.asarray(
+                                [x, y, z])
 
         # checking if the new coordinates are into the boundary conditions
         # if it is out of our sphere, we rescale it to match the sphere radius

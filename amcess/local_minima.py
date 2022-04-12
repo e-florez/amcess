@@ -3,13 +3,16 @@ from scipy.optimize import dual_annealing
 import attr
 import numpy as np
 from amcess.base_molecule import Cluster
-from amcess.electronic_energy_2 import Electronic_energy
+from amcess.electronic_energy import Electronic_energy
 from amcess.gaussian_process import solve_gaussian_processes
+from amcess.ascec_criterion import Ascec
 
 
 @attr.s
 class extra_functions(Electronic_energy):
-    """Extra functions used for ordering the cluster introduced by the user"""
+    """Extra functions with method for ordering the cluster introduced by the 
+    user, and the method for obtain local minima 
+    using the dual annealing procedure"""
 
     initial_cluster = attr.ib(
         default=None,
@@ -22,7 +25,7 @@ class extra_functions(Electronic_energy):
     @property
     def center_sphere_mass(self):
         """Put the most massive molecule as the first molecule, in order to
-        move the others molecules in the cluster around there.
+        move the others molecules in the cluster around they.
         """
 
         max_mass = 0
@@ -33,8 +36,7 @@ class extra_functions(Electronic_energy):
 
         new_cluster_center = self.initial_cluster.get_molecule(max_mass_order)
         self.initial_cluster = self.initial_cluster.remove_molecule(
-            max_mass_order
-        )
+                               max_mass_order)
         self.initial_cluster = new_cluster_center + self.initial_cluster
         return self.initial_cluster
 
@@ -52,14 +54,13 @@ class extra_functions(Electronic_energy):
 
         new_cluster_center = self.initial_cluster.get_molecule(max_atom_order)
         self.initial_cluster = self.initial_cluster.remove_molecule(
-            max_atom_order
-        )
+                               max_atom_order)
         self.initial_cluster = new_cluster_center + self.initial_cluster
         return self.initial_cluster
 
     def callback_dual_annealing(self, x, func, context):
-        """This function is created in order to get local minima of the function
-        that is being optimized.
+        """This function is created in order to get local minima of the 
+        function that is being optimized.
 
 
         Parameters
@@ -183,10 +184,10 @@ class LocalMinima(extra_functions):
         if sampling_method is None:
             sampling_method = "sobol"
 
-        energie = self.energy
+        energy = self.energy
 
         minimos = shgo(
-            energie,
+            energy,
             bounds=self.bounds,
             iters=iters,
             n=n,
@@ -202,9 +203,8 @@ class LocalMinima(extra_functions):
 
         return minimos
 
-    def dual_annealing_optimize(
-        self, num_runs: int = None, maxiter: int = None
-    ):
+    def dual_annealing_optimize(self, num_runs: int = None, 
+                                maxiter: int = None):
         """Function to find the mimina of a molecular system using the the
         dual annealing optimization procedure
 
@@ -242,8 +242,7 @@ class LocalMinima(extra_functions):
                     f.write(str(len(self.initial_cluster.atoms)) + "\n")
                     f.write("Energy: " + str(self.minima_energy[i]) + "\n")
                     cluster_in_minima = self.controled_move(
-                        self.minima_energy_x[i]
-                    )
+                                        self.minima_energy_x[i])
                     for terms in cluster_in_minima.atoms:
                         f.write(" ".join([str(x) for x in terms]) + "\n")
 
@@ -257,20 +256,19 @@ class LocalMinima(extra_functions):
         minimo = solve_gaussian_processes(energie, bounds=self.bounds)
         return minimo
 
+    def ascec(self):
+        """Function to find the mimina of a molecular system using
+        Andy's optimization procedure
+        """
 
-#    def ascec(self):
-#        """Function to find the mimina of a molecular system using the the
-#        Andy's optimization procedure
-#        """
-#        bounds = self.bounds
-
-#        minimo = Ascec(
-#            object_system=self.initial_cluster,
-#            search_type="ASCEC",
-#            sphere_center=self.initial_cluster.get_molecule(0).center_of_mass,
-#            sphere_radius=self.sphere_radius,
-#            basis_set=self.basis,
-#            call_function=1,
-#            bounds=self.bounds,
-#        )
-#        return minimo
+        minimo = Ascec(
+            object_system=self.initial_cluster,
+            search_type="ASCEC",
+            sphere_center=self.initial_cluster.get_molecule(0).center_of_mass,
+            sphere_radius=self.sphere_radius,
+            basis_set=self.basis,
+            call_function=1,
+            bounds=self.bounds,
+        )
+        minimo.run_ascec()
+        # return minimo

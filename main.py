@@ -90,9 +90,8 @@ def system_w_li_cluster():
     random_gen = random.default_rng(1234)
 
     probability = [
-        1 / (w.total_molecules - 1) if p else 0
-        for p in range(w.total_molecules)
-    ]
+        1 / (w.total_molecules - 1) if p else 0 for p in range(
+            w.total_molecules)]
 
     with open("w6_li.xyz", "w") as file_xyz:
         for _ in range(total_steps):
@@ -117,9 +116,7 @@ def system_w_li_cluster():
             tz = max_t * (random_gen.uniform() - 0.5)
 
             # print(w)
-            w = w.translate(mol, x=tx, y=ty, z=tz).rotate(
-                mol, x=ax, y=ay, z=az
-            )
+            w = w.translate(mol, x=tx, y=ty, z=tz).rotate(mol, x=ax, y=ay, z=az)
 
             file_xyz.write(w.xyz)
 
@@ -145,9 +142,8 @@ def test_molecule():
 
     # mol = Molecule([("a", 0, 0, 0), ("b", 10, 10, 10)], -10, 5))
     # ---
-    mol = Molecule(
-        [("Xe", 0, 0, 0), ("Na", 5, 5, 5), ("Na", 10, 10, 10)], -10, 5
-    )
+    mol = Molecule([("Xe", 0, 0, 0), ("Na", 5, 5, 5), (
+        "Na", 10, 10, 10)], -10, 5)
 
     # print("\n")
     # print(mol)

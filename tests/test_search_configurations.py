@@ -74,9 +74,8 @@ def test_cluster_object_elements_into_search_conf(
     search_config = SearchConfig(Cluster(molecule1, molecule2))
     # it is necessary to sort to avoid errors because the elements attr
     # can return in different order the symbols
-    assert (
-        sorted(search_config._system_object.elements) == expected_coordinates
-    )
+    assert sorted(
+            search_config._system_object.elements) == expected_coordinates
 
 
 @pytest.mark.parametrize(
@@ -200,9 +199,8 @@ def test_SC_bounds_grep(molecule1, molecule2, expected_bounds):
     """
     Test @property associated with bounds variable
     """
-    assert (
-        SearchConfig(Cluster(molecule1, molecule2)).bounds == expected_bounds
-    )
+    assert SearchConfig(Cluster(
+            molecule1, molecule2)).bounds == expected_bounds
 
 
 @pytest.mark.parametrize(
@@ -276,10 +274,8 @@ def test_SC_output_name_grep(molecule1, molecule2, expected_name):
     """
     Test @property associated with output_name variable
     """
-    assert (
-        SearchConfig(Cluster(molecule1, molecule2)).output_name
-        == expected_name
-    )
+    assert SearchConfig(Cluster(
+            molecule1, molecule2)).output_name == expected_name
 
 
 @pytest.mark.parametrize(
@@ -351,10 +347,8 @@ def test_SC_search_type_grep(molecule1, molecule2, expected_search):
     """
     Test @property associated with search methodology type
     """
-    assert (
-        SearchConfig(Cluster(molecule1, molecule2)).search_type
-        == expected_search
-    )
+    assert SearchConfig(Cluster(
+            molecule1, molecule2)).search_type == expected_search
 
 
 @pytest.mark.parametrize(
@@ -525,8 +519,8 @@ def test_SC_sphere_center_TE_set(molecule1, molecule2):
         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
         obj_sc.sphere_center = 1.0
     assert (
-        str(e.value)
-        == "\n\nThe Sphere center must be a tuple with three elements: "
+        str(e.value) == 
+        "\n\nThe Sphere center must be a tuple with three elements: "
         "(float, float, float)"
         f"\nplease, check: '{type(1.0)}'\n"
     )
@@ -534,8 +528,8 @@ def test_SC_sphere_center_TE_set(molecule1, molecule2):
         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
         obj_sc.sphere_center = 1
     assert (
-        str(e.value)
-        == "\n\nThe Sphere center must be a tuple with three elements: "
+        str(e.value) == 
+        "\n\nThe Sphere center must be a tuple with three elements: "
         "(float, float, float)"
         f"\nplease, check: '{type(1)}'\n"
     )
@@ -543,8 +537,8 @@ def test_SC_sphere_center_TE_set(molecule1, molecule2):
         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
         obj_sc.sphere_center = "1.0"
     assert (
-        str(e.value)
-        == "\n\nThe Sphere center must be a tuple with three elements: "
+        str(e.value) == 
+        "\n\nThe Sphere center must be a tuple with three elements: "
         "(float, float, float)"
         f"\nplease, check: '{type('1.0')}'\n"
     )
@@ -552,8 +546,8 @@ def test_SC_sphere_center_TE_set(molecule1, molecule2):
         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
         obj_sc.sphere_center = [1.0]
     assert (
-        str(e.value)
-        == "\n\nThe Sphere center must be a tuple with three elements: "
+        str(e.value) == 
+        "\n\nThe Sphere center must be a tuple with three elements: "
         "(float, float, float)"
         f"\nplease, check: '{type([1.0])}'\n"
     )
@@ -577,8 +571,8 @@ def test_SC_sphere_center_VE_set(molecule1, molecule2):
         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
         obj_sc.sphere_center = (1.0,)
     assert (
-        str(e.value)
-        == "\n\nThe Sphere center must be a tuple with three elements: "
+        str(e.value) == 
+        "\n\nThe Sphere center must be a tuple with three elements: "
         "(float, float, float)"
         f"\nplease, check: '{(1.0,)}'\n"
     )
@@ -589,8 +583,8 @@ def test_SC_sphere_center_VE_set(molecule1, molecule2):
             1.0,
         )
     assert (
-        str(e.value)
-        == "\n\nThe Sphere center must be a tuple with three elements: "
+        str(e.value) == 
+        "\n\nThe Sphere center must be a tuple with three elements: "
         "(float, float, float)"
         f"\nplease, check: '{(1.0,1.0,)}'\n"
     )
@@ -603,8 +597,8 @@ def test_SC_sphere_center_VE_set(molecule1, molecule2):
             1.0,
         )
     assert (
-        str(e.value)
-        == "\n\nThe Sphere center must be a tuple with three elements: "
+        str(e.value) == 
+        "\n\nThe Sphere center must be a tuple with three elements: "
         "(float, float, float)"
         f"\nplease, check: '{(1.0,1.0,1.0,1.0,)}'\n"
     )
@@ -781,8 +775,7 @@ def test_SC_new_cost_function(molecule1, molecule2, expectation):
     ],
 )
 def test_SC_tolerance_radius_grep(
-    molecule1, molecule2, default_tolerance_radius
-):
+                            molecule1, molecule2, default_tolerance_radius):
     """
     Test ask tolerance radius
     """
@@ -803,8 +796,7 @@ def test_SC_tolerance_radius_grep(
     ],
 )
 def test_SC_new_tolerance_radius_set(
-    molecule1, molecule2, new_tolerance_radius
-):
+                                   molecule1, molecule2, new_tolerance_radius):
     """
     Test TypeError @radius_contour.setter
     """
@@ -891,9 +883,10 @@ def test_SC_run_da_method(molecule1, molecule2, method_min):
     """
     Test SC.run method for dual annealing
     """
-    SearchConfig(
-        Cluster(molecule1, molecule2), search_methodology=method_min
-    ).run(maxfun=1, maxiter=1)
+    SearchConfig(Cluster(
+        molecule1, molecule2), search_methodology=method_min).run(
+        maxfun=1, maxiter=1
+    )
     with open("configurations.xyz", "r") as f:
         readl = f.readline()
     os.remove("configurations.xyz")
@@ -914,9 +907,10 @@ def test_SC_run_shgo_method(molecule1, molecule2, search_meth):
     """
     Test SC.run method for shgo
     """
-    SearchConfig(
-        Cluster(molecule1, molecule2), search_methodology=search_meth
-    ).run(sampling_method="sobol", n=1)
+    SearchConfig(Cluster(
+        molecule1, molecule2), search_methodology=search_meth).run(
+        sampling_method="sobol", n=1
+    )
     with open("configurations.xyz", "r") as f:
         readl = f.readline()
     os.remove("configurations.xyz")
@@ -955,15 +949,15 @@ def test_SC_the_biggest_to_initio(molecule1, molecule2, molecule3):
     ],
 )
 def test_SC_run_bayesian_method(
-    molecule1, molecule2, search_meth, initer, maxiter
-):
+                           molecule1, molecule2, search_meth, initer, maxiter):
     """
     Test SC.run method for bayesian
     """
     gp_params = {"initer": initer, "maxiter": maxiter}
-    SearchConfig(
-        Cluster(molecule1, molecule2), search_methodology=search_meth
-    ).run(gp_params=gp_params)
+    SearchConfig(Cluster(
+        molecule1, molecule2), search_methodology=search_meth).run(
+        gp_params=gp_params
+    )
     with open("configurations.xyz", "r") as f:
         readl = f.readline()
     os.remove("configurations.xyz")

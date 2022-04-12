@@ -15,7 +15,7 @@ REQUIREMENTS = [
     "scipy>=1.7",
     "numpy>=1.21",
     "pyscf>=1.7.6.post1",
-    "GPyOpt==1.2.6"
+    "GPyOpt==1.2.6",
 ]
 
 with open(PATH / "amcess" / "__init__.py") as fp:
@@ -45,13 +45,13 @@ setup(
     license="The MIT License",
     description="Atomic and Molecular Cluster Energy Surface Sampler",
     long_description=LONG_DESCRIPTION,
-    keywords=["optimization", "PES", "Potential Energy Surface", "Monte Carlo"],
-    install_requires=[
-	"h5py==3.1.0",
-        "scipy>=1.7",
-        "numpy>=1.21",
-        "pyscf>=1.7.6.post1",
-    	"GPyOpt==1.2.6"
+    keywords=["optimization", "PES", "Potential Energy Surface", 
+              "Monte Carlo"], install_requires=[
+              "h5py==3.1.0",
+              "scipy>=1.7",
+              "numpy>=1.21",
+              "pyscf>=1.7.6.post1",
+              "GPyOpt==1.2.6",
     ],
 )
 

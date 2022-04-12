@@ -703,9 +703,8 @@ def test_cluster_str():
     """
     Test for Cluster magic str
     """
-    w = Cluster(
-        {"atoms": [("H1", 0, 0, 0)]}, [("H2", 0, 0, 0), ("H3", 0, 0, 0)]
-    )
+    w = Cluster({"atoms": [("H1", 0, 0, 0)]}, 
+                [("H2", 0, 0, 0), ("H3", 0, 0, 0)])
     w_str = str(w)
 
     expected_str = (
@@ -880,9 +879,8 @@ def test_cluster_initialize_cluster():
 
         mol2 = w3_no_overlapping.cluster_dictionary[j]
 
-        overlap.append(
-            Cluster().overlapping(mol1.coordinates, mol2.coordinates)
-        )
+        overlap.append(Cluster().overlapping(
+                       mol1.coordinates, mol2.coordinates))
 
     assert not all(overlap)
 
@@ -915,9 +913,8 @@ def test_cluster_move_molecule():
 
         mol2 = new_w5.cluster_dictionary[j]
 
-        overlap.append(
-            Cluster().overlapping(mol1.coordinates, mol2.coordinates)
-        )
+        overlap.append(Cluster().overlapping(
+                       mol1.coordinates, mol2.coordinates))
 
     assert not all(overlap)
 

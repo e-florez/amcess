@@ -1,6 +1,6 @@
 import numpy as np
 from scipy import constants
-from amcess.electronic_energy import ElectronicEnergy
+from amcess.electronic_energy_ascec import ElectronicEnergy
 
 
 class Ascec(ElectronicEnergy):
