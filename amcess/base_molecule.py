@@ -852,7 +852,6 @@ class Cluster(Molecule):
         max_overlap_cycle: int = 10000
 
         for count in range(max_overlap_cycle):
-
             if count % 10 == 0:
                 max_step *= 1.1
                 max_rotation *= 1.1
@@ -1032,7 +1031,6 @@ class Cluster(Molecule):
             translatedcoordinates - np.asarray(self.sphere_center)
         )
         if self.sphere_radius and (distance > self.sphere_radius):
-
             max_distance: float = self.sphere_radius / np.linalg.norm(
                 translatedcoordinates - np.asarray(self.sphere_center)
             )
