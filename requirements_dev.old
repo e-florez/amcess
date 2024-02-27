@@ -1,0 +1,28 @@
+# setuptools==58.1.0
+tox==3.24.3
+pytest==6.2.5
+pytest-cov==2.12.1
+coverage==5.5
+
+black==21.8b0
+flake8==3.9.2
+flake8-black==0.2.3
+flake8-builtins==1.5.3
+flake8-isort==4.0.0
+
+mypy==0.910  # type hints
+
+sphinx==4.1.2
+sphinx_rtd_theme==0.5.1
+myst-parser==0.15.2
+docutils==0.16
+sphinxcontrib-bibtex==2.4
+
+
+# testing jupyter notebooks
+nbmake==0.8
+
+
+# -------------------------------------------------------------------------------
+# pytest -v tests/ --cov=tests/ --cov=src/ --cov=data/ --cov=workflow/ --cov-fail-under 90 --cov-report term-missing --nbmake workflow/
+# -------------------------------------------------------------------------------
