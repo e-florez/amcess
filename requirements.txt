@@ -1,7 +1,9 @@
 
 attrs>=23.2.0
-scipy>=1.11.14
-numpy>=1.26.4
+scipy>=1.12.0
+#scipy1.12.o work with numpy > 1.19
+#last version numpy.error.with GPyOpt1.2.6, only work good with numpy1.23.1 not work with numpy==1.21.0
+numpy==1.23.1 
 pyscf>=2.5.0
 h5py>=3.1.0  
 GPyOpt>=1.2.6
