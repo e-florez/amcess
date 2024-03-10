@@ -1,5 +1,6 @@
+import math
+
 import pytest
-import scipy
 
 from amcess.base_molecule import Cluster
 from amcess.search_engine import SearchConfig
@@ -18,9 +19,9 @@ from amcess.gaussian_process import Objective
             (-2.3260049557867735, 2.3260049557867735),
             (-2.3260049557867735, 2.3260049557867735),
             (-2.3260049557867735, 2.3260049557867735),
-            (0, scipy.pi),
-            (0, scipy.pi),
-            (0, scipy.pi),
+            (0, math.pi),
+            (0, math.pi),
+            (0, math.pi),
         ],
     ],
 )
@@ -126,9 +127,9 @@ def test_Bayesian_input_maxeval(molecule1, molecule2, search_meth, initer):
     Test ValueError for maxeval
     """
     with pytest.raises(ValueError) as e:
-        SearchConfig(
-            Cluster(molecule1, molecule2), search_methodology=search_meth
-        ).run(initer=3)
+        SearchConfig(Cluster(molecule1, molecule2), search_methodology=search_meth).run(
+            initer=3
+        )
     assert str(e.value) == "maxiter not defined in Bayesian Optimization"
 
 
@@ -148,9 +149,9 @@ def test_Bayesian_input_initer(molecule1, molecule2, search_meth, maxiter):
     Test ValueError for maxeval
     """
     with pytest.raises(ValueError) as e:
-        SearchConfig(
-            Cluster(molecule1, molecule2), search_methodology=search_meth
-        ).run(maxiter=3)
+        SearchConfig(Cluster(molecule1, molecule2), search_methodology=search_meth).run(
+            maxiter=3
+        )
     assert str(e.value) == "initer not defined in Bayesian Optimization"
 
 
