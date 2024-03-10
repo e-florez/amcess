@@ -83,26 +83,30 @@ Technical documents behind this project can be accessed [here](https://adanianze
 
 First, you should install the required Python packages
 
-> attrs>=23.2.0
-> scipy>=1.12.0
-> numpy==1.23.1
-> pyscf>=2.5.0
-> h5py>=3.1.0
-> pyberny>=0.6.3
-> geomeTRIC>=0.9.7.2
-> GPyOpt>=1.2.6
-> pyDOE>=0.3.8
-> matplotlib>=3.8.3
-> matplotlib-inline>=0.1.6
+```
+  attrs>=23.2.0
+  scipy>=1.12.0
+  numpy==1.23.1
+  pyscf>=2.5.0
+  h5py>=3.1.0
+  pyberny>=0.6.3
+  geomeTRIC>=0.9.7.2
+  GPyOpt>=1.2.6
+  pyDOE>=0.3.8
+  matplotlib>=3.8.3
+  matplotlib-inline>=0.1.6
+```
 
 To use Jupyter Notebook
 
-> py3Dmol>=2.0.4
-> notebook>=6.5.6
-> notebook_shim>=0.2.4
-> jupyter>=1.0.0
-> ipykernel>=6.29.3
-> rise>=5.7.1
+```
+  py3Dmol>=2.0.4
+  notebook>=6.5.6
+  notebook_shim>=0.2.4
+  jupyter>=1.0.0
+  ipykernel>=6.29.3
+  rise>=5.7.1
+```
 
 check the file `requirements.txt`. For developers, you should install `requirements_dev.txt`.
 
