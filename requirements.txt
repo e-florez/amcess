@@ -3,9 +3,11 @@ attrs>=23.2.0
 scipy>=1.12.0
 #scipy1.12.o work with numpy > 1.19
 #last version numpy.error.with GPyOpt1.2.6, only work good with numpy1.23.1 not work with numpy==1.21.0
-numpy==1.23.1 
+numpy==1.23.1
 pyscf>=2.5.0
-h5py>=3.1.0  
+h5py>=3.1.0
+pyberny>=0.6.3
+geomeTRIC>=0.9.7.2
 GPyOpt>=1.2.6
 pyDOE>=0.3.8
 matplotlib>=3.8.3
@@ -13,10 +15,10 @@ matplotlib-inline>=0.1.6
 
 # for jupyter notebook
 py3Dmol>=2.0.4
-notebook==6.5.6
-notebook_shim==0.2.4
-jupyter==1.0.0
-ipykernel==6.29.3
-rise==5.7.1
+notebook>=6.5.6
+notebook_shim>=0.2.4
+jupyter>=1.0.0
+ipykernel>=6.29.3
+rise>=5.7.1
 
 

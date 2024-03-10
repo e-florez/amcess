@@ -1,6 +1,6 @@
-# setuptools==58.1.0
+# setuptools>=58.1.0
 tox>=4.13.0
-pytest>=8.0.2 
+pytest>=8.0.2
 pytest-cov>=4.1.0
 coverage>=7.4.3
 
@@ -20,11 +20,11 @@ sphinxcontrib-bibtex>=2.6.2
 
 # testing jupyter notebooks
 nbmake>=1.5.0
-jupyter >= 1.0.0
-ipykernel >= 6.29.0
-rise >= 5.7.1    #Not support notebook 7
-notebook==6.5.6
-traitlets==5.9.0
+jupyter>= 1.0.0
+ipykernel>= 6.29.0
+rise>= 5.7.1    #Not support notebook 7
+notebook>=6.5.6
+traitlets>=5.9.0
 
 # -------------------------------------------------------------------------------
 # pytest -v tests/ --cov=tests/ --cov=src/ --cov=data/ --cov=workflow/ --cov-fail-under 90 --cov-report term-missing --nbmake workflow/
