@@ -1,7 +1,7 @@
 from scipy.optimize import dual_annealing, shgo
 
 from amcess.ascec import Ascec
-from amcess.base_molecule import Cluster
+from amcess.cluster import Cluster
 from amcess.electronic_energy import ElectronicEnergy
 from amcess.gaussian_process import solve_gaussian_processes
 

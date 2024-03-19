@@ -27,5 +27,7 @@ __version__ = "0.1.2"
 # IMPORTS
 # =============================================================================
 
-from .base_molecule import Molecule, Cluster  # noqa
+from .atom import Atom # noqa
+from .molecule import Molecule # noqa
+from .cluster import Cluster  # noqa
 from .search_engine import SearchConfig as engine  # noqa

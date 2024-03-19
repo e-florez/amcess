@@ -1,7 +1,7 @@
 import numpy as np
 from pyscf import cc, dft, gto, mp, scf
 
-from amcess.base_molecule import Cluster
+from amcess.cluster import Cluster
 
 
 class ElectronicEnergy:
