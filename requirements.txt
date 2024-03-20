@@ -12,6 +12,7 @@ GPyOpt>=1.2.6
 pyDOE>=0.3.8
 matplotlib>=3.8.3
 matplotlib-inline>=0.1.6
+rdkit>=2023.9.5
 
 # for jupyter notebook
 py3Dmol>=2.0.4
