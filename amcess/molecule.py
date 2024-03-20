@@ -121,9 +121,9 @@ class Molecule:
 
     #     return new_cluster
 
-    # def __str__(self):
-    #     """Magic method '__str__' to print the Molecule in XYZ format"""
-    #     return self.xyz
+    def __str__(self):
+        """Magic method '__str__' to print the Molecule in XYZ format"""
+        return self.xyz
 
     # ===============================================================
     # PROPERTIES
