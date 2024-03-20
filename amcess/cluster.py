@@ -3,7 +3,7 @@ from copy import deepcopy
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from amcess.Molecule import Molecule
+from amcess.molecule import Molecule
 
 
 class Cluster(Molecule):

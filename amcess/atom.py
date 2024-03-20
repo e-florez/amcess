@@ -56,6 +56,12 @@ class Atom:
             )
 
     # ===============================================================
+    # MAGIC METHODS
+    # ===============================================================
+    def __str__(self):
+        """Magic method '__str__' to print the object as a dictionary"""
+        return str(attr.asdict(self))
+    # ===============================================================
     # PROPERTIES
     # ===============================================================
     @property
@@ -67,10 +73,3 @@ class Atom:
     def symbol(self) -> list:
         """Atomic symbol of the atom"""
         return self.element
-
-    # ===============================================================
-    # MAGIC METHODS
-    # ===============================================================
-    def __str__(self):
-        """Magic method '__str__' to print the object as a dictionary"""
-        return str(attr.asdict(self))

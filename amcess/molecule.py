@@ -86,43 +86,44 @@ class Molecule:
     # ===============================================================
     # MAGIC METHODS
     # ===============================================================
-    def __add__(self, other) -> object:
-        """Magic method '__add__' to add two molecules, return a new one"""
-        return self.add_molecule(other)
+    # def __add__(self, other) -> object:
+    #     """Magic method '__add__' to add two molecules, return a new one"""
+    #     print(" ME LLAMAS ADD ", other)
+    #     return self.add_molecule(other)
 
-    def __mul__(self, value: int):
-        """Magic method '__mul__' to multiply a molecule by a number"""
-        return value * self
+    # def __mul__(self, value: int):
+    #     """Magic method '__mul__' to multiply a molecule by a number"""
+    #     return value * self
 
-    def __rmul__(self, value: int):
-        """
-        Replicate a molecule.
-        summing or multiplying Molecule classes produce a Cluster class
+    # def __rmul__(self, value: int):
+    #     """
+    #     Replicate a molecule.
+    #     summing or multiplying Molecule classes produce a Cluster class
 
-        Parameters
-        ----------
-        value : int
-            quantity to replicate Molecue
+    #     Parameters
+    #     ----------
+    #     value : int
+    #         quantity to replicate Molecue
 
-        Return
-        ------
-        Cluster : object
-        """
-        if not isinstance(value, int) or value < 1:
-            raise ValueError(
-                "\nMultiplier must be and integer larger than zero"
-                f"\ncheck --> '{value}'"
-            )
+    #     Return
+    #     ------
+    #     Cluster : object
+    #     """
+    #     if not isinstance(value, int) or value < 1:
+    #         raise ValueError(
+    #             "\nMultiplier must be and integer larger than zero"
+    #             f"\ncheck --> '{value}'"
+    #         )
 
-        new_cluster = deepcopy(self)
-        for _ in range(value - 1):
-            new_cluster = new_cluster.add_molecule(deepcopy(self))
+    #     new_cluster = deepcopy(self)
+    #     for _ in range(value - 1):
+    #         new_cluster = new_cluster.add_molecule(deepcopy(self))
 
-        return new_cluster
+    #     return new_cluster
 
-    def __str__(self):
-        """Magic method '__str__' to print the Molecule in XYZ format"""
-        return self.xyz
+    # def __str__(self):
+    #     """Magic method '__str__' to print the Molecule in XYZ format"""
+    #     return self.xyz
 
     # ===============================================================
     # PROPERTIES
@@ -201,6 +202,11 @@ class Molecule:
                 f"\nyou get --> 'multiplicity = {new_multiplicity}'\n"
             )
         self._multiplicity = new_multiplicity
+
+    @property
+    def molecule(self) -> dict:
+        """Return the dict atoms"""
+        return {"atoms": self.atoms, "charge": self.charge, "multiplicity": self.multiplicity}
 
     @property
     def numbering_atoms(self) -> str:
@@ -319,14 +325,14 @@ class Molecule:
         total_atoms: list = self.atoms + new_atoms
         return self.__class__(total_atoms)
 
-    def add_molecule(self, other) -> object:
-        """adding molecule return a new Cluster object"""
-        if not isinstance(other, Molecule):
-            raise TypeError(
-                "\nOnly type 'Molecule', list or dict could be added"
-                f"\nyou have a type: '{type(other)}', check: \n{other}"
-            )
-        return Cluster(self, other)
+    # def add_molecule(self, other) -> object:
+    #     """adding molecule return a new Cluster object"""
+    #     if not isinstance(other, dict):    #Molecule):
+    #         raise TypeError(
+    #             "\nOnly type 'Molecule', list or dict could be added"
+    #             f"\nyou have a type: '{type(other)}', check: \n{other}"
+    #         )
+    #     return Cluster(self, other)
 
     def get_atom(self, atom: int) -> list:
         """
