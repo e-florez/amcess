@@ -2,6 +2,8 @@ from copy import deepcopy
 
 import attr
 import numpy as np
+import rdkit as rk
+from rdkit.Chem import AllChem
 
 from amcess.atom import Atom
 
@@ -33,9 +35,7 @@ class Molecule:
     # ===============================================================
     # VALIDATORS
     # ===============================================================
-    @_atoms.validator
-    def _cehck_valid_atoms(self, attribute, atoms):
-        """check if the atoms are valid"""
+    def _check_atoms_list(self, attribute, atoms):
         for line, atom in enumerate(atoms):
             try:
                 Atom(*atom)
@@ -45,6 +45,35 @@ class Molecule:
                     "[(str, float, float, float), ...]"
                     f"\ncheck atom number {line + 1} --> {atom}\n"
                     f"from --> {atoms}\n"
+                )
+
+    def _check_atoms_smiles(self, attribute, atoms, addH: bool = True):
+        try:
+            rk.Chem.MolFromSmiles(atoms, sanitize=False)
+        except (ValueError, TypeError) as err:
+            raise TypeError(
+                f"\n\n{err}\n atoms must be a smiles: "
+                " 'CCO' "
+            )
+        mol = rk.Chem.MolFromSmiles(atoms)
+        if addH:
+            mol = rk.Chem.AddHs(mol)
+        AllChem.EmbedMolecule(mol)
+        self._atoms = [tuple([a.GetSymbol()] + list(xyz))
+                for a, xyz in zip(mol.GetAtoms(), mol.GetConformer().GetPositions())]
+
+    @_atoms.validator
+    def _cehck_valid_atoms(self, attribute, atoms):
+        """check if the atoms are valid"""
+        if isinstance(atoms, list):
+            self._check_atoms_list(attribute, atoms)
+        elif isinstance(atoms, str):
+            self._check_atoms_smiles(attribute, atoms)
+        else:
+            raise TypeError(
+                    "\ncoordinates format must be a list of tuple"
+                    " or str (Smiles):\n[(str, float, float, float), ...]"
+                    "\n'CCO' "
                 )
 
     @_charge.validator
