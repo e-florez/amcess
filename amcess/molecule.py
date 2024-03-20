@@ -86,40 +86,44 @@ class Molecule:
     # ===============================================================
     # MAGIC METHODS
     # ===============================================================
-    # def __add__(self, other) -> object:
-    #     """Magic method '__add__' to add two molecules, return a new one"""
-    #     print(" ME LLAMAS ADD ", other)
-    #     return self.add_molecule(other)
+    def __add__(self, other) -> object:
+        """Magic method '__add__' to add two molecules, return a new one"""
+        return Molecule(self.atoms + other.atoms, self.charge + self.charge, (self.multiplicity + other.multiplicity) - 1)
 
-    # def __mul__(self, value: int):
-    #     """Magic method '__mul__' to multiply a molecule by a number"""
-    #     return value * self
+    #def __mul__(self, value: int):
+    #    """Magic method '__mul__' to multiply a molecule by a number"""
+    #    return value * self
 
-    # def __rmul__(self, value: int):
-    #     """
-    #     Replicate a molecule.
-    #     summing or multiplying Molecule classes produce a Cluster class
+    def __rmul__(self, value: int):
+        """
+        Replicate a molecule.
+        summing or multiplying Molecule classes produce a Cluster class
 
-    #     Parameters
-    #     ----------
-    #     value : int
-    #         quantity to replicate Molecue
+        Parameters
+        ----------
+        value : int
+            quantity to replicate Molecue
 
-    #     Return
-    #     ------
-    #     Cluster : object
-    #     """
-    #     if not isinstance(value, int) or value < 1:
-    #         raise ValueError(
-    #             "\nMultiplier must be and integer larger than zero"
-    #             f"\ncheck --> '{value}'"
-    #         )
+        Return
+        ------
+        Cluster : object
+        """
+        if not isinstance(value, int) or value < 1:
+            raise ValueError(
+                "\nMultiplier must be and integer larger than zero"
+                f"\ncheck --> '{value}'"
+            )
 
-    #     new_cluster = deepcopy(self)
-    #     for _ in range(value - 1):
-    #         new_cluster = new_cluster.add_molecule(deepcopy(self))
+        tcoordinates: list = [at for i in range(value) for at in self.atoms]
+        tcharge: int = 0
+        tmultiplicity: int = 0
+        for i in range(value):
+            tcharge += self.charge
+            tmultiplicity += self.multiplicity
+        tmultiplicity -= value - 1
 
-    #     return new_cluster
+        return Molecule(tcoordinates, tcharge, tmultiplicity)
+        
 
     def __str__(self):
         """Magic method '__str__' to print the Molecule in XYZ format"""
