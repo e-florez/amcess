@@ -1,13 +1,26 @@
 from copy import deepcopy
 
 import attr
+from pathlib import Path
+
 import numpy as np
-import rdkit as rk
+from rdkit import Chem
 from rdkit.Chem import AllChem
 from rdkit.Chem import Descriptors
 
+
 from amcess.atom import Atom
 
+
+# NOTE: Format allow in rdkit
+EXT_FILE: dict[str] = {'.mol': Chem.rdmolfiles.MolFromMolFile,
+                       '.mol2': Chem.rdmolfiles.MolFromMol2File, 
+                       '.xyz': Chem.rdmolfiles.MolFromXYZFile, 
+                       '.tpl': Chem.rdmolfiles.MolFromTPLFile, 
+                       '.png': Chem.rdmolfiles.MolFromPNGFile, 
+                       '.pdb': Chem.rdmolfiles.MolFromPDBFile, 
+                       '.mrv': Chem.rdmolfiles.MolFromMrvFile
+                       }
 
 @attr.s(frozen=False)
 class Molecule:
@@ -32,7 +45,9 @@ class Molecule:
     _atoms = attr.ib()
     _charge: int = attr.ib(default=0)
     _multiplicity: int = attr.ib(default=1)
+    _file: bool = attr.ib(default=False)
     _addHs: bool = attr.ib(default=False)
+    _removeHs: bool = attr.ib(default=False)
 
     # ===============================================================
     # VALIDATORS
@@ -48,29 +63,53 @@ class Molecule:
                     f"\ncheck atom number {line + 1} --> {atom}\n"
                     f"from --> {atoms}\n"
                 )
+    def _molecule_list_building(self, mol):
+        self._atoms = [tuple([a.GetSymbol()] + list(xyz))
+                for a, xyz in zip(mol.GetAtoms(), mol.GetConformer().GetPositions())]
+        self._charge = Chem.rdmolops.GetFormalCharge(mol)
+        self._multiplicity = Descriptors.NumRadicalElectrons(mol) + 1 
 
     def _check_atoms_smiles(self, attribute, atoms):
         try:
-            rk.Chem.MolFromSmiles(atoms, sanitize=False)
+            Chem.MolFromSmiles(atoms, sanitize=False)
         except (ValueError, TypeError) as err:
             raise TypeError(
                 f"\n\n{err}\n atoms must be a smiles: "
                 " 'CCO' "
             )
-        mol = rk.Chem.MolFromSmiles(atoms)
-        mol = rk.Chem.AddHs(mol, explicitOnly=self._addHs)
+        mol = Chem.MolFromSmiles(atoms)
+        mol = Chem.AddHs(mol, explicitOnly=self._addHs)
         # NOTE: Explanation of EmbedMolecule process
         #       https://www.rdkit.org/docs/GettingStartedInPython.html#working-with-3d-molecules
         AllChem.EmbedMolecule(mol)
-        self._atoms = [tuple([a.GetSymbol()] + list(xyz))
-                for a, xyz in zip(mol.GetAtoms(), mol.GetConformer().GetPositions())]
-        self._charge = rk.Chem.rdmolops.GetFormalCharge(mol)
-        self._multiplicity = Descriptors.NumRadicalElectrons(mol) + 1 
+        self._molecule_list_building(mol)
+
+    def _check_atoms_file(self, attribute, file):
+        if not Path(file).exists():
+            raise ValueError(
+                f"The file {file} doesn't exist"
+            )
+        if Path(file).suffix.lower() not in EXT_FILE.keys():
+            raise TypeError(
+                f"File with extension {Path(file).suffix} can't be reading"
+            )
+        if Path(file).suffix.lower() in ['.xyz', '.png', '.tpl']:
+            mol = EXT_FILE[Path(file).suffix.lower()](file)    
+        else:
+            mol = EXT_FILE[Path(file).suffix.lower()](file, removeHs=self._removeHs)
+        if self._addHs:
+            if Path(file).suffix.lower() == '.mol2':
+                raise TypeError('RDKit have problem to add H to mol from'
+                                'mol2 file')                
+            mol = Chem.AddHs(mol, addCoords=True)
+        self._molecule_list_building(mol)
 
     @_atoms.validator
     def _cehck_valid_atoms(self, attribute, atoms):
         """check if the atoms are valid"""
-        if isinstance(atoms, list):
+        if self._file:
+            self._check_atoms_file(attribute, atoms)
+        elif isinstance(atoms, list):
             self._check_atoms_list(attribute, atoms)
         elif isinstance(atoms, str):
             self._check_atoms_smiles(attribute, atoms)
@@ -123,8 +162,7 @@ class Molecule:
         atoms = atoms_dict.get("atoms")
         charge = atoms_dict.get("charge", 0)
         multiplicity = atoms_dict.get("multiplicity", 1)
-        addHs = atoms_dict.get("addHs", True)
-        return cls(atoms, charge, multiplicity, addHs)
+        return cls(atoms, charge, multiplicity)
 
     # ===============================================================
     # MAGIC METHODS
@@ -179,11 +217,6 @@ class Molecule:
     def atoms(self) -> list:
         """Return the list of atoms"""
         return self._atoms
-
-    @property
-    def addHs(self) -> bool:
-        """Activate Add of H"""
-        return self._addHs
 
     @atoms.setter
     def atoms(self, *args, **kwargs) -> None:
