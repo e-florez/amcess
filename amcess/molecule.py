@@ -4,6 +4,7 @@ import attr
 import numpy as np
 import rdkit as rk
 from rdkit.Chem import AllChem
+from rdkit.Chem import Descriptors
 
 from amcess.atom import Atom
 
@@ -31,6 +32,7 @@ class Molecule:
     _atoms = attr.ib()
     _charge: int = attr.ib(default=0)
     _multiplicity: int = attr.ib(default=1)
+    _addHs: bool = attr.ib(default=False)
 
     # ===============================================================
     # VALIDATORS
@@ -47,7 +49,7 @@ class Molecule:
                     f"from --> {atoms}\n"
                 )
 
-    def _check_atoms_smiles(self, attribute, atoms, addH: bool = True):
+    def _check_atoms_smiles(self, attribute, atoms):
         try:
             rk.Chem.MolFromSmiles(atoms, sanitize=False)
         except (ValueError, TypeError) as err:
@@ -56,11 +58,14 @@ class Molecule:
                 " 'CCO' "
             )
         mol = rk.Chem.MolFromSmiles(atoms)
-        if addH:
-            mol = rk.Chem.AddHs(mol)
+        mol = rk.Chem.AddHs(mol, explicitOnly=self._addHs)
+        # NOTE: Explanation of EmbedMolecule process
+        #       https://www.rdkit.org/docs/GettingStartedInPython.html#working-with-3d-molecules
         AllChem.EmbedMolecule(mol)
         self._atoms = [tuple([a.GetSymbol()] + list(xyz))
                 for a, xyz in zip(mol.GetAtoms(), mol.GetConformer().GetPositions())]
+        self._charge = rk.Chem.rdmolops.GetFormalCharge(mol)
+        self._multiplicity = Descriptors.NumRadicalElectrons(mol) + 1 
 
     @_atoms.validator
     def _cehck_valid_atoms(self, attribute, atoms):
@@ -75,6 +80,14 @@ class Molecule:
                     " or str (Smiles):\n[(str, float, float, float), ...]"
                     "\n'CCO' "
                 )
+
+    @_addHs.validator
+    def _cehck_valid_addHs(self, attribute, addHs):
+        if not isinstance(addHs, bool):
+            raise ValueError(
+                "\n\naddHs must be an bool "  # noqa
+                f"\nyou get --> 'addHs = {addHs}'\n"
+            )
 
     @_charge.validator
     def _check_valid_charge(self, attribute, charge):
@@ -110,7 +123,8 @@ class Molecule:
         atoms = atoms_dict.get("atoms")
         charge = atoms_dict.get("charge", 0)
         multiplicity = atoms_dict.get("multiplicity", 1)
-        return cls(atoms, charge, multiplicity)
+        addHs = atoms_dict.get("addHs", True)
+        return cls(atoms, charge, multiplicity, addHs)
 
     # ===============================================================
     # MAGIC METHODS
@@ -165,6 +179,11 @@ class Molecule:
     def atoms(self) -> list:
         """Return the list of atoms"""
         return self._atoms
+
+    @property
+    def addHs(self) -> bool:
+        """Activate Add of H"""
+        return self._addHs
 
     @atoms.setter
     def atoms(self, *args, **kwargs) -> None:
