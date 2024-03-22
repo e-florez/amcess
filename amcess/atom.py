@@ -1,31 +1,34 @@
 import attr
 
+
+from rdkit.Chem.rdchem import Atom as RDKAtom
+
 from .data.atomic_data import atomic_mass
 
 
 @attr.s(frozen=True)
-class Atom:
-    """
-    Representation of an individual atomas (<element> <X> <Y> <Z>)
+class Atom(RDKAtom):
+    # """
+    # Representation of an individual atomas (<element> <X> <Y> <Z>)
 
-    .. rubric:: Examples
+    # .. rubric:: Examples
 
-    >>> Atom(element='H', x=0, y=0, z=0)
-    {'element': 'H', 'x': 0, 'y': 0, 'z': 0}
+    # >>> Atom(element='H', x=0, y=0, z=0)
+    # {'element': 'H', 'x': 0, 'y': 0, 'z': 0}
 
-    >>> Atom('F', 0, 0, 1.97)
-    {'element': 'F', 'x': 0, 'y': 0, 'z': 1.97}
+    # >>> Atom('F', 0, 0, 1.97)
+    # {'element': 'F', 'x': 0, 'y': 0, 'z': 1.97}
 
-    .. rubric:: Returns
+    # .. rubric:: Returns
 
-    atom : object
-        object like dict {'element': str, 'x': float, 'y': float, 'z': float}
+    # atom : object
+    #     object like dict {'element': str, 'x': float, 'y': float, 'z': float}
 
-    .. rubric:: Raises
+    # .. rubric:: Raises
 
-    ValueError
-        format MUST be (str, float, float, float) with NOT empty filed
-    """
+    # ValueError
+    #     format MUST be (str, float, float, float) with NOT empty filed
+    # """
 
     element: str = attr.ib()
     x: int = attr.ib()
@@ -61,15 +64,10 @@ class Atom:
     def __str__(self):
         """Magic method '__str__' to print the object as a dictionary"""
         return str(attr.asdict(self))
-    # ===============================================================
-    # PROPERTIES
-    # ===============================================================
-    @property
-    def atomic_mass(self) -> list:
-        """Atomic mass of the atom"""
-        return atomic_mass(self.element)
+    
+    # # ===============================================================
+    # # Building
+    # # ===============================================================
+    def __attrs_pre_init__(self, element, x: float = 0.0, y: float = 0.0, z: float = 0.0):
+        super().__init__(element)
 
-    @property
-    def symbol(self) -> list:
-        """Atomic symbol of the atom"""
-        return self.element
