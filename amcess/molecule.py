@@ -7,6 +7,8 @@ import numpy as np
 from rdkit import Chem
 from rdkit.Chem import AllChem
 from rdkit.Chem import Descriptors
+from rdkit.Chem.rdchem import Mol
+
 
 
 from amcess.atom import Atom
@@ -23,7 +25,7 @@ EXT_FILE: dict[str] = {'.mol': Chem.rdmolfiles.MolFromMolFile,
                        }
 
 @attr.s(frozen=False)
-class Molecule:
+class Molecule(Mol):
     """
     Create a Molecule that is at least ONE atom.
     The format of the INPUT coordinates must be:
@@ -52,6 +54,11 @@ class Molecule:
     # ===============================================================
     # VALIDATORS
     # ===============================================================
+    def _init_mol_rdkit(self, mol):
+        """"""
+        super().__init__(mol)
+
+
     def _check_atoms_list(self, attribute, atoms):
         for line, atom in enumerate(atoms):
             try:
@@ -63,9 +70,22 @@ class Molecule:
                     f"\ncheck atom number {line + 1} --> {atom}\n"
                     f"from --> {atoms}\n"
                 )
-    def _molecule_list_building(self, mol):
-        self._atoms = [tuple([a.GetSymbol()] + list(xyz))
-                for a, xyz in zip(mol.GetAtoms(), mol.GetConformer().GetPositions())]
+        total_atoms: int = len(atoms) 
+        block_xyz: str = f"""{total_atoms}\n\n"""
+        for atom in atoms:
+            block_xyz += f"""{atom[0]:<6}"""
+            block_xyz += f"""\t{atom[1]:> 15.8f}"""
+            block_xyz += f"""\t{atom[2]:> 15.8f}"""
+            block_xyz += f"""\t{atom[3]:> 15.8f}\n"""
+
+        self._init_mol_rdkit(Chem.rdmolfiles.MolFromXYZBlock(block_xyz))
+
+    #def _molecule_list_building(self, mol):
+    #    self._atoms = [tuple([a.GetSymbol()] + list(xyz))
+    #            for a, xyz in zip(mol.GetAtoms(), mol.GetConformer().GetPositions())]
+
+    def _mol_charge_multiplicity(self, mol):
+        """"""
         self._charge = Chem.rdmolops.GetFormalCharge(mol)
         self._multiplicity = Descriptors.NumRadicalElectrons(mol) + 1 
 
@@ -73,16 +93,15 @@ class Molecule:
         try:
             Chem.MolFromSmiles(atoms, sanitize=False)
         except (ValueError, TypeError) as err:
-            raise TypeError(
-                f"\n\n{err}\n atoms must be a smiles: "
-                " 'CCO' "
-            )
+            raise TypeError(f"\n\n{err}\n atoms must be a smiles: "
+                            " 'CCO' ")
         mol = Chem.MolFromSmiles(atoms)
         mol = Chem.AddHs(mol, explicitOnly=self._addHs)
         # NOTE: Explanation of EmbedMolecule process
         #       https://www.rdkit.org/docs/GettingStartedInPython.html#working-with-3d-molecules
         AllChem.EmbedMolecule(mol)
-        self._molecule_list_building(mol)
+        self._mol_charge_multiplicity(mol)
+        self._init_mol_rdkit(mol)
 
     def _check_atoms_file(self, attribute, file):
         if not Path(file).exists():
@@ -97,17 +116,23 @@ class Molecule:
             mol = EXT_FILE[Path(file).suffix.lower()](file)    
         else:
             mol = EXT_FILE[Path(file).suffix.lower()](file, removeHs=self._removeHs)
+        
         if self._addHs:
             if Path(file).suffix.lower() == '.mol2':
                 raise TypeError('RDKit have problem to add H to mol from'
                                 'mol2 file')                
+            print("ADDD ")
             mol = Chem.AddHs(mol, addCoords=True)
-        self._molecule_list_building(mol)
+        #self._molecule_list_building(mol)
+        self._mol_charge_multiplicity(mol)
+        self._init_mol_rdkit(mol)
 
     @_atoms.validator
     def _cehck_valid_atoms(self, attribute, atoms):
         """check if the atoms are valid"""
-        if self._file:
+        if isinstance(atoms, (Molecule, Chem.rdchem.Mol)):
+            self._init_mol_rdkit(atoms)
+        elif self._file:
             self._check_atoms_file(attribute, atoms)
         elif isinstance(atoms, list):
             self._check_atoms_list(attribute, atoms)
@@ -149,31 +174,31 @@ class Molecule:
     # ===============================================================
     # CONSTRUCTORS
     # ===============================================================
-    @classmethod
-    def from_dict(cls, atoms_dict):
-        "Dictionary type: {'atoms': [(<element> <X> <Y> <Z>), ...]}"
-        if "atoms" not in atoms_dict:
-            # FIXME: KeyError does not support \n
-            raise TypeError(
-                "\n\nThe key 'atoms' is casesensitive"
-                "\n{'atoms': [(<element> <X> <Y> <Z>), ...]}"
-                f"\nyou get {atoms_dict}\n"
-            )
-        atoms = atoms_dict.get("atoms")
-        charge = atoms_dict.get("charge", 0)
-        multiplicity = atoms_dict.get("multiplicity", 1)
-        return cls(atoms, charge, multiplicity)
+    # @classmethod
+    # def from_dict(cls, atoms_dict):
+    #     "Dictionary type: {'atoms': [(<element> <X> <Y> <Z>), ...]}"
+    #     if "atoms" not in atoms_dict:
+    #         # FIXME: KeyError does not support \n
+    #         raise TypeError(
+    #             "\n\nThe key 'atoms' is casesensitive"
+    #             "\n{'atoms': [(<element> <X> <Y> <Z>), ...]}"
+    #             f"\nyou get {atoms_dict}\n"
+    #         )
+    #     atoms = atoms_dict.get("atoms")
+    #     charge = atoms_dict.get("charge", 0)
+    #     multiplicity = atoms_dict.get("multiplicity", 1)
+    #     return cls(atoms, charge, multiplicity)
 
     # ===============================================================
     # MAGIC METHODS
     # ===============================================================
     def __add__(self, other) -> object:
         """Magic method '__add__' to add two molecules, return a new one"""
-        return Molecule(self.atoms + other.atoms, self.charge + self.charge, (self.multiplicity + other.multiplicity) - 1)
+        return Molecule(self.GetMolList + other.GetMolList, self.GetMolCharge + other.GetMolCharge, (self.GetMolMultiplicity + other.GetMolMultiplicity) - 1)
 
-    #def __mul__(self, value: int):
-    #    """Magic method '__mul__' to multiply a molecule by a number"""
-    #    return value * self
+    def __mul__(self, value: int):
+        """Magic method '__mul__' to multiply a molecule by a number"""
+        return value * self
 
     def __rmul__(self, value: int):
         """
@@ -195,60 +220,62 @@ class Molecule:
                 f"\ncheck --> '{value}'"
             )
 
-        tcoordinates: list = [at for i in range(value) for at in self.atoms]
+        tcoordinates: list = [at for i in range(value) for at in self.GetMolList]
         tcharge: int = 0
         tmultiplicity: int = 0
         for i in range(value):
-            tcharge += self.charge
-            tmultiplicity += self.multiplicity
+            tcharge += self.GetMolCharge
+            tmultiplicity += self.GetMolMultiplicity
         tmultiplicity -= value - 1
 
         return Molecule(tcoordinates, tcharge, tmultiplicity)
         
 
-    def __str__(self):
-        """Magic method '__str__' to print the Molecule in XYZ format"""
-        return self.xyz
+    #def __str__(self):
+    #    """Magic method '__str__' to print the Molecule in XYZ format"""
+    #    return self.xyz
 
     # ===============================================================
     # PROPERTIES
     # ===============================================================
     @property
-    def atoms(self) -> list:
+    def GetAtomicSymbols(self) -> list:
         """Return the list of atoms"""
-        return self._atoms
+        return [a.GetSymbol() for a in self.GetAtoms()]
 
-    @atoms.setter
-    def atoms(self, *args, **kwargs) -> None:
-        """Set the list of atoms"""
-        raise AttributeError(
-            "\n\nyou cannot reset 'atoms'. Consider create a new instance \n"
-        )
+    #@GetAtomicSymbols.setter
+    #def atomic_symbols(self, *args, **kwargs) -> None:
+    #    """Set the list of atoms"""
+    #    raise AttributeError(
+    #        "\n\nyou cannot reset 'atoms'. Consider create a new instance \n"
+    #    )
 
     @property
-    def write_atoms(self) -> str:
+    def GetBlockXYZ(self) -> str:
         """Printing Molecule coordinates using XYZ format"""
-        write_coordinates = ""
-        for atom in self.atoms:
-            write_coordinates += f"""{atom[0]:<6}"""
-            write_coordinates += f"""\t{atom[1]:> 15.8f}"""
-            write_coordinates += f"""\t{atom[2]:> 15.8f}"""
-            write_coordinates += f"""\t{atom[3]:> 15.8f}\n"""
+        write_coordinates: str = ""
+        comment: str = f"charge: {self.GetMolCharge} multiplicity:{self.GetMolMultiplicity}"
+        write_coordinates += f"{len(self.GetAtomicSymbols)}\n{comment}\n"
+        for atom, xyz in zip(self.GetAtoms(), self.GetConformer().GetPositions()):
+            write_coordinates += f"""{atom.GetSymbol():<6}"""
+            write_coordinates += f"""\t{xyz[0]:> 15.8f}"""
+            write_coordinates += f"""\t{xyz[1]:> 15.8f}"""
+            write_coordinates += f"""\t{xyz[2]:> 15.8f}\n"""
 
         return write_coordinates
 
     @property
-    def atomic_masses(self) -> list:
+    def GetAtomicMasses(self) -> list:
         """Atomic mass of the molecule"""
-        return [Atom(*atom).atomic_mass for atom in self.atoms]
+        return [atom.GetMass() for atom in self.GetAtoms()]
 
     @property
-    def charge(self) -> int:
+    def GetMolCharge(self) -> int:
         """Total molecular/atomic charge"""
         return self._charge
 
-    @charge.setter
-    def charge(self, new_charge) -> int:
+    @GetMolCharge.setter
+    def SetMolCharge(self, new_charge) -> int:
         """Set the total molecular/atomic charge"""
         if not isinstance(new_charge, int):
             raise ValueError(
@@ -258,28 +285,29 @@ class Molecule:
         self._charge = new_charge
 
     @property
-    def coordinates(self) -> list:
+    def GetAtomicCoordinates(self) -> list:
         """Return the list of coordinates"""
-        return [c[1:] for c in self.atoms]
+        return self.GetConformer().GetPositions()
+
+    #! Se hereda
+    # @property
+    # def elements(self) -> list:
+    #     """Show a list of unique symbols
+
+    #     .. rubric:: Returns
+
+    #     list
+    #         list of unique symbols
+    #     """
+    #     return self.GetNumAtoms()
 
     @property
-    def elements(self) -> list:
-        """Show a list of unique symbols
-
-        .. rubric:: Returns
-
-        list
-            list of unique symbols
-        """
-        return list(set(self.symbols))
-
-    @property
-    def multiplicity(self) -> int:
+    def GetMolMultiplicity(self) -> int:
         """Return the multiplicity"""
         return self._multiplicity
 
-    @multiplicity.setter
-    def multiplicity(self, new_multiplicity) -> int:
+    @GetMolMultiplicity.setter
+    def SetMolMultiplicity(self, new_multiplicity) -> int:
         """Set the multiplicity"""
         if not isinstance(new_multiplicity, int) or new_multiplicity < 1:
             raise ValueError(
@@ -289,47 +317,57 @@ class Molecule:
         self._multiplicity = new_multiplicity
 
     @property
-    def molecule(self) -> dict:
+    def GetMolList(self) -> list:
         """Return the dict atoms"""
-        return {"atoms": self.atoms, "charge": self.charge, "multiplicity": self.multiplicity}
+        list_atoms: list(tuple(str, float)) = [tuple([a.GetSymbol()] + list(xyz))
+                for a, xyz in zip(self.GetAtoms(), self.GetConformer().GetPositions())]
+        return list_atoms
 
     @property
-    def numbering_atoms(self) -> str:
-        """show atom number line by line
+    def GetMolDict(self) -> dict:
+        """Return the dict atoms"""
+        return {"atoms": self.GetMolList, "charge": self.GetMolCharge, "multiplicity": self.GetMolMultiplicity}
 
-        .. rubric:: Returns
+    #! Para que?
+    # @property
+    # def GetNumberingAtoms(self) -> str:
+    #     """show atom number line by line
 
-        str
-            atom number line by line
-        """
-        numbered_atoms = list()
-        for i in range(self.total_atoms):
-            line = list(self.atoms[i])
-            line[0] = f"\r  atom #{i} --> {line[0]:<6}"
-            line[1] = f"{line[1]:> 15.8f}"
-            line[2] = f"{line[2]:> 15.8f}"
-            line[3] = f"{line[3]:> 15.8f}"
-            numbered_atoms.append("".join(line))
+    #     .. rubric:: Returns
 
-        return "\n".join(numbered_atoms)
+    #     str
+    #         atom number line by line
+    #     """
+    #     numbered_atoms = list()
+    #     for a, xyz in zip(self.GetAtoms(), self.GetCoordinates):
+    #         line = list(self.atoms[i])
+    #         line[0] = f"\r  atom #{i} --> {line[0]:<6}"
+    #         line[1] = f"{line[1]:> 15.8f}"
+    #         line[2] = f"{line[2]:> 15.8f}"
+    #         line[3] = f"{line[3]:> 15.8f}"
+    #         numbered_atoms.append("".join(line))
+
+    #     return "\n".join(numbered_atoms)
+
+    #!Lo realiza GetAtomicSymbol
+    #@property
+    #def symbols(self) -> list:
+    #    """Return the list of symbols"""
+    #    return [s.title() for s in self.GetAtomicSymbols]
+
+    # !Lo realiza el método heredado GetNumAtoms además es igual que elements
+    # @property
+    # def total_atoms(self) -> int:
+    #     """Return the total number of atoms"""
+    #     return len(self.atoms)
 
     @property
-    def symbols(self) -> list:
-        """Return the list of symbols"""
-        return [str(s[0]).title() for s in self.atoms]
-
-    @property
-    def total_atoms(self) -> int:
-        """Return the total number of atoms"""
-        return len(self.atoms)
-
-    @property
-    def total_mass(self) -> float:
+    def GetMolMass(self) -> float:
         """Return the total mass of the molecule"""
-        return sum(self.atomic_masses)
+        return sum(self.GetAtomicMasses)
 
     @property
-    def center_of_mass(self) -> tuple:
+    def GetMolCM(self) -> tuple:
         """Center of mass for a N-body problem. `Jacobi coordinates`_
 
         .. rubric:: Notes
@@ -345,44 +383,44 @@ class Molecule:
         .. _Jacobi coordinates:
             https://en.wikipedia.org/wiki/Jacobicoordinates
         """
-
-        total_mass = 1 if not self.total_mass else self.total_mass
-
+        # total_mass = 1 if not self.total_mass else self.total_mass
         return tuple(
             np.dot(
-                np.asarray(self.atomic_masses),
-                np.asarray(self.coordinates),
+                np.asarray(self.GetAtomicMasses),
+                np.asarray(self.GetAtomicCoordinates),
             )
-            / total_mass
+            / self.GetMolMass
         )
 
     @property
-    def principal_axes(self) -> list:
+    def GetMolPrincipalAxes(self) -> list:
         """Principal axes for according to Jacobi coordinates"""
         return [
             tuple(c)
             for c in (  # noqa
-                np.asarray(self.coordinates) - np.asarray(self.center_of_mass)
+                np.asarray(self.GetAtomicCoordinates) - np.asarray(self.GetMolCM)
             )
         ]
 
-    @property
-    def xyz(self) -> str:
-        """Printing Molecule coordinates using XYZ format"""
-        comments = (
-            f"-- charge={self.charge:<-g} and "
-            f"multiplicity={self.multiplicity:<g} --"
-        )
-        write_xyz = f"""\t{self.total_atoms}\n{comments:<s}\n"""
-        for atom in self.atoms:
-            write_xyz += f"""{atom[0]:<6}"""
-            write_xyz += f"""\t{atom[1]:> 15.8f}"""
-            write_xyz += f"""\t{atom[2]:> 15.8f}"""
-            write_xyz += f"""\t{atom[3]:> 15.8f}\n"""
+    # !Ya lo realiza GetBlockXYZ
+    # @property
+    # def xyz(self) -> str:
+    #     """Printing Molecule coordinates using XYZ format"""
+    #     comments = (
+    #         f"-- charge={self.charge:<-g} and "
+    #         f"multiplicity={self.multiplicity:<g} --"
+    #     )
+    #     write_xyz = f"""{self.total_atoms}\n{comments:<s}\n"""
+    #     for atom in self.atoms:
+    #         write_xyz += f"""{atom[0]:<6}"""
+    #         write_xyz += f"""\t{atom[1]:> 15.8f}"""
+    #         write_xyz += f"""\t{atom[2]:> 15.8f}"""
+    #         write_xyz += f"""\t{atom[3]:> 15.8f}\n"""
 
-        return write_xyz
+    #     return write_xyz
 
-    def add_atoms(self, new_atoms: list) -> object:
+    #def add_atoms(self, new_atoms: list) -> object:
+    def AddAtoms(self, new_atoms: list, attribute: None = None) -> object:
         """adding extra atoms can NOT be MOVED or ROTATED
 
         .. rubric:: Parameters
@@ -407,8 +445,10 @@ class Molecule:
                 f"check --> \n{new_atoms}\n"
             )
 
-        total_atoms: list = self.atoms + new_atoms
-        return self.__class__(total_atoms)
+        atoms: list = self.GetMolList + new_atoms
+
+        return self._cehck_valid_atoms(attribute, atoms)
+        #return self.__class__(total_atoms)
 
     # def add_molecule(self, other) -> object:
     #     """adding molecule return a new Cluster object"""
@@ -419,7 +459,7 @@ class Molecule:
     #         )
     #     return Cluster(self, other)
 
-    def get_atom(self, atom: int) -> list:
+    def GetAtomWithIndix(self, atom: int) -> list:
         """
         Getting catesian coordinate for an atom
 
@@ -430,34 +470,34 @@ class Molecule:
 
         .. rubric:: Returns
 
-        list
-            ["element", "X", "Y", "Z"]
+        tuple
+            ("element", "X", "Y", "Z")
 
         .. rubric:: Raises
 
         IndexError
         """
-        if not isinstance(atom, int) or atom >= self.total_atoms:
+        if not isinstance(atom, int) or atom >= self.GetNumAtoms():
             raise IndexError(
-                f"\nMolecule with {self.total_atoms} total atoms "
-                f"and index [0-{self.total_atoms - 1}]"
-                f"\n atom index must be less than {self.total_atoms}"
+                f"\nMolecule with {self.GetNumAtoms()} total atoms "
+                f"and index [0-{self.GetNumAtoms() - 1}]"
+                f"\n atom index must be less than {self.GetNumAtoms()}"
                 f"\nCheck! You want to get atom with index {atom}"
             )
-        return self.atoms[atom]
+        return self.GetMolList[atom]
 
-    def remove_atom(self, atom: int) -> object:
+    def RemoveAtom(self, atom: int, attribute: None = None) -> object:
         """remove one atom"""
-        if not isinstance(atom, int) or atom >= self.total_atoms:
+        if not isinstance(atom, int) or atom >= self.GetNumAtoms():
             raise IndexError(
-                f"\nMolecule with {self.total_atoms} total atoms "
-                f"and index [0-{self.total_atoms - 1}]"
-                f"\n atom index must be less than {self.total_atoms}"
+                f"\nMolecule with {self.GetNumAtoms()} total atoms "
+                f"and index [0-{self.GetNumAtoms() - 1}]"
+                f"\n atom index must be less than {self.GetNumAtoms()}"
                 f"\nCheck! You want to remove atom with index '{atom}'"
             )
 
-        new_atoms: list = list(self.atoms)
+        atoms: list = self.GetMolList
 
-        del new_atoms[atom]
+        del atoms[atom]
 
-        return self.__class__(new_atoms)
+        return self._cehck_valid_atoms(attribute, atoms)

@@ -65,9 +65,9 @@ class Atom(RDKAtom):
         """Magic method '__str__' to print the object as a dictionary"""
         return str(attr.asdict(self))
     
-    # # ===============================================================
-    # # Building
-    # # ===============================================================
+    # ===============================================================
+    # Building
+    # ===============================================================
     def __attrs_pre_init__(self, element, x: float = 0.0, y: float = 0.0, z: float = 0.0):
         super().__init__(element)
 
