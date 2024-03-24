@@ -7,6 +7,7 @@ import numpy as np
 from rdkit import Chem
 from rdkit.Chem import AllChem
 from rdkit.Chem import Descriptors
+from rdkit.Chem import rdDetermineBonds
 from rdkit.Chem.rdchem import Mol
 
 
@@ -113,7 +114,9 @@ class Molecule(Mol):
                 f"File with extension {Path(file).suffix} can't be reading"
             )
         if Path(file).suffix.lower() in ['.xyz', '.png', '.tpl']:
-            mol = EXT_FILE[Path(file).suffix.lower()](file)    
+            mol = EXT_FILE[Path(file).suffix.lower()](file)
+            if Path(file).suffix.lower() in ['.xyz']:
+                rdDetermineBonds.DetermineConnectivity(mol)    
         else:
             mol = EXT_FILE[Path(file).suffix.lower()](file, removeHs=self._removeHs)
         
@@ -121,7 +124,6 @@ class Molecule(Mol):
             if Path(file).suffix.lower() == '.mol2':
                 raise TypeError('RDKit have problem to add H to mol from'
                                 'mol2 file')                
-            print("ADDD ")
             mol = Chem.AddHs(mol, addCoords=True)
         #self._molecule_list_building(mol)
         self._mol_charge_multiplicity(mol)
