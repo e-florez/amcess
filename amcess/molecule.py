@@ -56,11 +56,11 @@ class Molecule(Mol):
     # VALIDATORS
     # ===============================================================
     def _init_mol_rdkit(self, mol):
-        """"""
+        """Build Mol object from RDKit class"""
         super().__init__(mol)
 
-
     def _check_atoms_list(self, attribute, atoms):
+        """Check the list is Ok"""
         for line, atom in enumerate(atoms):
             try:
                 Atom(*atom)
@@ -79,18 +79,17 @@ class Molecule(Mol):
             block_xyz += f"""\t{atom[2]:> 15.8f}"""
             block_xyz += f"""\t{atom[3]:> 15.8f}\n"""
 
-        self._init_mol_rdkit(Chem.rdmolfiles.MolFromXYZBlock(block_xyz))
-
-    #def _molecule_list_building(self, mol):
-    #    self._atoms = [tuple([a.GetSymbol()] + list(xyz))
-    #            for a, xyz in zip(mol.GetAtoms(), mol.GetConformer().GetPositions())]
+        mol = Chem.rdmolfiles.MolFromXYZBlock(block_xyz)
+        rdDetermineBonds.DetermineConnectivity(mol)
+        self._init_mol_rdkit(mol)
 
     def _mol_charge_multiplicity(self, mol):
-        """"""
+        """Save charge and multiplicty in variables of object"""
         self._charge = Chem.rdmolops.GetFormalCharge(mol)
         self._multiplicity = Descriptors.NumRadicalElectrons(mol) + 1 
 
     def _check_atoms_smiles(self, attribute, atoms):
+        """Check that the smiles is Ok"""
         try:
             Chem.MolFromSmiles(atoms, sanitize=False)
         except (ValueError, TypeError) as err:
@@ -105,6 +104,7 @@ class Molecule(Mol):
         self._init_mol_rdkit(mol)
 
     def _check_atoms_file(self, attribute, file):
+        """Check that file exists and is Ok"""
         if not Path(file).exists():
             raise ValueError(
                 f"The file {file} doesn't exist"
@@ -125,7 +125,6 @@ class Molecule(Mol):
                 raise TypeError('RDKit have problem to add H to mol from'
                                 'mol2 file')                
             mol = Chem.AddHs(mol, addCoords=True)
-        #self._molecule_list_building(mol)
         self._mol_charge_multiplicity(mol)
         self._init_mol_rdkit(mol)
 
@@ -174,24 +173,6 @@ class Molecule(Mol):
             )
 
     # ===============================================================
-    # CONSTRUCTORS
-    # ===============================================================
-    # @classmethod
-    # def from_dict(cls, atoms_dict):
-    #     "Dictionary type: {'atoms': [(<element> <X> <Y> <Z>), ...]}"
-    #     if "atoms" not in atoms_dict:
-    #         # FIXME: KeyError does not support \n
-    #         raise TypeError(
-    #             "\n\nThe key 'atoms' is casesensitive"
-    #             "\n{'atoms': [(<element> <X> <Y> <Z>), ...]}"
-    #             f"\nyou get {atoms_dict}\n"
-    #         )
-    #     atoms = atoms_dict.get("atoms")
-    #     charge = atoms_dict.get("charge", 0)
-    #     multiplicity = atoms_dict.get("multiplicity", 1)
-    #     return cls(atoms, charge, multiplicity)
-
-    # ===============================================================
     # MAGIC METHODS
     # ===============================================================
     def __add__(self, other) -> object:
@@ -232,10 +213,9 @@ class Molecule(Mol):
 
         return Molecule(tcoordinates, tcharge, tmultiplicity)
         
-
-    #def __str__(self):
-    #    """Magic method '__str__' to print the Molecule in XYZ format"""
-    #    return self.xyz
+    def __str__(self):
+        """Magic method '__str__' to print the Molecule in XYZ format"""
+        return self.GetBlockXYZ
 
     # ===============================================================
     # PROPERTIES
@@ -245,6 +225,10 @@ class Molecule(Mol):
         """Return the list of atoms"""
         return [a.GetSymbol() for a in self.GetAtoms()]
 
+    @property
+    def GetAtomicNumbers(self) -> list:
+        """Return the list of atoms"""
+        return [a.GetAtomicNum() for a in self.GetAtoms()]
     #@GetAtomicSymbols.setter
     #def atomic_symbols(self, *args, **kwargs) -> None:
     #    """Set the list of atoms"""
@@ -290,18 +274,6 @@ class Molecule(Mol):
     def GetAtomicCoordinates(self) -> list:
         """Return the list of coordinates"""
         return self.GetConformer().GetPositions()
-
-    #! Se hereda
-    # @property
-    # def elements(self) -> list:
-    #     """Show a list of unique symbols
-
-    #     .. rubric:: Returns
-
-    #     list
-    #         list of unique symbols
-    #     """
-    #     return self.GetNumAtoms()
 
     @property
     def GetMolMultiplicity(self) -> int:
@@ -351,18 +323,6 @@ class Molecule(Mol):
 
     #     return "\n".join(numbered_atoms)
 
-    #!Lo realiza GetAtomicSymbol
-    #@property
-    #def symbols(self) -> list:
-    #    """Return the list of symbols"""
-    #    return [s.title() for s in self.GetAtomicSymbols]
-
-    # !Lo realiza el método heredado GetNumAtoms además es igual que elements
-    # @property
-    # def total_atoms(self) -> int:
-    #     """Return the total number of atoms"""
-    #     return len(self.atoms)
-
     @property
     def GetMolMass(self) -> float:
         """Return the total mass of the molecule"""
@@ -404,24 +364,6 @@ class Molecule(Mol):
             )
         ]
 
-    # !Ya lo realiza GetBlockXYZ
-    # @property
-    # def xyz(self) -> str:
-    #     """Printing Molecule coordinates using XYZ format"""
-    #     comments = (
-    #         f"-- charge={self.charge:<-g} and "
-    #         f"multiplicity={self.multiplicity:<g} --"
-    #     )
-    #     write_xyz = f"""{self.total_atoms}\n{comments:<s}\n"""
-    #     for atom in self.atoms:
-    #         write_xyz += f"""{atom[0]:<6}"""
-    #         write_xyz += f"""\t{atom[1]:> 15.8f}"""
-    #         write_xyz += f"""\t{atom[2]:> 15.8f}"""
-    #         write_xyz += f"""\t{atom[3]:> 15.8f}\n"""
-
-    #     return write_xyz
-
-    #def add_atoms(self, new_atoms: list) -> object:
     def AddAtoms(self, new_atoms: list, attribute: None = None) -> object:
         """adding extra atoms can NOT be MOVED or ROTATED
 
