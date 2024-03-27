@@ -2,6 +2,7 @@ from copy import deepcopy
 
 import numpy as np
 from scipy.spatial.transform import Rotation
+from rdkit.Chem.rdchem import Mol
 
 from amcess.molecule import Molecule
 
@@ -80,6 +81,8 @@ class Cluster(Molecule):
                 continue
             elif isinstance(mol, Molecule):
                 new_molecule = mol
+            elif isinstance(mol, Mol):
+                new_molecule = Molecule(mol)
             elif isinstance(mol, dict):
                 new_molecule = Molecule(mol)
             elif isinstance(mol, list):
@@ -113,7 +116,11 @@ class Cluster(Molecule):
         # ! ver en que puede se diferenciar de Molecule
         # * la idea es que debe ser similar para que ambos
         # * creen una nueva instancia nueva de Cluster
-        return self.add_molecule(other)
+        new_cluster: dict = {}
+        for count, m in self.GetClusterDict.items():
+            new_cluster[count] = m.GetMolDict
+        new_cluster[self.GetTotalMol] = Molecule(other).GetMolDict
+        return Cluster(*new_cluster.values())
 
     def __mul__(self, value: int):
         """multiply the cluster by a number"""
@@ -138,9 +145,9 @@ class Cluster(Molecule):
                 f"\ncheck --> '{value}'"
             )
 
-        new_cluster = deepcopy(self)
+        new_cluster = self
         for _ in range(value - 1):
-            new_cluster = new_cluster.add_molecule(deepcopy(self))
+            new_cluster += new_cluster   #.AddMol(deepcopy(self))
 
         return new_cluster
 
@@ -149,16 +156,16 @@ class Cluster(Molecule):
         cluster_dict: dict = self._cluster_dict
 
         cluster_string: str = (
-            f"Cluster of ({self.total_molecules}) molecules"
-            f" and ({self.total_atoms}) total atoms\n"
+            f"Cluster of ({self.GetTotalMol}) molecules"
+            f" and ({self.GetNumAtoms()}) total atoms\n"
         )
         for key, molecule in cluster_dict.items():
-            atoms = molecule.atoms
+            atoms = molecule.GetMolList
             cluster_string += f" #{key}: molecule with {len(atoms)} atoms:\n"
             cluster_string += f"     --> atoms: {atoms}\n"
-            charge = molecule.charge
+            charge = molecule.GetMolCharge
             cluster_string += f"     --> charge: {charge:>+}\n"
-            multiplicity = molecule.multiplicity
+            multiplicity = molecule.GetMolMultiplicity
             cluster_string += f"     --> multiplicity: {multiplicity}\n"
 
         return cluster_string
@@ -187,29 +194,29 @@ class Cluster(Molecule):
             raise TypeError(f"values {type(values)} can only be a list or int")
 
     @property
-    def random_generator(self) -> np.random.Generator:
+    def GetRandomGen(self) -> np.random.Generator:
         """return the random generator"""
         # self._random_gen: np.random.Generator = np.random.default_rng(seed)
-        return np.random.default_rng(self.seed)
+        return np.random.default_rng(self.GetSeed)
 
     @property
-    def seed(self) -> int:
+    def GetSeed(self) -> int:
         """return the seed for the random generator"""
         return self._seed
 
-    @seed.setter
-    def seed(self, new_seed: int) -> None:
+    @GetSeed.setter
+    def SetSeed(self, new_seed: int) -> None:
         """set the seed for the random generator"""
         self._seed = new_seed
         self._random_gen = np.random.default_rng(new_seed)
 
     @property
-    def sphere_center(self) -> tuple:
+    def GetSphereCenter(self) -> tuple:
         """return the sphere center for the Cluster boundary conditions"""
         return self._sphere_center
 
-    @sphere_center.setter
-    def sphere_center(self, new_center: tuple) -> None:
+    @GetSphereCenter.setter
+    def SetSphereCenter(self, new_center: tuple) -> None:
         """set the sphere center for the Cluster boundary conditions"""
         if len(new_center) != 3:
             raise ValueError(
@@ -221,12 +228,12 @@ class Cluster(Molecule):
         self._sphere_center = new_center
 
     @property
-    def sphere_radius(self) -> float:
+    def GetSphereR(self) -> float:
         """return the sphere radius for the Cluster boundary conditions"""
         return self._sphere_radius
 
-    @sphere_radius.setter
-    def sphere_radius(self, new_radius: float) -> None:
+    @GetSphereR.setter
+    def SetSphereR(self, new_radius: float) -> None:
         """set the sphere radius for the Cluster boundary conditions"""
         if not isinstance(new_radius, (int, float)) or new_radius < 0.9:
             raise ValueError(
@@ -237,15 +244,35 @@ class Cluster(Molecule):
         self._sphere_radius = new_radius
 
     @property
-    def total_molecules(self) -> int:
+    def GetTotalMol(self) -> int:
         """return the total number of molecules in the cluster"""
         return len(self._cluster_dict)
 
     # ===============================================================
     # METHODS
     # ===============================================================
+    def GetMol(self, molecule: int):
+        """extract a molecule from the cluster and return a new Cluster"""
+        if molecule not in self.GetClusterDict:
+            raise IndexError(
+                f"\nMolecule with {self.GetTotalMol} total molecules "
+                f"and index [0-{self.GetTotalMol - 1}]"
+                f"\nmolecule index must be less than {self.GetTotalMol}"
+                f"\nCheck! You want to get molecule with index {molecule}"
+            )
+
+        cluster_dict: dict = self.GetClusterDict
+        new_molecule: Molecule = cluster_dict.pop(molecule)
+
+        return self.__class__(
+            new_molecule,
+            freeze_molecule=self.GetFreezeMol,
+            sphere_radius=self.GetSphereR,
+            sphere_center=self.GetSphereCenter,
+        )    
+    
     @staticmethod
-    def overlapping(
+    def Overlapping(
         first_coordinates: list,
         second_coordinates: list,
         max_closeness: float = 1.0,
@@ -280,16 +307,6 @@ class Cluster(Molecule):
 
         return False
 
-    def add_molecule(self, other: Molecule) -> object:
-        new_cluster = deepcopy(self)
-        return self.__class__(
-            new_cluster,
-            other,
-            freeze_molecule=new_cluster.GetFreezeMol,
-            sphere_radius=new_cluster.sphere_radius,
-            sphere_center=new_cluster.sphere_center,
-        )
-
     def initialize_cluster(self, max_closeness: float = 1.0) -> object:
         """Create a new cluster object which any atom is overlapped
 
@@ -310,14 +327,14 @@ class Cluster(Molecule):
 
         # initializing a new cluster moving the first molecule
         # to the center of the cluster sphere
-        molecule = self.get_molecule(0)
+        molecule = self.GetMol(0)
         new_cluster = molecule.translate(0, sc_x, sc_y, sc_z)
 
         for i in range(1, self.total_molecules):
             # moving the next single molecule into the cluster sphere
-            molecule = self.get_molecule(i).translate(0, sc_x, sc_y, sc_z)
+            molecule = self.GetMol(i).translate(0, sc_x, sc_y, sc_z)
 
-            if Cluster.overlapping(  # noqa
+            if Cluster.Overlapping(  # noqa
                 molecule.coordinates, new_cluster.coordinates
             ):
                 new_cluster += molecule
@@ -333,29 +350,10 @@ class Cluster(Molecule):
         return Cluster(
             new_cluster,
             freeze_molecule=self.GetFreezeMol,
-            sphere_radius=self.sphere_radius,
+            sphere_radius=self.GetSphereR,
             sphere_center=self.sphere_center,
         )
 
-    def get_molecule(self, molecule: int):
-        """extract a molecule from the cluster and return a new Cluster"""
-        if molecule not in self.GetClusterDict:
-            raise IndexError(
-                f"\nMolecule with {self.total_molecules} total molecules "
-                f"and index [0-{self.total_molecules - 1}]"
-                f"\nmolecule index must be less than {self.total_molecules}"
-                f"\nCheck! You want to get molecule with index {molecule}"
-            )
-
-        cluster_dict: dict = deepcopy(self).GetClusterDict
-        new_molecule: Molecule = cluster_dict.pop(molecule)
-
-        return self.__class__(
-            new_molecule,
-            freeze_molecule=self.GetFreezeMol,
-            sphere_radius=self.sphere_radius,
-            sphere_center=self.sphere_center,
-        )
 
     def move_molecule(
         self,
@@ -402,12 +400,12 @@ class Cluster(Molecule):
         if not max_rotation or not isinstance(max_rotation, (int, float)):
             max_rotation = 30
 
-        molecule_to_move: Cluster = self.get_molecule(molecule)
+        molecule_to_move: Cluster = self.GetMol(molecule)
 
         cluster_without_molecule: Cluster = self.remove_molecule(molecule)
         cluster_coordinates: Cluster = cluster_without_molecule.coordinates
 
-        random_gen: np.random.Generator = self.random_generator
+        random_gen: np.random.Generator = self.GetRandomGen
 
         max_overlap_cycle: int = 10000
 
@@ -441,7 +439,7 @@ class Cluster(Molecule):
 
             molecule_coordinates: list = new_molecule.coordinates
 
-            overlap: bool = Cluster.overlapping(
+            overlap: bool = Cluster.Overlapping(
                 molecule_coordinates,
                 cluster_coordinates,
                 max_closeness=max_closeness,
@@ -456,7 +454,7 @@ class Cluster(Molecule):
                 "\nat least one atom is overlapped with a distance"
                 f" less than '{max_closeness}' Angstroms"
                 "\nfor a cluster into a sphere of radius"
-                f" '{self.sphere_radius}' Angstroms"
+                f" '{self.GetSphereR}' Angstroms"
                 # f"\nPlease, check: \n\n{self.xyz}"
             )
 
@@ -466,7 +464,7 @@ class Cluster(Molecule):
         return self.__class__(
             *cluster_dict.values(),
             freeze_molecule=self.GetFreezeMol,
-            sphere_radius=self.sphere_radius,
+            sphere_radius=self.GetSphereR,
             sphere_center=self.sphere_center,
         )
 
@@ -489,7 +487,7 @@ class Cluster(Molecule):
         return self.__class__(
             *new_cluster._cluster_dict.values(),
             freeze_molecule=new_cluster.GetFreezeMol,
-            sphere_radius=new_cluster.sphere_radius,
+            sphere_radius=new_cluster.GetSphereR,
             sphere_center=new_cluster.sphere_center,
         )
 
@@ -552,7 +550,7 @@ class Cluster(Molecule):
         return self.__class__(
             *new_cluster._cluster_dict.values(),
             freeze_molecule=new_cluster.GetFreezeMol,
-            sphere_radius=new_cluster.sphere_radius,
+            sphere_radius=new_cluster.GetSphereR,
             sphere_center=new_cluster.sphere_center,
         )
 
@@ -591,9 +589,9 @@ class Cluster(Molecule):
         distance: float = np.linalg.norm(
             translatedcoordinates - np.asarray(self.sphere_center)
         )
-        if self.sphere_radius and (distance > self.sphere_radius):
+        if self.GetSphereR and (distance > self.GetSphereR):
 
-            max_distance: float = self.sphere_radius / np.linalg.norm(
+            max_distance: float = self.GetSphereR / np.linalg.norm(
                 translatedcoordinates - np.asarray(self.sphere_center)
             )
 
@@ -616,7 +614,7 @@ class Cluster(Molecule):
         return self.__class__(
             *new_cluster._cluster_dict.values(),
             freeze_molecule=new_cluster.GetFreezeMol,
-            sphere_radius=new_cluster.sphere_radius,
+            sphere_radius=new_cluster.GetSphereR,
             sphere_center=new_cluster.sphere_center,
         )
 
@@ -657,12 +655,12 @@ class Cluster(Molecule):
         # The biggest molecule
         molecules_number: Cluster = self.total_molecules
         for i in range(molecules_number):
-            if self.get_molecule(i).total_atoms > max_atoms:
-                max_atoms = self.get_molecule(i).total_atoms
+            if self.GetMol(i).total_atoms > max_atoms:
+                max_atoms = self.GetMol(i).total_atoms
                 molecule = i
         # ---------------------------------------------------------------
         # Define sphere center above the cm of the biggest molecule
-        center = self.get_molecule(molecule).center_of_mass
+        center = self.GetMol(molecule).center_of_mass
         # ---------------------------------------------------------------
         # Radius between the sphere center to the furthest atom
         for xyz in self.coordinates:
@@ -678,11 +676,11 @@ class Cluster(Molecule):
             new_geom = dict()
             for i in range(molecules_number):
                 if i == 0:
-                    new_geom[i] = self.get_molecule(molecule)
+                    new_geom[i] = self.GetMol(molecule)
                 elif i == molecule:
-                    new_geom[i] = self.get_molecule(0)
+                    new_geom[i] = self.GetMol(0)
                 else:
-                    new_geom[i] = self.get_molecule(i)
+                    new_geom[i] = self.GetMol(i)
             # ---------------------------------------------------------------
             # Instantiation of Cluster object with radius and center sphere
             return Cluster(
