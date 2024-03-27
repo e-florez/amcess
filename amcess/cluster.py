@@ -74,8 +74,8 @@ class Cluster(Molecule):
             if isinstance(mol, Cluster):
                 for j in mol._cluster_dict:
                     self._cluster_dict[size + j] = mol._cluster_dict[j]
-                self._charge += mol.charge
-                cluster_atoms += mol.atoms
+                self._charge += mol.GetMolCharge
+                cluster_atoms += mol.GetMolList
                 # restarting the loop
                 continue
             elif isinstance(mol, Molecule):
