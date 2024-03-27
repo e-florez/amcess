@@ -167,22 +167,24 @@ class Cluster(Molecule):
     # PROPERTIES
     # ===============================================================
     @property
-    def cluster_dictionary(self) -> dict:
+    def GetClusterDict(self) -> dict:
         """return the cluster dictionary"""
         return self._cluster_dict
 
     @property
-    def freeze_molecule(self) -> int:
+    def GetFreezeMol(self) -> int:
         """return a list with freezed molecules"""
         return self._freeze_molecule
 
-    @freeze_molecule.setter
-    def freeze_molecule(self, values) -> None:
+    @GetFreezeMol.setter
+    def SetFreezeMol(self, values) -> None:
         """set the freeze molecules"""
         if isinstance(values, list):
             self._freeze_molecule = values
-        else:
+        elif isinstance(values, int):
             self._freeze_molecule = [values]
+        else:
+            raise TypeError(f"values {type(values)} can only be a list or int")
 
     @property
     def random_generator(self) -> np.random.Generator:
@@ -283,7 +285,7 @@ class Cluster(Molecule):
         return self.__class__(
             new_cluster,
             other,
-            freeze_molecule=new_cluster.freeze_molecule,
+            freeze_molecule=new_cluster.GetFreezeMol,
             sphere_radius=new_cluster.sphere_radius,
             sphere_center=new_cluster.sphere_center,
         )
@@ -330,14 +332,14 @@ class Cluster(Molecule):
 
         return Cluster(
             new_cluster,
-            freeze_molecule=self.freeze_molecule,
+            freeze_molecule=self.GetFreezeMol,
             sphere_radius=self.sphere_radius,
             sphere_center=self.sphere_center,
         )
 
     def get_molecule(self, molecule: int):
         """extract a molecule from the cluster and return a new Cluster"""
-        if molecule not in self.cluster_dictionary:
+        if molecule not in self.GetClusterDict:
             raise IndexError(
                 f"\nMolecule with {self.total_molecules} total molecules "
                 f"and index [0-{self.total_molecules - 1}]"
@@ -345,12 +347,12 @@ class Cluster(Molecule):
                 f"\nCheck! You want to get molecule with index {molecule}"
             )
 
-        cluster_dict: dict = deepcopy(self).cluster_dictionary
+        cluster_dict: dict = deepcopy(self).GetClusterDict
         new_molecule: Molecule = cluster_dict.pop(molecule)
 
         return self.__class__(
             new_molecule,
-            freeze_molecule=self.freeze_molecule,
+            freeze_molecule=self.GetFreezeMol,
             sphere_radius=self.sphere_radius,
             sphere_center=self.sphere_center,
         )
@@ -458,19 +460,19 @@ class Cluster(Molecule):
                 # f"\nPlease, check: \n\n{self.xyz}"
             )
 
-        cluster_dict: dict = deepcopy(self.cluster_dictionary)
+        cluster_dict: dict = deepcopy(self.GetClusterDict)
         cluster_dict[molecule] = new_molecule
 
         return self.__class__(
             *cluster_dict.values(),
-            freeze_molecule=self.freeze_molecule,
+            freeze_molecule=self.GetFreezeMol,
             sphere_radius=self.sphere_radius,
             sphere_center=self.sphere_center,
         )
 
     def remove_molecule(self, molecule: int) -> object:
         """Removing molecule from cluster"""
-        if molecule not in self.cluster_dictionary:
+        if molecule not in self.GetClusterDict:
             raise IndexError(
                 f"\nMolecule with {self.total_molecules} total atoms "
                 f"and index [0-{self.total_molecules - 1}]"
@@ -478,7 +480,7 @@ class Cluster(Molecule):
                 f"\nCheck! You want to remove molecule with index {molecule}"
             )
         new_cluster: Cluster = deepcopy(self)
-        new_cluster_dict: dict = new_cluster.cluster_dictionary
+        new_cluster_dict: dict = new_cluster.GetClusterDict
         del new_cluster_dict[molecule]
         # ! Martin
         # ! tener cuidado con el self porque se puede compartir Molecule
@@ -486,7 +488,7 @@ class Cluster(Molecule):
         # ! Preferible usar Cluster(...)
         return self.__class__(
             *new_cluster._cluster_dict.values(),
-            freeze_molecule=new_cluster.freeze_molecule,
+            freeze_molecule=new_cluster.GetFreezeMol,
             sphere_radius=new_cluster.sphere_radius,
             sphere_center=new_cluster.sphere_center,
         )
@@ -499,7 +501,7 @@ class Cluster(Molecule):
         around molecule internal center of mass
         """
         # avoiding to rotate a FROZEN molecule
-        if molecule in self.freeze_molecule:
+        if molecule in self.GetFreezeMol:
             return deepcopy(self)
 
         if (
@@ -549,7 +551,7 @@ class Cluster(Molecule):
 
         return self.__class__(
             *new_cluster._cluster_dict.values(),
-            freeze_molecule=new_cluster.freeze_molecule,
+            freeze_molecule=new_cluster.GetFreezeMol,
             sphere_radius=new_cluster.sphere_radius,
             sphere_center=new_cluster.sphere_center,
         )
@@ -559,7 +561,7 @@ class Cluster(Molecule):
     ):
         """Returns a NEW Molecule Object with a TRANSLATED fragment"""
         # avoiding to rotate a FROZEN molecule
-        if molecule in self.freeze_molecule:
+        if molecule in self.GetFreezeMol:
             return deepcopy(self)
 
         if (
@@ -613,7 +615,7 @@ class Cluster(Molecule):
 
         return self.__class__(
             *new_cluster._cluster_dict.values(),
-            freeze_molecule=new_cluster.freeze_molecule,
+            freeze_molecule=new_cluster.GetFreezeMol,
             sphere_radius=new_cluster.sphere_radius,
             sphere_center=new_cluster.sphere_center,
         )
