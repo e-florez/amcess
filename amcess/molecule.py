@@ -59,6 +59,30 @@ class Molecule(Mol):
         """Build Mol object from RDKit class"""
         super().__init__(mol)
 
+    def _check_atoms_dict(self, attribute, atoms):
+        """Check the list is Ok"""
+        for line, atom in enumerate(atoms["atoms"]):
+            try:
+                Atom(*atom)
+            except (ValueError, TypeError) as err:
+                raise TypeError(
+                    f"\n\n{err}\ncoordinates format must be a dict: "
+                    "{'atoms':[(str, float, float, float), ...], ...}"
+                    f"\ncheck atom number {line + 1} --> {atom}\n"
+                    f"from --> {atoms}\n"
+                )
+        total_atoms: int = len(atoms["atoms"]) 
+        block_xyz: str = f"""{total_atoms}\n\n"""
+        for atom in atoms["atoms"]:
+            block_xyz += f"""{atom[0]:<6}"""
+            block_xyz += f"""\t{atom[1]:> 15.8f}"""
+            block_xyz += f"""\t{atom[2]:> 15.8f}"""
+            block_xyz += f"""\t{atom[3]:> 15.8f}\n"""
+
+        mol = Chem.rdmolfiles.MolFromXYZBlock(block_xyz)
+        rdDetermineBonds.DetermineConnectivity(mol)
+        self._init_mol_rdkit(mol)
+
     def _check_atoms_list(self, attribute, atoms):
         """Check the list is Ok"""
         for line, atom in enumerate(atoms):
@@ -137,6 +161,8 @@ class Molecule(Mol):
             self._check_atoms_file(attribute, atoms)
         elif isinstance(atoms, list):
             self._check_atoms_list(attribute, atoms)
+        elif isinstance(atoms, dict):
+            self._check_atoms_dict(attribute, atoms)
         elif isinstance(atoms, str):
             self._check_atoms_smiles(attribute, atoms)
         else:
