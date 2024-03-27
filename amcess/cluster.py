@@ -79,9 +79,9 @@ class Cluster(Molecule):
                 # restarting the loop
                 continue
             elif isinstance(mol, Molecule):
-                new_molecule = deepcopy(mol)
+                new_molecule = mol
             elif isinstance(mol, dict):
-                new_molecule = Molecule.from_dict(mol)
+                new_molecule = Molecule(mol)
             elif isinstance(mol, list):
                 new_molecule = Molecule(mol)
             else:
@@ -92,16 +92,16 @@ class Cluster(Molecule):
                     f"\nyou have a NOT valid '{type(mol)}', check: \n{mol}"
                 )
 
-            cluster_atoms += new_molecule.atoms
+            cluster_atoms += new_molecule.GetMolList #new_molecule.atoms
             # ! how is computed the cluster total multiplicity?
-            self._charge += new_molecule.charge
+            self._charge += new_molecule.GetMolCharge   #charge
             self._cluster_dict[size] = new_molecule
 
         # initializing Cluster as a 'Molecule' (sum of all individual ones)
         super().__init__(
             atoms=cluster_atoms,
-            charge=self.charge,
-            multiplicity=self.multiplicity,
+            charge=self._charge,
+            multiplicity=self._multiplicity,
         )
 
     # ===============================================================
