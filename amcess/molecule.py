@@ -60,7 +60,7 @@ class Molecule(Mol):
         super().__init__(mol)
 
     def _check_atoms_dict(self, attribute, atoms):
-        """Check the list is Ok"""
+        """Check the dict is Ok"""
         for line, atom in enumerate(atoms["atoms"]):
             try:
                 Atom(*atom)
