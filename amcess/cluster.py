@@ -251,26 +251,10 @@ class Cluster(Molecule):
     # ===============================================================
     # METHODS
     # ===============================================================
-    def GetMol(self, molecule: int):
-        """extract a molecule from the cluster and return a new Cluster"""
-        if molecule not in self.GetClusterDict:
-            raise IndexError(
-                f"\nMolecule with {self.GetTotalMol} total molecules "
-                f"and index [0-{self.GetTotalMol - 1}]"
-                f"\nmolecule index must be less than {self.GetTotalMol}"
-                f"\nCheck! You want to get molecule with index {molecule}"
-            )
+    def GetMol(self, molecule) -> Mol:
+        """"""
+        return self.GetClusterDict[molecule]
 
-        cluster_dict: dict = self.GetClusterDict
-        new_molecule: Molecule = cluster_dict.pop(molecule)
-
-        return self.__class__(
-            new_molecule,
-            freeze_molecule=self.GetFreezeMol,
-            sphere_radius=self.GetSphereR,
-            sphere_center=self.GetSphereCenter,
-        )    
-    
     @staticmethod
     def Overlapping(
         first_coordinates: list,
