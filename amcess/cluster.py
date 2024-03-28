@@ -549,7 +549,8 @@ class Cluster(Molecule):
         """Returns a NEW Molecule Object with a TRANSLATED fragment"""
         # avoiding to rotate a FROZEN molecule
         if molecule in self.GetFreezeMol:
-            return deepcopy(self)
+            #return deepcopy(self)
+            return self
 
         if (
             not isinstance(molecule, int)
@@ -662,24 +663,31 @@ class Cluster(Molecule):
         # Move the biggest molecule to the first position in the cluster
         # object, if is necessary
         if molecule != 0:
-            new_geom = dict()
+            new_geom: dict = {}
             for i in range(molecules_number):
                 if i == 0:
-                    new_geom[i] = new_cluster.GetClusterDict[molecule]
+                    mol = new_cluster.GetMol(molecule)
+                    new_geom[i] = Molecule(mol.GetMolList, mol.GetMolCharge, mol.GetMolMultiplicity)
                 elif i == molecule:
-                    new_geom[i] = new_cluster.GetClusterDict[0]
+                    mol = new_cluster.GetMol(0)
+                    new_geom[i] = Molecule(mol.GetMolList, mol.GetMolCharge, mol.GetMolMultiplicity)
                 else:
-                    new_geom[i] = new_cluster.GetClusterDict[i]
+                    mol = new_cluster.GetMol(i)
+                    new_geom[i] = Molecule(mol.GetMolList, mol.GetMolCharge, mol.GetMolMultiplicity)
             # ---------------------------------------------------------------
             # Instantiation of Cluster object with radius and center sphere
-            return new_cluster.__class__(
+            return self.__class__(
                 *new_geom.values(),
                 sphere_center=center,
                 sphere_radius=maximum_r_cm,
             )
         else:
-            return new_cluster.__class__(
-                *new_cluster.GetClusterDict.values(),
+            new_geom = {}
+            for i in range(molecules_number):
+                mol = new_cluster.GetMol(i)
+                new_geom[i] = Molecule(mol.GetMolList, mol.GetMolCharge, mol.GetMolMultiplicity)
+            return self.__class__(
+                *new_geom.values(),
                 sphere_center=center,
                 sphere_radius=maximum_r_cm,
             )
