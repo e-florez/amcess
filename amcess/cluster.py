@@ -145,9 +145,9 @@ class Cluster(Molecule):
                 f"\ncheck --> '{value}'"
             )
 
-        new_cluster = self
-        for _ in range(value - 1):
-            new_cluster += new_cluster
+        new_cluster: Cluster = Cluster()
+        for _ in range(value):
+            new_cluster += self
 
         return new_cluster
 
