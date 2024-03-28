@@ -177,6 +177,11 @@ class Cluster(Molecule):
     def GetClusterDict(self) -> dict:
         """return the cluster dictionary"""
         return self._cluster_dict
+    
+    @property
+    def GetClusterList(self) -> list:
+        """return the cluster list"""
+        return [mol for mol in self._cluster_dict.values()]
 
     @property
     def GetFreezeMol(self) -> int:
