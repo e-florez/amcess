@@ -120,7 +120,7 @@ class Cluster(Molecule):
         for count, m in self.GetClusterDict.items():
             new_cluster[count] = m.GetMolDict
         new_cluster[self.GetTotalMol] = Molecule(other).GetMolDict
-        return Cluster(*new_cluster.values())
+        return Cluster(*new_cluster.values(), sphere_center=self.GetSphereCenter, sphere_radius=self.GetSphereR)
 
     def __mul__(self, value: int):
         """multiply the cluster by a number"""
@@ -149,7 +149,7 @@ class Cluster(Molecule):
         for _ in range(value):
             new_cluster += self
 
-        return new_cluster
+        return Cluster(*new_cluster.GetClusterDict.values(), sphere_center=self.GetSphereCenter, sphere_radius=self.GetSphereR)
 
     def __str__(self):
         """print the cluster"""
