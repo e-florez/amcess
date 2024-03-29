@@ -1,9 +1,11 @@
-from copy import deepcopy
-
+# from copy import deepcopy
+# from rdkit.Chem import AllChem  # type: ignore
 import attr
 import numpy as np
 
+import rdkit as rk  # type: ignore
 from amcess.atom import Atom
+from rdkit.Chem import Descriptors  # type: ignore
 
 
 @attr.s(frozen=False)
@@ -29,13 +31,12 @@ class Molecule:
     _atoms = attr.ib()
     _charge: int = attr.ib(default=0)
     _multiplicity: int = attr.ib(default=1)
+    _addHs: bool = attr.ib(default=False)
 
     # ===============================================================
     # VALIDATORS
     # ===============================================================
-    @_atoms.validator
-    def _cehck_valid_atoms(self, attribute, atoms):
-        """check if the atoms are valid"""
+    def _check_atoms_list(self, attribute, atoms):
         for line, atom in enumerate(atoms):
             try:
                 Atom(*atom)
@@ -46,6 +47,44 @@ class Molecule:
                     f"\ncheck atom number {line + 1} --> {atom}\n"
                     f"from --> {atoms}\n"
                 )
+
+    def _check_atoms_smiles(self, attribute, atoms):
+        try:
+            rk.Chem.MolFromSmiles(atoms, sanitize=False)
+        except (ValueError, TypeError) as err:
+            raise TypeError(f"\n\n{err}\n atoms must be a smiles: " " 'CCO' ")
+        mol = rk.Chem.MolFromSmiles(atoms)
+        mol = rk.Chem.AddHs(mol, explicitOnly=self._addHs)
+        # NOTE: Explanation of EmbedMolecule process
+        #       https://www.rdkit.org/docs/GettingStartedInPython.html#working-with-3d-molecules
+        self._atoms = [
+            tuple([a.GetSymbol()] + list(xyz))
+            for a, xyz in zip(mol.GetAtoms(), mol.GetConformer().GetPositions())  # noqa
+        ]
+        self._charge = rk.Chem.rdmolops.GetFormalCharge(mol)
+        self._multiplicity = Descriptors.NumRadicalElectrons(mol) + 1
+
+    @_atoms.validator
+    def _cehck_valid_atoms(self, attribute, atoms):
+        """check if the atoms are valid"""
+        if isinstance(atoms, list):
+            self._check_atoms_list(attribute, atoms)
+        elif isinstance(atoms, str):
+            self._check_atoms_smiles(attribute, atoms)
+        else:
+            raise TypeError(
+                "\ncoordinates format must be a list of tuple"
+                " or str (Smiles):\n[(str, float, float, float), ...]"
+                "\n'CCO' "
+            )
+
+    @_addHs.validator
+    def _cehck_valid_addHs(self, attribute, addHs):
+        if not isinstance(addHs, bool):
+            raise ValueError(
+                "\n\naddHs must be an bool "  # noqa
+                f"\nyou get --> 'addHs = {addHs}'\n"
+            )
 
     @_charge.validator
     def _check_valid_charge(self, attribute, charge):
@@ -81,16 +120,21 @@ class Molecule:
         atoms = atoms_dict.get("atoms")
         charge = atoms_dict.get("charge", 0)
         multiplicity = atoms_dict.get("multiplicity", 1)
-        return cls(atoms, charge, multiplicity)
+        addHs = atoms_dict.get("addHs", True)
+        return cls(atoms, charge, multiplicity, addHs)
 
     # ===============================================================
     # MAGIC METHODS
     # ===============================================================
     def __add__(self, other) -> object:
         """Magic method '__add__' to add two molecules, return a new one"""
-        return Molecule(self.atoms + other.atoms, self.charge + self.charge, (self.multiplicity + other.multiplicity) - 1)
+        return Molecule(
+            self.atoms + other.atoms,
+            self.charge + self.charge,
+            (self.multiplicity + other.multiplicity) - 1,
+        )
 
-    #def __mul__(self, value: int):
+    # def __mul__(self, value: int):
     #    """Magic method '__mul__' to multiply a molecule by a number"""
     #    return value * self
 
@@ -123,7 +167,6 @@ class Molecule:
         tmultiplicity -= value - 1
 
         return Molecule(tcoordinates, tcharge, tmultiplicity)
-        
 
     def __str__(self):
         """Magic method '__str__' to print the Molecule in XYZ format"""
@@ -136,6 +179,11 @@ class Molecule:
     def atoms(self) -> list:
         """Return the list of atoms"""
         return self._atoms
+
+    @property
+    def addHs(self) -> bool:
+        """Activate Add of H"""
+        return self._addHs
 
     @atoms.setter
     def atoms(self, *args, **kwargs) -> None:
@@ -210,7 +258,11 @@ class Molecule:
     @property
     def molecule(self) -> dict:
         """Return the dict atoms"""
-        return {"atoms": self.atoms, "charge": self.charge, "multiplicity": self.multiplicity}
+        return {
+            "atoms": self.atoms,
+            "charge": self.charge,
+            "multiplicity": self.multiplicity,
+        }
 
     @property
     def numbering_atoms(self) -> str:

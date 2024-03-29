@@ -4,18 +4,26 @@ amcess package
 Submodules
 ----------
 
-amcess.ascec module
--------------------
+amcess.atom
+-----------
 
-.. automodule:: amcess.ascec
+.. automodule:: amcess.atom
    :members:
    :undoc-members:
    :show-inheritance:
 
-amcess.base\_molecule module
-----------------------------
+amcess.molecule
+---------------
 
-.. automodule:: amcess.base_molecule
+.. automodule:: amcess.molecule
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+amcess.cluster
+-----------------
+
+.. automodule:: amcess.cluster
    :members:
    :undoc-members:
    :show-inheritance:

@@ -17,6 +17,9 @@ myst-parser>=2.0.0
 docutils>=0.20.1
 sphinxcontrib-bibtex>=2.6.2
 
+# packaging and distribution (PyPI)
+twine>=5.0.0
+build>=0.7.0
 
 # testing jupyter notebooks
 nbmake>=1.5.0
