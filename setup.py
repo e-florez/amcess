@@ -27,10 +27,10 @@ REQUIREMENTS = [
     "notebook_shim>=0.2.4",
     "jupyter>=1.0.0",
     "ipykernel>=6.29.3",
-    "rise>=5.7.1"
+    "rise>=5.7.1",
 ]
 
-with open(PATH / "amcess2024" / "__init__.py") as fp:
+with open(PATH / "amcess" / "__init__.py") as fp:
     for line in fp.readlines():
         if line.startswith("__version__ = "):
             VERSION = line.split("=", 1)[-1].replace('"', "").strip()
@@ -46,20 +46,20 @@ with open("README.md", "r") as readme:
 
 setup(
     name="amcess2024",
-    version="0.1.2a8",
+    version="0.1.2a20",
     author="""
     Edison Florez,
     Andy Zapata,
-    Daniel Bajac, 
+    Daniel Bajac,
     Alejandra Mendez,
-    Cesar Ibarguen, 
+    Cesar Ibarguen,
     José Aucar
     """,
     author_email="""
-    edisonffhc@gmail.com, 
+    edisonffhc@gmail.com,
     danianescobarv@gmail.com
     """,
-    packages=["amcess2024", "amcess2024/data"],
+    packages=["amcess", "amcess/data"],
     install_requires=REQUIREMENTS,
     license="The GPLv3 License",
     description="Atomic and Molecular Cluster Energy Surface Sampler",

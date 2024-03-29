@@ -1,9 +1,9 @@
 from scipy.optimize import dual_annealing, shgo
 
-from amcess2024.ascec import Ascec
-from amcess2024.base_molecule import Cluster
-from amcess2024.electronic_energy import ElectronicEnergy
-from amcess2024.gaussian_process import solve_gaussian_processes
+from amcess.ascec import Ascec
+from amcess.base_molecule import Cluster
+from amcess.electronic_energy import ElectronicEnergy
+from amcess.gaussian_process import solve_gaussian_processes
 
 METHODS = {
     "ASCEC": Ascec,
