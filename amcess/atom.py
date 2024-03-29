@@ -71,6 +71,6 @@ class Atom:
         return atomic_mass(self.element)
 
     @property
-    def symbol(self) -> list:
+    def symbol(self):
         """Atomic symbol of the atom"""
         return self.element

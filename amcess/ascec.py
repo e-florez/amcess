@@ -18,7 +18,7 @@ class Ascec(ElectronicEnergy):
         basis_set: str,
         program: str,
         bounds: list,
-        seed: int = None,
+        seed: int = 1234567890,
         initial_temperature: float = 1000.0,
         number_temperatures: int = 100,
         step_temperature: float = 0.1,

@@ -1,27 +1,25 @@
 # from copy import deepcopy
 # from rdkit.Chem import AllChem  # type: ignore
-import attr
 from pathlib import Path
 
+import attr
 import numpy as np
-from rdkit import Chem
-from rdkit.Chem import AllChem
-from rdkit.Chem import Descriptors
-
 
 from amcess.atom import Atom
-from rdkit.Chem import Descriptors  # type: ignore
-
+from rdkit import Chem  # type: ignore
+from rdkit.Chem import AllChem, Descriptors  # type: ignore
 
 # NOTE: Format allow in rdkit
-EXT_FILE: dict[str] = {'.mol': Chem.rdmolfiles.MolFromMolFile,
-                       '.mol2': Chem.rdmolfiles.MolFromMol2File, 
-                       '.xyz': Chem.rdmolfiles.MolFromXYZFile, 
-                       '.tpl': Chem.rdmolfiles.MolFromTPLFile, 
-                       '.png': Chem.rdmolfiles.MolFromPNGFile, 
-                       '.pdb': Chem.rdmolfiles.MolFromPDBFile, 
-                       '.mrv': Chem.rdmolfiles.MolFromMrvFile
-                       }
+EXT_FILE: dict[str, Chem.rdmolfiles.MolFromMolFile] = {
+    ".mol": Chem.rdmolfiles.MolFromMolFile,
+    ".mol2": Chem.rdmolfiles.MolFromMol2File,
+    ".xyz": Chem.rdmolfiles.MolFromXYZFile,
+    ".tpl": Chem.rdmolfiles.MolFromTPLFile,
+    ".png": Chem.rdmolfiles.MolFromPNGFile,
+    ".pdb": Chem.rdmolfiles.MolFromPDBFile,
+    ".mrv": Chem.rdmolfiles.MolFromMrvFile,
+}
+
 
 @attr.s(frozen=False)
 class Molecule:
@@ -64,20 +62,20 @@ class Molecule:
                     f"\ncheck atom number {line + 1} --> {atom}\n"
                     f"from --> {atoms}\n"
                 )
+
     def _molecule_list_building(self, mol):
-        self._atoms = [tuple([a.GetSymbol()] + list(xyz))
-                for a, xyz in zip(mol.GetAtoms(), mol.GetConformer().GetPositions())]
+        self._atoms = [
+            tuple([a.GetSymbol()] + list(xyz))
+            for a, xyz in zip(mol.GetAtoms(), mol.GetConformer().GetPositions())  # noqa
+        ]
         self._charge = Chem.rdmolops.GetFormalCharge(mol)
-        self._multiplicity = Descriptors.NumRadicalElectrons(mol) + 1 
+        self._multiplicity = Descriptors.NumRadicalElectrons(mol) + 1
 
     def _check_atoms_smiles(self, attribute, atoms):
         try:
             Chem.MolFromSmiles(atoms, sanitize=False)
         except (ValueError, TypeError) as err:
-            raise TypeError(
-                f"\n\n{err}\n atoms must be a smiles: "
-                " 'CCO' "
-            )
+            raise TypeError(f"\n\n{err}\n atoms must be a smiles: " " 'CCO' ")
         mol = Chem.MolFromSmiles(atoms)
         mol = Chem.AddHs(mol, explicitOnly=self._addHs)
         # NOTE: Explanation of EmbedMolecule process
@@ -87,21 +85,23 @@ class Molecule:
 
     def _check_atoms_file(self, attribute, file):
         if not Path(file).exists():
-            raise ValueError(
-                f"The file {file} doesn't exist"
-            )
+            raise ValueError(f"The file {file} doesn't exist")
         if Path(file).suffix.lower() not in EXT_FILE.keys():
             raise TypeError(
-                f"File with extension {Path(file).suffix} can't be reading"
+                f"File with extension {Path(file).suffix}" + "can't be reading"
             )
-        if Path(file).suffix.lower() in ['.xyz', '.png', '.tpl']:
-            mol = EXT_FILE[Path(file).suffix.lower()](file)    
+        if Path(file).suffix.lower() in [".xyz", ".png", ".tpl"]:
+            mol = EXT_FILE[Path(file).suffix.lower()](file)
         else:
-            mol = EXT_FILE[Path(file).suffix.lower()](file, removeHs=self._removeHs)
+            mol = EXT_FILE[Path(file).suffix.lower()](
+                file, removeHs=self._removeHs
+            )  # ---
+
         if self._addHs:
-            if Path(file).suffix.lower() == '.mol2':
-                raise TypeError('RDKit have problem to add H to mol from'
-                                'mol2 file')                
+            if Path(file).suffix.lower() == ".mol2":
+                raise TypeError(
+                    "RDKit have problem to add H to mol from " + "mol2 file"
+                )
             mol = Chem.AddHs(mol, addCoords=True)
         self._molecule_list_building(mol)
 

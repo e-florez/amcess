@@ -1,4 +1,4 @@
-from scipy.optimize import dual_annealing, shgo
+from scipy.optimize import dual_annealing, shgo  # type: ignore
 
 from amcess.ascec import Ascec
 from amcess.cluster import Cluster
@@ -46,7 +46,7 @@ class SearchConfig:
 
     def __init__(
         self,
-        system_object: Cluster = None,
+        system_object: None | Cluster = None,
         search_methodology: str = "ASCEC",
         methodology: str = "HF",
         basis: str = "sto-3g",
