@@ -1,7 +1,7 @@
 from copy import deepcopy
 
 import numpy as np
-from scipy.spatial.transform import Rotation
+from scipy.spatial.transform import Rotation  # type: ignore
 
 from amcess.molecule import Molecule
 
@@ -39,10 +39,10 @@ class Cluster(Molecule):
     def __init__(
         self,
         *args,
-        freeze_molecule: list = None,
-        sphere_radius: float = None,
+        freeze_molecule: None | list = None,
+        sphere_radius: None | float = None,
         sphere_center: tuple = (0, 0, 0),
-        seed: int = None,
+        seed: int = 1234567890,
     ):
         self._cluster_dict = dict()
         self._multiplicity = 1
