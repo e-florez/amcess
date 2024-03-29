@@ -61,6 +61,7 @@ class Atom:
     def __str__(self):
         """Magic method '__str__' to print the object as a dictionary"""
         return str(attr.asdict(self))
+
     # ===============================================================
     # PROPERTIES
     # ===============================================================

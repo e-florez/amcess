@@ -1,12 +1,11 @@
-from copy import deepcopy
-
+# from copy import deepcopy
+# from rdkit.Chem import AllChem  # type: ignore
 import attr
 import numpy as np
-import rdkit as rk
-from rdkit.Chem import AllChem
-from rdkit.Chem import Descriptors
 
+import rdkit as rk  # type: ignore
 from amcess.atom import Atom
+from rdkit.Chem import Descriptors  # type: ignore
 
 
 @attr.s(frozen=False)
@@ -53,19 +52,17 @@ class Molecule:
         try:
             rk.Chem.MolFromSmiles(atoms, sanitize=False)
         except (ValueError, TypeError) as err:
-            raise TypeError(
-                f"\n\n{err}\n atoms must be a smiles: "
-                " 'CCO' "
-            )
+            raise TypeError(f"\n\n{err}\n atoms must be a smiles: " " 'CCO' ")
         mol = rk.Chem.MolFromSmiles(atoms)
         mol = rk.Chem.AddHs(mol, explicitOnly=self._addHs)
         # NOTE: Explanation of EmbedMolecule process
         #       https://www.rdkit.org/docs/GettingStartedInPython.html#working-with-3d-molecules
-        AllChem.EmbedMolecule(mol)
-        self._atoms = [tuple([a.GetSymbol()] + list(xyz))
-                for a, xyz in zip(mol.GetAtoms(), mol.GetConformer().GetPositions())]
+        self._atoms = [
+            tuple([a.GetSymbol()] + list(xyz))
+            for a, xyz in zip(mol.GetAtoms(), mol.GetConformer().GetPositions())  # noqa
+        ]
         self._charge = rk.Chem.rdmolops.GetFormalCharge(mol)
-        self._multiplicity = Descriptors.NumRadicalElectrons(mol) + 1 
+        self._multiplicity = Descriptors.NumRadicalElectrons(mol) + 1
 
     @_atoms.validator
     def _cehck_valid_atoms(self, attribute, atoms):
@@ -76,10 +73,10 @@ class Molecule:
             self._check_atoms_smiles(attribute, atoms)
         else:
             raise TypeError(
-                    "\ncoordinates format must be a list of tuple"
-                    " or str (Smiles):\n[(str, float, float, float), ...]"
-                    "\n'CCO' "
-                )
+                "\ncoordinates format must be a list of tuple"
+                " or str (Smiles):\n[(str, float, float, float), ...]"
+                "\n'CCO' "
+            )
 
     @_addHs.validator
     def _cehck_valid_addHs(self, attribute, addHs):
@@ -131,9 +128,13 @@ class Molecule:
     # ===============================================================
     def __add__(self, other) -> object:
         """Magic method '__add__' to add two molecules, return a new one"""
-        return Molecule(self.atoms + other.atoms, self.charge + self.charge, (self.multiplicity + other.multiplicity) - 1)
+        return Molecule(
+            self.atoms + other.atoms,
+            self.charge + self.charge,
+            (self.multiplicity + other.multiplicity) - 1,
+        )
 
-    #def __mul__(self, value: int):
+    # def __mul__(self, value: int):
     #    """Magic method '__mul__' to multiply a molecule by a number"""
     #    return value * self
 
@@ -166,7 +167,6 @@ class Molecule:
         tmultiplicity -= value - 1
 
         return Molecule(tcoordinates, tcharge, tmultiplicity)
-        
 
     def __str__(self):
         """Magic method '__str__' to print the Molecule in XYZ format"""
@@ -258,7 +258,11 @@ class Molecule:
     @property
     def molecule(self) -> dict:
         """Return the dict atoms"""
-        return {"atoms": self.atoms, "charge": self.charge, "multiplicity": self.multiplicity}
+        return {
+            "atoms": self.atoms,
+            "charge": self.charge,
+            "multiplicity": self.multiplicity,
+        }
 
     @property
     def numbering_atoms(self) -> str:
