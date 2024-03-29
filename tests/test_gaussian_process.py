@@ -2,7 +2,7 @@ import math
 
 import pytest
 
-from amcess.base_molecule import Cluster
+from amcess.cluster import Cluster
 from amcess.search_engine import SearchConfig
 from amcess.gaussian_process import GPyOpt_formatted_bounds
 from amcess.gaussian_process import define_optimization_args

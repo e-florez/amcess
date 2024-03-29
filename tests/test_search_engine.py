@@ -4,7 +4,8 @@ import os
 import pytest
 
 from amcess.ascec import Ascec
-from amcess.base_molecule import Cluster, Molecule
+from amcess.molecule import Molecule
+from amcess.cluster import Cluster
 from amcess.search_engine import SearchConfig
 
 METHODS = {

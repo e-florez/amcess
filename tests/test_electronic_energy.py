@@ -1,7 +1,7 @@
 from pyscf import gto
 import pytest
 
-from amcess.base_molecule import Cluster
+from amcess.cluster import Cluster
 from amcess.electronic_energy import ElectronicEnergy
 
 
