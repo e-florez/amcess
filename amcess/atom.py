@@ -9,7 +9,7 @@ from .data.atomic_data import atomic_mass
 @attr.s(frozen=True)
 class Atom(RDKAtom):
     """
-    This class inherits attributes of the Atom Class from RDKit, 
+    This class inherits attributes of the Atom class from RDKit, 
     for more information:
         *) https://www.rdkit.org/docs/cppapi/classRDKit_1_1Atom.html
         *) https://www.rdkit.org/docs/source/rdkit.Chem.rdchem.html

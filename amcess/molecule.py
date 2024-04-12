@@ -11,11 +11,11 @@ from rdkit.Chem import rdDetermineBonds
 from rdkit.Chem.rdchem import Mol
 
 
-
 from amcess.atom import Atom
 
 
-# NOTE: Format allow in rdkit
+# This dictionary is a menu to call  RDKit's function according 
+# input's format that contains the molecular information
 EXT_FILE: dict[str] = {'.mol': Chem.rdmolfiles.MolFromMolFile,
                        '.mol2': Chem.rdmolfiles.MolFromMol2File, 
                        '.xyz': Chem.rdmolfiles.MolFromXYZFile, 
@@ -28,7 +28,14 @@ EXT_FILE: dict[str] = {'.mol': Chem.rdmolfiles.MolFromMolFile,
 @attr.s(frozen=False)
 class Molecule(Mol):
     """
+    This class inherits attributes of the Mol class from RDKit, 
+    for more information:
+        *) https://www.rdkit.org/docs/source/rdkit.Chem.rdchem.html#rdkit.Chem.rdchem.Mol
+    
+    
+    !Class description:
     Create a Molecule that is at least ONE atom.
+    
     The format of the INPUT coordinates must be:
 
     {"atoms": [(<element> <X> <Y> <Z>), (<element> <X> <Y> <Z>), ...]}
