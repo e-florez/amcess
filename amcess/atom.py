@@ -8,27 +8,37 @@ from .data.atomic_data import atomic_mass
 
 @attr.s(frozen=True)
 class Atom(RDKAtom):
-    # """
-    # Representation of an individual atomas (<element> <X> <Y> <Z>)
+    """
+    This class inherits attributes of the Atom Class from RDKit, 
+    for more information:
+        *) https://www.rdkit.org/docs/cppapi/classRDKit_1_1Atom.html
+        *) https://www.rdkit.org/docs/source/rdkit.Chem.rdchem.html
+    
+    The idea of this class is to achieve of standard of amcess and
+    add atom coordinates to Atom class from RDKit.       
 
-    # .. rubric:: Examples
+    !Class description:
+    Representation of an individual atoms (<element> <X> <Y> <Z>)
 
-    # >>> Atom(element='H', x=0, y=0, z=0)
-    # {'element': 'H', 'x': 0, 'y': 0, 'z': 0}
+    .. rubric:: Examples
 
-    # >>> Atom('F', 0, 0, 1.97)
-    # {'element': 'F', 'x': 0, 'y': 0, 'z': 1.97}
+    >>> Atom(element='H')
+    {'element': 'H', 'x': 0., 'y': 0., 'z': 0.}
+    NOTE: The coordinate by default are (0.,0.,0.)
 
-    # .. rubric:: Returns
+    >>> Atom('F', 0, 0, 1.97)
+    {'element': 'F', 'x': 0., 'y': 0., 'z': 1.97}
 
-    # atom : object
-    #     object like dict {'element': str, 'x': float, 'y': float, 'z': float}
+    .. rubric:: Returns
 
-    # .. rubric:: Raises
+    atom : object
+        object like dict {'element': str, 'x': float, 'y': float, 'z': float}
 
-    # ValueError
-    #     format MUST be (str, float, float, float) with NOT empty filed
-    # """
+    .. rubric:: Raises
+
+    ValueError
+        format MUST be (str, float, float, float) with NOT empty filed
+    """
 
     element: str = attr.ib()
     x: int = attr.ib()
