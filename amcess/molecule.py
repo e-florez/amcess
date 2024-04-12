@@ -32,10 +32,9 @@ class Molecule(Mol):
     for more information:
         *) https://www.rdkit.org/docs/source/rdkit.Chem.rdchem.html#rdkit.Chem.rdchem.Mol
     
-    
     !Class description:
     Create a Molecule that is at least ONE atom.
-    
+
     The format of the INPUT coordinates must be:
 
     {"atoms": [(<element> <X> <Y> <Z>), (<element> <X> <Y> <Z>), ...]}
@@ -52,6 +51,7 @@ class Molecule(Mol):
         larger than zero, by defaul one (1)
     """
 
+    #! attributes initial of Molecule class, some they have default value
     _atoms = attr.ib()
     _charge: int = attr.ib(default=0)
     _multiplicity: int = attr.ib(default=1)
@@ -63,13 +63,18 @@ class Molecule(Mol):
     # VALIDATORS
     # ===============================================================
     def _init_mol_rdkit(self, mol):
-        """Build Mol object from RDKit class"""
+        """Build Molecule object using Mol class from RDKit"""
         super().__init__(mol)
 
     def _check_atoms_dict(self, attribute, atoms):
-        """Check the dict is Ok"""
+        """
+        Check that information in dict is Ok
+        Example:
+        {"atoms": [(<element> <X> <Y> <Z>), ...], "charge": 0, "multiplicty": 1}
+        """
         for line, atom in enumerate(atoms["atoms"]):
             try:
+                #! Check atom information
                 Atom(*atom)
             except (ValueError, TypeError) as err:
                 raise TypeError(
@@ -86,12 +91,16 @@ class Molecule(Mol):
             block_xyz += f"""\t{atom[2]:> 15.8f}"""
             block_xyz += f"""\t{atom[3]:> 15.8f}\n"""
 
-        mol = Chem.rdmolfiles.MolFromXYZBlock(block_xyz)
+        mol: Mol = Chem.rdmolfiles.MolFromXYZBlock(block_xyz)
         rdDetermineBonds.DetermineConnectivity(mol)
         self._init_mol_rdkit(mol)
 
     def _check_atoms_list(self, attribute, atoms):
-        """Check the list is Ok"""
+        """
+        Check that information in list is Ok
+        Example:
+        [(<element> <X> <Y> <Z>), ...]
+        """
         for line, atom in enumerate(atoms):
             try:
                 Atom(*atom)
@@ -110,7 +119,7 @@ class Molecule(Mol):
             block_xyz += f"""\t{atom[2]:> 15.8f}"""
             block_xyz += f"""\t{atom[3]:> 15.8f}\n"""
 
-        mol = Chem.rdmolfiles.MolFromXYZBlock(block_xyz)
+        mol: Mol = Chem.rdmolfiles.MolFromXYZBlock(block_xyz)
         rdDetermineBonds.DetermineConnectivity(mol)
         self._init_mol_rdkit(mol)
 
@@ -120,13 +129,17 @@ class Molecule(Mol):
         self._multiplicity = Descriptors.NumRadicalElectrons(mol) + 1 
 
     def _check_atoms_smiles(self, attribute, atoms):
-        """Check that the smiles is Ok"""
+        """
+        Check that the smiles is Ok
+        Example:
+        'CC'
+        """
         try:
             Chem.MolFromSmiles(atoms, sanitize=False)
         except (ValueError, TypeError) as err:
             raise TypeError(f"\n\n{err}\n atoms must be a smiles: "
                             " 'CCO' ")
-        mol = Chem.MolFromSmiles(atoms)
+        mol: Mol = Chem.MolFromSmiles(atoms)
         mol = Chem.AddHs(mol, explicitOnly=self._addHs)
         # NOTE: Explanation of EmbedMolecule process
         #       https://www.rdkit.org/docs/GettingStartedInPython.html#working-with-3d-molecules
@@ -135,7 +148,10 @@ class Molecule(Mol):
         self._init_mol_rdkit(mol)
 
     def _check_atoms_file(self, attribute, file):
-        """Check that file exists and is Ok"""
+        """
+        Check that molecular information is Ok and if the file exists
+        Inputs formats allowed: .xyz, .mol, .mol2, .tpl, png, .pdb, .mrv
+        """
         if not Path(file).exists():
             raise ValueError(
                 f"The file {file} doesn't exist"
@@ -145,7 +161,7 @@ class Molecule(Mol):
                 f"File with extension {Path(file).suffix} can't be reading"
             )
         if Path(file).suffix.lower() in ['.xyz', '.png', '.tpl']:
-            mol = EXT_FILE[Path(file).suffix.lower()](file)
+            mol: Mol = EXT_FILE[Path(file).suffix.lower()](file)
             if Path(file).suffix.lower() in ['.xyz']:
                 rdDetermineBonds.DetermineConnectivity(mol)    
         else:
@@ -210,7 +226,10 @@ class Molecule(Mol):
     # ===============================================================
     def __add__(self, other) -> object:
         """Magic method '__add__' to add two molecules, return a new one"""
-        return Molecule(self.GetMolList + other.GetMolList, self.GetMolCharge + other.GetMolCharge, (self.GetMolMultiplicity + other.GetMolMultiplicity) - 1)
+        return Molecule(self.GetMolList + other.GetMolList,
+                        self.GetMolCharge + other.GetMolCharge,
+                        (self.GetMolMultiplicity + other.GetMolMultiplicity)
+                        - 1)
 
     def __mul__(self, value: int):
         """Magic method '__mul__' to multiply a molecule by a number"""
