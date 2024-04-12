@@ -226,9 +226,9 @@ class Molecule(Mol):
     # ===============================================================
     def __add__(self, other) -> object:
         """Magic method '__add__' to add two molecules, return a new one"""
-        return Molecule(self.GetMolList + other.GetMolList,
-                        self.GetMolCharge + other.GetMolCharge,
-                        (self.GetMolMultiplicity + other.GetMolMultiplicity)
+        return Molecule(self.GetMolList() + other.GetMolList(),
+                        self.GetMolCharge() + other.GetMolCharge(),
+                        (self.GetMolMultiplicity() + other.GetMolMultiplicity())
                         - 1)
 
     def __mul__(self, value: int):
@@ -255,45 +255,38 @@ class Molecule(Mol):
                 f"\ncheck --> '{value}'"
             )
 
-        tcoordinates: list = [at for i in range(value) for at in self.GetMolList]
+        tcoordinates: list = [at for i in range(value)
+                              for at in self.GetMolList()]
         tcharge: int = 0
         tmultiplicity: int = 0
         for i in range(value):
-            tcharge += self.GetMolCharge
-            tmultiplicity += self.GetMolMultiplicity
+            tcharge += self.GetMolCharge()
+            tmultiplicity += self.GetMolMultiplicity()
         tmultiplicity -= value - 1
 
         return Molecule(tcoordinates, tcharge, tmultiplicity)
         
     def __str__(self):
         """Magic method '__str__' to print the Molecule in XYZ format"""
-        return self.GetBlockXYZ
+        return self.GetBlockXYZ()
 
     # ===============================================================
     # PROPERTIES
     # ===============================================================
-    @property
-    def GetAtomicSymbols(self) -> list:
+    #! Getter
+    def GetAtomicSymbols(self) -> list[str]:
         """Return the list of atoms"""
         return [a.GetSymbol() for a in self.GetAtoms()]
 
-    @property
-    def GetAtomicNumbers(self) -> list:
+    def GetAtomicNumbers(self) -> list[int]:
         """Return the list of atoms"""
         return [a.GetAtomicNum() for a in self.GetAtoms()]
-    #@GetAtomicSymbols.setter
-    #def atomic_symbols(self, *args, **kwargs) -> None:
-    #    """Set the list of atoms"""
-    #    raise AttributeError(
-    #        "\n\nyou cannot reset 'atoms'. Consider create a new instance \n"
-    #    )
 
-    @property
     def GetBlockXYZ(self) -> str:
         """Printing Molecule coordinates using XYZ format"""
         write_coordinates: str = ""
-        comment: str = f"charge: {self.GetMolCharge} multiplicity:{self.GetMolMultiplicity}"
-        write_coordinates += f"{len(self.GetAtomicSymbols)}\n{comment}\n"
+        comment: str = f"charge: {self.GetMolCharge()} multiplicity:{self.GetMolMultiplicity()}"
+        write_coordinates += f"{len(self.GetAtomicSymbols())}\n{comment}\n"
         for atom, xyz in zip(self.GetAtoms(), self.GetConformer().GetPositions()):
             write_coordinates += f"""{atom.GetSymbol():<6}"""
             write_coordinates += f"""\t{xyz[0]:> 15.8f}"""
@@ -302,17 +295,74 @@ class Molecule(Mol):
 
         return write_coordinates
 
-    @property
-    def GetAtomicMasses(self) -> list:
+    def GetAtomicMasses(self) -> list[float]:
         """Atomic mass of the molecule"""
         return [atom.GetMass() for atom in self.GetAtoms()]
 
-    @property
     def GetMolCharge(self) -> int:
         """Total molecular/atomic charge"""
         return self._charge
 
-    @GetMolCharge.setter
+    def GetAtomicCoordinates(self) -> list[float]:
+        """Return the list of coordinates"""
+        return self.GetConformer().GetPositions()
+
+    def GetMolMultiplicity(self) -> int:
+        """Return the multiplicity"""
+        return self._multiplicity
+
+    def GetMolList(self) -> list[str, float]:
+        """Return the dict atoms"""
+        list_atoms: list(tuple(str, float)) = [tuple([a.GetSymbol()] + list(xyz))
+                for a, xyz in zip(self.GetAtoms(), self.GetConformer().GetPositions())]
+        return list_atoms
+
+    def GetMolDict(self) -> dict:
+        """Return the dict atoms"""
+        return {"atoms": self.GetMolList(),
+                "charge": self.GetMolCharge(),
+                "multiplicity": self.GetMolMultiplicity()}
+
+    def GetMolMass(self) -> float:
+        """Return the total mass of the molecule"""
+        return sum(self.GetAtomicMasses())
+
+    def GetMolCM(self) -> tuple[float]:
+        """Center of mass for a N-body problem. `Jacobi coordinates`_
+
+        .. rubric:: Notes
+
+        total mass for dummy atoms (not in the Periodic Table) is equal
+        to ONE (1)
+
+        .. rubric:: Returns
+
+        tuple : (float, float, float)
+            List of N 3D tuples, where N is equal to the number of atoms
+
+        .. _Jacobi coordinates:
+            https://en.wikipedia.org/wiki/Jacobicoordinates
+        """
+        # total_mass = 1 if not self.total_mass else self.total_mass
+        return tuple(
+            np.dot(
+                np.asarray(self.GetAtomicMasses()),
+                np.asarray(self.GetAtomicCoordinates()),
+            )
+            / self.GetMolMass()
+        )
+
+    def GetMolPrincipalAxes(self) -> list[float]:
+        """Principal axes for according to Jacobi coordinates"""
+        return [
+            tuple(c)
+            for c in (  # noqa
+                np.asarray(self.GetAtomicCoordinates())
+                - np.asarray(self.GetMolCM())
+            )
+        ]
+
+    #! Setter
     def SetMolCharge(self, new_charge) -> int:
         """Set the total molecular/atomic charge"""
         if not isinstance(new_charge, int):
@@ -322,17 +372,6 @@ class Molecule(Mol):
             )
         self._charge = new_charge
 
-    @property
-    def GetAtomicCoordinates(self) -> list:
-        """Return the list of coordinates"""
-        return self.GetConformer().GetPositions()
-
-    @property
-    def GetMolMultiplicity(self) -> int:
-        """Return the multiplicity"""
-        return self._multiplicity
-
-    @GetMolMultiplicity.setter
     def SetMolMultiplicity(self, new_multiplicity) -> int:
         """Set the multiplicity"""
         if not isinstance(new_multiplicity, int) or new_multiplicity < 1:
@@ -342,17 +381,6 @@ class Molecule(Mol):
             )
         self._multiplicity = new_multiplicity
 
-    @property
-    def GetMolList(self) -> list:
-        """Return the dict atoms"""
-        list_atoms: list(tuple(str, float)) = [tuple([a.GetSymbol()] + list(xyz))
-                for a, xyz in zip(self.GetAtoms(), self.GetConformer().GetPositions())]
-        return list_atoms
-
-    @property
-    def GetMolDict(self) -> dict:
-        """Return the dict atoms"""
-        return {"atoms": self.GetMolList, "charge": self.GetMolCharge, "multiplicity": self.GetMolMultiplicity}
 
     #! Para que?
     # @property
@@ -372,49 +400,7 @@ class Molecule(Mol):
     #         line[2] = f"{line[2]:> 15.8f}"
     #         line[3] = f"{line[3]:> 15.8f}"
     #         numbered_atoms.append("".join(line))
-
     #     return "\n".join(numbered_atoms)
-
-    @property
-    def GetMolMass(self) -> float:
-        """Return the total mass of the molecule"""
-        return sum(self.GetAtomicMasses)
-
-    @property
-    def GetMolCM(self) -> tuple:
-        """Center of mass for a N-body problem. `Jacobi coordinates`_
-
-        .. rubric:: Notes
-
-        total mass for dummy atoms (not in the Periodic Table) is equal
-        to ONE (1)
-
-        .. rubric:: Returns
-
-        tuple : (float, float, float)
-            List of N 3D tuples, where N is equal to the number of atoms
-
-        .. _Jacobi coordinates:
-            https://en.wikipedia.org/wiki/Jacobicoordinates
-        """
-        # total_mass = 1 if not self.total_mass else self.total_mass
-        return tuple(
-            np.dot(
-                np.asarray(self.GetAtomicMasses),
-                np.asarray(self.GetAtomicCoordinates),
-            )
-            / self.GetMolMass
-        )
-
-    @property
-    def GetMolPrincipalAxes(self) -> list:
-        """Principal axes for according to Jacobi coordinates"""
-        return [
-            tuple(c)
-            for c in (  # noqa
-                np.asarray(self.GetAtomicCoordinates) - np.asarray(self.GetMolCM)
-            )
-        ]
 
     def AddAtoms(self, new_atoms: list, attribute: None = None) -> object:
         """adding extra atoms can NOT be MOVED or ROTATED
@@ -441,10 +427,9 @@ class Molecule(Mol):
                 f"check --> \n{new_atoms}\n"
             )
 
-        atoms: list = self.GetMolList + new_atoms
+        atoms: list = self.GetMolList() + new_atoms
 
         return self._cehck_valid_atoms(attribute, atoms)
-        #return self.__class__(total_atoms)
 
     # def add_molecule(self, other) -> object:
     #     """adding molecule return a new Cluster object"""
@@ -480,7 +465,7 @@ class Molecule(Mol):
                 f"\n atom index must be less than {self.GetNumAtoms()}"
                 f"\nCheck! You want to get atom with index {atom}"
             )
-        return self.GetMolList[atom]
+        return self.GetMolList()[atom]
 
     def RemoveAtom(self, atom: int, attribute: None = None) -> object:
         """remove one atom"""
@@ -492,7 +477,7 @@ class Molecule(Mol):
                 f"\nCheck! You want to remove atom with index '{atom}'"
             )
 
-        atoms: list = self.GetMolList
+        atoms: list = self.GetMolList()
 
         del atoms[atom]
 
