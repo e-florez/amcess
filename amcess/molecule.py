@@ -65,6 +65,21 @@ class Molecule(Mol):
     def _init_mol_rdkit(self, mol):
         """Build Molecule object using Mol class from RDKit"""
         super().__init__(mol)
+    
+    def _check_atom(self, line, atom, atoms):
+        """
+        Check atomic information
+        """
+        try:
+            #! Check atom informations
+            Atom(*atom)
+        except (ValueError, TypeError) as err:
+            raise TypeError(
+                f"\n\n{err}\ncoordinates format must be a dict: "
+                "{'atoms':[(str, float, float, float), ...], ...}"
+                f"\ncheck atom number {line + 1} --> {atom}\n"
+                f"from --> {atoms}\n"
+            )
 
     def _check_atoms_dict(self, attribute, atoms):
         """
@@ -73,16 +88,8 @@ class Molecule(Mol):
         {"atoms": [(<element> <X> <Y> <Z>), ...], "charge": 0, "multiplicty": 1}
         """
         for line, atom in enumerate(atoms["atoms"]):
-            try:
-                #! Check atom information
-                Atom(*atom)
-            except (ValueError, TypeError) as err:
-                raise TypeError(
-                    f"\n\n{err}\ncoordinates format must be a dict: "
-                    "{'atoms':[(str, float, float, float), ...], ...}"
-                    f"\ncheck atom number {line + 1} --> {atom}\n"
-                    f"from --> {atoms}\n"
-                )
+            self._check_atom(line, atom, atoms)
+
         total_atoms: int = len(atoms["atoms"]) 
         block_xyz: str = f"""{total_atoms}\n\n"""
         for atom in atoms["atoms"]:
@@ -102,15 +109,8 @@ class Molecule(Mol):
         [(<element> <X> <Y> <Z>), ...]
         """
         for line, atom in enumerate(atoms):
-            try:
-                Atom(*atom)
-            except (ValueError, TypeError) as err:
-                raise TypeError(
-                    f"\n\n{err}\ncoordinates format must be a list of tuple: "
-                    "[(str, float, float, float), ...]"
-                    f"\ncheck atom number {line + 1} --> {atom}\n"
-                    f"from --> {atoms}\n"
-                )
+            self._check_atom(line, atom, atoms)
+
         total_atoms: int = len(atoms) 
         block_xyz: str = f"""{total_atoms}\n\n"""
         for atom in atoms:
