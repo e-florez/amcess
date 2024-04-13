@@ -1,20 +1,33 @@
 import attr
 
+
+from rdkit.Chem.rdchem import Atom as RDKAtom
+
 from .data.atomic_data import atomic_mass
 
 
 @attr.s(frozen=True)
-class Atom:
+class Atom(RDKAtom):
     """
-    Representation of an individual atomas (<element> <X> <Y> <Z>)
+    This class inherits attributes of the Atom class from RDKit, 
+    for more information:
+        *) https://www.rdkit.org/docs/cppapi/classRDKit_1_1Atom.html
+        *) https://www.rdkit.org/docs/source/rdkit.Chem.rdchem.html
+    
+    The idea of this class is to achieve of standard of amcess and
+    add atom coordinates to Atom class from RDKit.       
+
+    !Class description:
+    Representation of an individual atoms (<element> <X> <Y> <Z>)
 
     .. rubric:: Examples
 
-    >>> Atom(element='H', x=0, y=0, z=0)
-    {'element': 'H', 'x': 0, 'y': 0, 'z': 0}
+    >>> Atom(element='H')
+    {'element': 'H', 'x': 0., 'y': 0., 'z': 0.}
+    NOTE: The coordinate by default are (0.,0.,0.)
 
     >>> Atom('F', 0, 0, 1.97)
-    {'element': 'F', 'x': 0, 'y': 0, 'z': 1.97}
+    {'element': 'F', 'x': 0., 'y': 0., 'z': 1.97}
 
     .. rubric:: Returns
 
@@ -61,16 +74,10 @@ class Atom:
     def __str__(self):
         """Magic method '__str__' to print the object as a dictionary"""
         return str(attr.asdict(self))
-
+    
     # ===============================================================
-    # PROPERTIES
+    # Building
     # ===============================================================
-    @property
-    def atomic_mass(self) -> list:
-        """Atomic mass of the atom"""
-        return atomic_mass(self.element)
+    def __attrs_pre_init__(self, element, x: float = 0.0, y: float = 0.0, z: float = 0.0):
+        super().__init__(element)
 
-    @property
-    def symbol(self):
-        """Atomic symbol of the atom"""
-        return self.element
