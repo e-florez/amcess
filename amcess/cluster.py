@@ -448,7 +448,7 @@ class Cluster(Molecule):
                 # f"\nPlease, check: \n\n{self.xyz}"
             )
 
-        cluster_dict: dict = deepcopy(self.GetClusterDict())
+        cluster_dict: dict = self.GetClusterDict()
         cluster_dict[molecule] = new_molecule
 
         return self.__class__(
