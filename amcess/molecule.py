@@ -405,7 +405,8 @@ class Molecule(Mol):
             numbered_atoms.append("".join(line))
         return "\n".join(numbered_atoms)
 
-    def AddAtoms(self, new_atoms: list, attribute: None = None) -> object:
+    def AddAtoms(self, new_atoms: list,
+                 charge = None, multiplicity = None) -> object:
         """adding extra atoms can NOT be MOVED or ROTATED
 
         .. rubric:: Parameters
@@ -429,10 +430,14 @@ class Molecule(Mol):
                 "[(str, float, float, float), ...]"
                 f"check --> \n{new_atoms}\n"
             )
+        if charge is not None:
+            self.SetMolCharge(charge)
+        if multiplicity is not None:
+            self.SetMolMultiplicity(multiplicity)
 
         atoms: list = self.GetMolList() + new_atoms
 
-        return self._cehck_valid_atoms(attribute, atoms)
+        return Molecule(atoms)
 
     # def add_molecule(self, other) -> object:
     #     """adding molecule return a new Cluster object"""

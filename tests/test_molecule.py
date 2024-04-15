@@ -264,135 +264,100 @@ def test_molecule_GetAtomicSymbols(system, expected_elements):
 )
 def test_molecule_GetNumberingAtoms(system, expected_result):
     """
-    Test for list of atomic symbols
+    Test GetNumberingAtoms function in Molecule class
     """
     numbered_atoms = Molecule(system).GetNumberingAtoms()
 
     assert numbered_atoms == expected_result
 
 
-# @pytest.mark.parametrize(
-#     "system, expected_symbols",
-#     [
-#         ("dummy", ["A", "X0"]),
-#         ("hf", ["H", "F"]),
-#         ("water", ["O", "H", "H"]),
-#     ],
-# )
-# def test_molecule_atomic_symbols(system, expected_symbols):
-#     """
-#     Test for list of atomic symbols
-#     """
-#     symbols = Molecule(COORDINATES[system]).symbols
+@pytest.mark.parametrize(
+    "system, expected_mass",
+    [
+        ("dummy", 2),
+        ("hf", 20),
+        ("water", 18),
+    ],
+)
+def test_molecule_GetMolMass(system, expected_mass):
+    """
+    Test for total molecular mass
+    """
+    mass = Molecule(COORDINATES[system]).GetMolMass()
 
-#     assert symbols == expected_symbols
-
-
-# @pytest.mark.parametrize(
-#     "system, expected_atoms",
-#     [
-#         ("dummy", 2),
-#         ("hf", 2),
-#         ("water", 3),
-#     ],
-# )
-# def test_molecule_total_atoms(system, expected_atoms):
-#     """
-#     Test for the total number of atoms
-#     """
-#     number_of_atoms = Molecule(COORDINATES[system]).total_atoms
-
-#     assert (number_of_atoms - expected_atoms) == 0
+    assert abs(mass - expected_mass) < 1.0e-1
 
 
-# @pytest.mark.parametrize(
-#     "system, expected_mass",
-#     [
-#         ("dummy", 0),
-#         ("hf", 20),
-#         ("water", 18),
-#     ],
-# )
-# def test_molecule_total_mass(system, expected_mass):
-#     """
-#     Test for total molecular mass
-#     """
-#     mass = Molecule(COORDINATES[system]).total_mass
+@pytest.mark.parametrize(
+    "system, expected_cm",
+    [
+        ("hf", (0.9, 0, 0)),
+        ("water", (0, 0, 0)),
+    ],
+)
+def test_molecule_GetMolCM(system, expected_cm):
+    """
+    Test GetMolCM function
+    """
+    cm = Molecule(COORDINATES[system]).GetMolCM()
 
-#     assert abs(mass - expected_mass) < 1.0e-1
-
-
-# @pytest.mark.parametrize(
-#     "system, expected_cm",
-#     [
-#         ("dummy", (0, 0, 0)),
-#         ("hf", (0.9, 0, 0)),
-#         ("water", (0, 0, 0)),
-#     ],
-# )
-# def test_molecule_center_of_mass(system, expected_cm):
-#     """
-#     Test center of mass
-#     """
-#     cm = Molecule(COORDINATES[system]).center_of_mass
-
-#     assert np.linalg.norm(np.asarray(cm) - expected_cm) < 0.1
+    assert np.linalg.norm(np.asarray(cm) - expected_cm) < 0.1
 
 
-# @pytest.mark.parametrize(
-#     "system, expected_principal_axes",
-#     [
-#         ("dummy", [(10, 20, 30), (-0.5, 0, -10)]),
-#         ("hf", [(-0.9, 0, 0), (0.05, 0, 0)]),
-#         ("water", [(0, -0.09, 0), (0.6, 0.7, 0), (-0.6, 0.7, 0)]),
-#     ],
-# )
-# def test_molecule_principal_axes(system, expected_principal_axes):
-#     """
-#     Test principal axes using internal coordinates system.
-#     Number of principal axis is equal to number of atoms
-#     """
-#     pp = Molecule(COORDINATES[system]).principal_axes
+@pytest.mark.parametrize(
+    "system, expected_principal_axes",
+    [
+        ("hf", [(-0.9, 0, 0), (0.05, 0, 0)]),
+        ("water", [(0, -0.09, 0), (0.6, 0.7, 0), (-0.6, 0.7, 0)]),
+    ],
+)
+def test_molecule_GetMolPrincipalAxes(system, expected_principal_axes):
+    """
+    Test principal axes using internal coordinates system.
+    Number of principal axis is equal to number of atoms
+                GetMolPrincipalAxes
+    """
+    pp = Molecule(COORDINATES[system]).GetMolPrincipalAxes()
 
-#     assert np.allclose(pp, expected_principal_axes, 0.1)
-
-
-# @pytest.mark.parametrize(
-#     "system, expected_result",
-#     [
-#         (
-#             [("Xe", 0, 0, 0)],
-#             """\t1\n-- charge=0 and multiplicity=1 --\nXe    """
-#             """\t     0.00000000\t     0.00000000\t     0.00000000\n""",
-#         )
-#     ],
-# )
-# def test_molecule_xyz_format(system, expected_result):
-#     """
-#     Test for list of atomic symbols
-#     """
-#     xyz_file = Molecule(system).xyz
-#     assert str(xyz_file) == expected_result
+    assert np.allclose(pp, expected_principal_axes, 0.1)
 
 
-# @pytest.mark.parametrize(
-#     "system, new_atom",
-#     [
-#         ("dummy", [("H", 0, 0, 0)]),
-#         ("hf", [("H", 0, 0, 0)]),
-#         ("water", [("H", 0, 0, 0)]),
-#     ],
-# )
-# def test_molecule_add_atom(system, new_atom):
-#     """
-#     Test adding a new atom
-#     """
-#     mol = Molecule(COORDINATES[system])
+@pytest.mark.parametrize(
+    "system, expected_result",
+    [
+        (
+            [("Xe", 0, 0, 0)],
+            """1\ncharge: 0 multiplicity: 1\nXe    """
+            """\t     0.00000000\t     0.00000000\t     0.00000000\n""",
+        )
+    ],
+)
+def test_molecule_GetBlockXYZ(system, expected_result):
+    """
+    Test GetBlockXYZ function
+    """
+    xyz_file = Molecule(system).GetBlockXYZ()
+    assert str(xyz_file) == expected_result
 
-#     # duplicating the system
-#     new_system = mol.add_atoms(new_atom)
 
-#     assert new_system.total_atoms == (mol.total_atoms + 1)
+@pytest.mark.parametrize(
+    "system, new_atom",
+    [
+        ("dummy", [("H", 0, 0, 0)]),
+        ("hf", [("H", 0, 0, 0)]),
+        ("water", [("H", 0, 0, 0)]),
+    ],
+)
+def test_molecule_AddAtoms(system, new_atom):
+    """
+    Test GetAddAtoms function
+    """
+    mol = Molecule(COORDINATES[system])
+
+    # duplicating the system
+    new_system = mol.AddAtoms(new_atom)
+
+    assert new_system.GetNumAtoms() == (mol.GetNumAtoms() + 1)
 
 
 # def test_molecule_add_atom_fail():
