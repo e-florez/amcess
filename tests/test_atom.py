@@ -58,7 +58,7 @@ def test_atom_coordinates_fails(wrong_atom):
 )
 def test_atom_symbol_fails(wrong_atom):
     """Testing Atom's symbol failures"""
-    with pytest.raises(ValueError):
+    with pytest.raises(RuntimeError):
         Atom(*wrong_atom)
 
 # @pytest.mark.parametrize(
