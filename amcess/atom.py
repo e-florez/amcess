@@ -48,14 +48,15 @@ class Atom(RDKAtom):
     # ===============================================================
     # VALIDATORS
     # ===============================================================
-    @element.validator
-    def _check_valid_element(self, element, value):
-        """Element: Must be valid NOT empty alphanumeric character"""
-        if not value.isalnum():
-            raise ValueError(
-                "\n\nMust be valid NOT empty alphanumeric character"
-                f"\nyou get --> '{value}'\n"
-            )
+    # ! super.__init__() already check element
+    # @element.validator
+    # def _check_valid_element(self, element, value):
+    #     """Element: Must be valid NOT empty alphanumeric character"""
+    #     if not value.isalnum():
+    #         raise ValueError(
+    #             "\n\nMust be valid NOT empty alphanumeric character"
+    #             f"\nyou get --> '{value}'\n"
+    #         )
 
     @x.validator
     @y.validator
@@ -79,5 +80,11 @@ class Atom(RDKAtom):
     # Building
     # ===============================================================
     def __attrs_pre_init__(self, element, x: float = 0.0, y: float = 0.0, z: float = 0.0):
+        """
+        __attrs_pre_init__ is automatically detected and run before attrs
+        starts initializing. If __attrs_pre_init__ takes more than the
+        self argument, the attrs-generated __init__ will call it with the
+        same arguments it received itself. This is useful if you need to
+        inject a call to super().__init__()
+        """
         super().__init__(element)
-
