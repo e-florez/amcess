@@ -4,7 +4,7 @@ import pytest
 from amcess.molecule import Molecule
 
 COORDINATES = {
-    "dummy": [("A", 10, 20, 30), ("X0", -0.5, 0, -10)],
+    "dummy": [("H", 10, 20, 30), ("H", -0.5, 0, -10)],
     "hf": [("H", 0, 0, 0), ("F", 0.917, 0, 0)],
     "water": [
         ("O", 0, 0, 0),
@@ -151,195 +151,124 @@ def test_molecule_magic_str(system, expected_result):
     assert str(str_mol) == expected_result
 
 
-# @pytest.mark.parametrize(
-#     "system, expected_atoms",
-#     [
-#         ("dummy", [("A", 10, 20, 30), ("X0", -0.5, 0, -10)]),
-#     ],
-# )
-# def test_molecule_atoms(system, expected_atoms):
-#     """
-#     Test for coordinate in XYZ format
-#     """
-#     atoms_list = Molecule(COORDINATES[system]).atoms
+@pytest.mark.parametrize(
+    "system, expected_atoms",
+    [
+        ("dummy", [("H", 10, 20, 30), ("H", -0.5, 0, -10)]),
+    ],
+)
+def test_molecule_GetMolList(system, expected_atoms):
+    """
+    Test GetMolList() of Molecule Class
+    """
+    atoms_list = Molecule(COORDINATES[system]).GetMolList()
 
-#     assert atoms_list == expected_atoms
-
-
-# @pytest.mark.parametrize(
-#     "system, expected_atoms",
-#     [
-#         ("dummy", [("A", 10, 20, 30), ("X0", -0.5, 0, -10)]),
-#     ],
-# )
-# def test_molecule_setting_atoms_fail(system, expected_atoms):
-#     """
-#     Test for coordinate in XYZ format
-#     """
-#     mol = Molecule(COORDINATES[system])
-#     with pytest.raises(AttributeError):
-#         mol.atoms = expected_atoms
+    assert atoms_list == expected_atoms
 
 
-# @pytest.mark.parametrize(
-#     "system, expected_masses",
-#     [
-#         ("dummy", [0, 0]),
-#         ("hf", [1, 19]),
-#         ("water", [16, 1, 1]),
-#     ],
-# )
-# def test_molecule_atomic_masses(system, expected_masses):
-#     """
-#     Test for atomic symbols
-#     """
-#     masses = Molecule(COORDINATES[system]).atomic_masses
-
-#     assert np.allclose(masses, expected_masses, 0.1)
-
-
-# @pytest.mark.parametrize(
-#     "system, expected_charge, expected_multiplicity",
-#     [
-#         ("dummy", 0, 1),
-#     ],
-# )
-# def test_molecule_default_charge_multiplicity(
-#     system, expected_charge, expected_multiplicity
-# ):
-#     """
-#     Test default atomic charge and multiplicity
-#     """
-#     mol = Molecule(COORDINATES[system])
-
-#     charge = mol.charge
-#     multiplicity = mol.multiplicity
-
-#     assert charge == expected_charge
-#     assert multiplicity == expected_multiplicity
+@pytest.mark.parametrize(
+    "system, expected_atoms",
+    [
+        ("dummy", 
+         {"atoms": [("H", 10, 20, 30), ("H", -0.5, 0, -10)],
+          "charge": 0, "multiplicity": 1}),
+    ],
+)
+def test_molecule_GetMolDict(system, expected_atoms):
+    """
+    Test for coordinate in XYZ format
+    """
+    mol = Molecule(COORDINATES[system])
+    assert mol.GetMolDict() == expected_atoms
 
 
-# @pytest.mark.parametrize(
-#     "system, expected_charge",
-#     [
-#         ("dummy", -1),
-#         ("dummy", +5),
-#     ],
-# )
-# def test_molecule_setting_charge(system, expected_charge):
-#     """
-#     Test setting atomic charge
-#     """
-#     mol = Molecule(COORDINATES[system])
+@pytest.mark.parametrize(
+    "system, expected_masses",
+    [
+        ("dummy", [1, 1]),
+        ("hf", [1, 19]),
+        ("water", [16, 1, 1]),
+    ],
+)
+def test_molecule_GetAtomicMases(system, expected_masses):
+    """
+    Test for atomic mases
+    """
+    masses = Molecule(COORDINATES[system]).GetAtomicMasses()
 
-#     mol.charge = expected_charge
-#     assert mol.charge == expected_charge
-
-
-# @pytest.mark.parametrize(
-#     "system, wrong_charge",
-#     [
-#         ("dummy", "x"),
-#         ("dummy", 1.3),
-#         ("dummy", ""),
-#     ],
-# )
-# def test_molecule_setting_charge_fails(system, wrong_charge):
-#     """
-#     Test setting atomic charge
-#     """
-#     mol = Molecule(COORDINATES[system])
-
-#     with pytest.raises(ValueError):
-#         mol.charge = wrong_charge
+    assert np.allclose(masses, expected_masses, 0.1)
 
 
-# @pytest.mark.parametrize(
-#     "system, expected_coordinates",
-#     [
-#         ("dummy", [(10, 20, 30), (-0.5, 0, -10)]),
-#     ],
-# )
-# def test_molecule_coordinates(system, expected_coordinates):
-#     """
-#     Test for coordinate in XYZ format
-#     """
-#     coordinates = Molecule(COORDINATES[system]).coordinates
+@pytest.mark.parametrize(
+    "system, expected_charge, expected_multiplicity",
+    [
+        ("dummy", -2, 20),
+    ],
+)
+def test_molecule_SetMolCharge_SetMolMultiplicity(
+    system, expected_charge, expected_multiplicity
+):
+    """
+    Tests of Set atomic charge and multiplicity
+    """
+    mol = Molecule(COORDINATES[system])
 
-#     assert coordinates == expected_coordinates
+    mol.SetMolCharge(-2)
+    mol.SetMolMultiplicity(20)
 
-
-# @pytest.mark.parametrize(
-#     "system, expected_elements",
-#     [
-#         ("dummy", ["A", "X0"]),
-#         ("hf", ["H", "F"]),
-#         ("water", ["O", "H"]),
-#     ],
-# )
-# def test_molecule_element_list(system, expected_elements):
-#     """
-#     Test for list of uniques elements
-#     """
-#     elements = Molecule(COORDINATES[system]).elements
-
-#     assert elements.sort() == expected_elements.sort()
+    assert mol.GetMolCharge() == expected_charge
+    assert mol.GetMolMultiplicity() == expected_multiplicity
 
 
-# @pytest.mark.parametrize(
-#     "system, expected_multiplicity",
-#     [
-#         ("dummy", 3),
-#         ("dummy", 15),
-#     ],
-# )
-# def test_molecule_setting_multiplicity(system, expected_multiplicity):
-#     """
-#     Test setting atomic multiplicity
-#     """
-#     mol = Molecule(COORDINATES[system])
+@pytest.mark.parametrize(
+    "system, expected_coordinates",
+    [
+        ("dummy", np.array([[10, 20, 30], [-0.5, 0, -10]])),
+    ],
+)
+def test_molecule_GetAtomicCoordinates(system, expected_coordinates):
+    """
+    Test for coordinate in XYZ format
+    """
+    coordinates = Molecule(COORDINATES[system]).GetAtomicCoordinates()
 
-#     mol.multiplicity = expected_multiplicity
-#     assert mol.multiplicity == expected_multiplicity
+    assert coordinates.all() == expected_coordinates.all()
 
 
-# @pytest.mark.parametrize(
-#     "system, wrong_multiplicity",
-#     [
-#         ("dummy", -1),
-#         ("dummy", 0),
-#         ("dummy", "x"),
-#         ("dummy", 1.3),
-#         ("dummy", ""),
-#     ],
-# )
-# def test_molecule_setting_multiplicity_fails(system, wrong_multiplicity):
-#     """
-#     Test setting atomic charge
-#     """
-#     mol = Molecule(COORDINATES[system])
+@pytest.mark.parametrize(
+    "system, expected_elements",
+    [
+        ("dummy", ["H", "H"]),
+        ("hf", ["H", "F"]),
+        ("water", ["O", "H"]),
+    ],
+)
+def test_molecule_GetAtomicSymbols(system, expected_elements):
+    """
+    Test for list of uniques elements
+    """
+    elements = Molecule(COORDINATES[system]).GetAtomicSymbols()
 
-#     with pytest.raises(ValueError):
-#         mol.multiplicity = wrong_multiplicity
+    assert elements.sort() == expected_elements.sort()
 
 
-# @pytest.mark.parametrize(
-#     "system, expected_result",
-#     [
-#         (
-#             [("Xe", 0, 0, 0)],
-#             """\r  atom #0 --> """
-#             """Xe         0.00000000     0.00000000     0.00000000""",
-#         )
-#     ],
-# )
-# def test_molecule_numbering_atoms(system, expected_result):
-#     """
-#     Test for list of atomic symbols
-#     """
-#     numbered_atoms = Molecule(system).numbering_atoms
+@pytest.mark.parametrize(
+    "system, expected_result",
+    [
+        (
+            [("Xe", 0, 0, 0)],
+            """\r  atom #0 --> """
+            """Xe         0.00000000     0.00000000     0.00000000""",
+        )
+    ],
+)
+def test_molecule_GetNumberingAtoms(system, expected_result):
+    """
+    Test for list of atomic symbols
+    """
+    numbered_atoms = Molecule(system).GetNumberingAtoms()
 
-#     assert numbered_atoms == expected_result
+    assert numbered_atoms == expected_result
 
 
 # @pytest.mark.parametrize(

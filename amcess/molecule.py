@@ -388,26 +388,22 @@ class Molecule(Mol):
             )
         self._multiplicity = new_multiplicity
 
+    def GetNumberingAtoms(self) -> str:
+        """show atom number line by line
 
-    #! Para que?
-    # @property
-    # def GetNumberingAtoms(self) -> str:
-    #     """show atom number line by line
+        .. rubric:: Returns
 
-    #     .. rubric:: Returns
-
-    #     str
-    #         atom number line by line
-    #     """
-    #     numbered_atoms = list()
-    #     for a, xyz in zip(self.GetAtoms(), self.GetCoordinates):
-    #         line = list(self.atoms[i])
-    #         line[0] = f"\r  atom #{i} --> {line[0]:<6}"
-    #         line[1] = f"{line[1]:> 15.8f}"
-    #         line[2] = f"{line[2]:> 15.8f}"
-    #         line[3] = f"{line[3]:> 15.8f}"
-    #         numbered_atoms.append("".join(line))
-    #     return "\n".join(numbered_atoms)
+        str
+            atom number line by line
+        """
+        numbered_atoms = list()
+        for count, axyz in enumerate(self.GetMolList()):
+            line = list(f"\r  atom #{count} --> {axyz[0]:<6}")
+            line.append(f"{axyz[1]:> 15.8f}")
+            line.append(f"{axyz[2]:> 15.8f}")
+            line.append(f"{axyz[3]:> 15.8f}")
+            numbered_atoms.append("".join(line))
+        return "\n".join(numbered_atoms)
 
     def AddAtoms(self, new_atoms: list, attribute: None = None) -> object:
         """adding extra atoms can NOT be MOVED or ROTATED
