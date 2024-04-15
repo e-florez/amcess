@@ -292,7 +292,7 @@ class Molecule(Mol):
     def GetBlockXYZ(self) -> str:
         """Printing Molecule coordinates using XYZ format"""
         write_coordinates: str = ""
-        comment: str = f"charge: {self.GetMolCharge()} multiplicity:{self.GetMolMultiplicity()}"
+        comment: str = f"charge: {self.GetMolCharge()} multiplicity: {self.GetMolMultiplicity()}"
         write_coordinates += f"{len(self.GetAtomicSymbols())}\n{comment}\n"
         for atom, xyz in zip(self.GetAtoms(), self.GetConformer().GetPositions()):
             write_coordinates += f"""{atom.GetSymbol():<6}"""

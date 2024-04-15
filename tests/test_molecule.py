@@ -20,7 +20,7 @@ COORDINATES = {
 def test_molecule_class_input():
     """
     Test inputs of molecule class when is used the list format
-    for molecular information 
+    for molecular information
     """
     mol = Molecule([("H", 10, 20, 30), ("H", 0, 0, 0)], -1, 10)
     assert mol.GetMolCharge() == -1
@@ -73,18 +73,18 @@ def test_molecule_init_from_dict():
     assert mol.GetMolMultiplicity() == 10
 
 
-# def test_molecule_init_from_dict_wrong():
-#     """
-#     Test class init
-#     """
-#     with pytest.raises(TypeError):
-#         Molecule.from_dict(
-#             {
-#                 ".......": [("A", 10, 20, 0), ("B", 0, 0, 0)],
-#                 "charge": -2,
-#                 "multiplicity": 10,
-#             }
-#         )
+def test_molecule_init_from_dict_wrong():
+    """
+    Test atomic symbols, this is did by rdkit
+    """
+    with pytest.raises(KeyError):
+        Molecule(
+            {
+                ".......": [("A", 10, 20, 0), ("B", 0, 0, 0)],
+                "charge": -2,
+                "multiplicity": 10,
+            }
+        )
 
 
 # #def test_molecule_magic_add():
@@ -113,42 +113,42 @@ def test_molecule_init_from_dict():
 # #        mol.add_molecule("H", 0, 0, 0)
 
 
-# #def test_molecule_magic_mul_rmul():
-# #    """Testing magic mul"""
-# #    mol1 = Molecule([("A", 0, 0, 0), ("B", 1, 1, 1)])
-# #    mol2 = mol1 * 2
-# #    mol3 = 3 * mol1
-# #    assert mol2.atoms == 2 * mol1.atoms
-# #    assert mol3.atoms == 3 * mol1.atoms
+def test_molecule_magic_mul_rmul():
+    """Testing magic mul function"""
+    mol1 = Molecule([("H", 0, 0, 0), ("H", 1, 1, 1)])
+    mol2 = mol1 * 2
+    mol3 = 3 * mol1
+    assert mol2.GetNumAtoms() == 4
+    assert mol3.GetNumAtoms() == 6
 
 
-# #def test_molecule_magic_mul_rmul_fail():
-# #    """Testing magic mul"""
-# #    mol1 = Molecule([("A", 0, 0, 0), ("B", 1, 1, 1)])
-# #
-# #    with pytest.raises(ValueError):
-# #        0 * mol1
-# #    with pytest.raises(ValueError):
-# #        -3 * mol1
+def test_molecule_magic_mul_rmul_fail():
+    """Testing magic mul function error"""
+    mol1 = Molecule([("H", 0, 0, 0), ("H", 1, 1, 1)])
+
+    with pytest.raises(ValueError):
+        mol1 * 0
+    with pytest.raises(ValueError):
+        mol1 * -3
 
 
-# @pytest.mark.parametrize(
-#     "system, expected_result",
-#     [
-#         (
-#             [("Xe", 0, 0, 0)],
-#             """\t1\n-- charge=0 and multiplicity=1 --\nXe    """
-#             """\t     0.00000000\t     0.00000000\t     0.00000000\n""",
-#         )
-#     ],
-# )
-# def test_molecule_str(system, expected_result):
-#     """
-#     Test for list of atomic symbols
-#     """
-#     str_mol = Molecule(system)
-#     assert str(str_mol) == str(str_mol.xyz)
-#     assert str(str_mol) == expected_result
+@pytest.mark.parametrize(
+    "system, expected_result",
+    [
+        (
+            [("Xe", 0, 0, 0)],
+            """1\ncharge: 0 multiplicity: 1\nXe    """
+            """\t     0.00000000\t     0.00000000\t     0.00000000\n""",
+        )
+    ],
+)
+def test_molecule_magic_str(system, expected_result):
+    """
+    Test for list of magic funtion str
+    """
+    str_mol = Molecule(system)
+    assert str(str_mol) == str(str_mol.GetBlockXYZ())
+    assert str(str_mol) == expected_result
 
 
 # @pytest.mark.parametrize(
