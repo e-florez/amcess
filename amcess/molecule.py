@@ -91,6 +91,8 @@ class Molecule(Mol):
         """
         for line, atom in enumerate(atoms["atoms"]):
             self._check_atom(line, atom, atoms)
+        self._check_valid_charge(attribute, atoms["charge"])
+        self._check_valid_multiplicity(attribute, atoms["multiplicity"])
 
         total_atoms: int = len(atoms["atoms"]) 
         block_xyz: str = f"""{total_atoms}\n\n"""
@@ -212,6 +214,8 @@ class Molecule(Mol):
                 "\n\ncharge must be an integer "  # noqa
                 f"\nyou get --> 'charge = {charge}'\n"
             )
+        if charge != 0:
+            self._charge = charge
 
     @_multiplicity.validator
     def _check_valid_multiplicity(self, attribute, multiplicity):
@@ -221,6 +225,8 @@ class Molecule(Mol):
                 "\n\nmultiplicity must be an integer larger than zero (0)"
                 f"\nyou get --> 'multiplicity = {multiplicity}'\n"
             )
+        if multiplicity != 1:
+            self._multiplicity = multiplicity
 
     # ===============================================================
     # MAGIC METHODS
