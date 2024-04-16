@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 from amcess.cluster import Cluster
+from amcess.cluster import Molecule
 
 COORDINATES = {
     "dummy": [("H", 10, 20, 30), ("H", -0.5, 0, -10)],
@@ -43,427 +44,396 @@ def test_cluster_init_dict():
     assert w.GetMolList() == COORDINATES["water"]
 
 
-# def test_cluster_init_molecule():
-#     """
-#     Test for cluster init from Molecule class
-#     """
-#     water_dict = {"atoms": COORDINATES["water"]}
+def test_cluster_init_molecule():
+    """
+    Test for cluster init from Molecule class
+    """
+    water_dict = {"atoms": COORDINATES["water"]}
 
-#     w = Cluster(Molecule.from_dict(water_dict))
+    w = Cluster(Molecule(water_dict))
 
-#     assert isinstance(w, Cluster)
-#     assert w.atoms == COORDINATES["water"]
+    assert isinstance(w, Cluster)
+    assert w.GetMolList() == COORDINATES["water"]
 
 
-# def test_cluster_init_cluster():
-#     """
-#     Test for cluster init from Cluster class
-#     """
-#     w = Cluster(COORDINATES["water"])
-#     w2 = Cluster(w, w)
+def test_cluster_init_cluster():
+    """
+    Test for cluster init from Cluster class
+    """
+    w = Cluster(COORDINATES["water"])
+    w2 = Cluster(w, w)
 
-#     assert isinstance(w2, Cluster)
-#     assert w2.atoms == 2 * COORDINATES["water"]
+    assert isinstance(w2, Cluster)
+    assert w2.GetMolList() == 2 * COORDINATES["water"]
 
 
-# def test_cluster_init_fail():
-#     """
-#     Test for cluster init raise
-#     """
+def test_cluster_init_fail():
+    """
+    Test for cluster init raise error
+    """
 
-#     with pytest.raises(TypeError):
-#         Cluster(tuple(COORDINATES["water"]))
+    with pytest.raises(TypeError):
+        Cluster(tuple(COORDINATES["water"]))
 
 
-# def test_cluster_magic_add():
-#     """
-#     Test for cluster magic method add
-#     """
+def test_cluster_magic_add():
+    """
+    Test for cluster magic method add
+    """
 
-#     w = Cluster(COORDINATES["water"])
-#     w2 = w + w
+    w = Cluster(COORDINATES["water"])
+    w2 = w + w
 
-#     assert isinstance(w2, Cluster)
-#     assert w2.atoms == 2 * COORDINATES["water"]
+    assert isinstance(w2, Cluster)
+    assert w2.GetMolList() == 2 * COORDINATES["water"]
 
 
-# def test_cluster_magic_mul_rmul():
-#     """
-#     Test for cluster magic method mul and rmul
-#     """
+def test_cluster_magic_mul_rmul():
+    """
+    Test for cluster magic method mul and rmul
+    """
 
-#     w = Cluster(COORDINATES["water"])
-#     w2 = w * 2
+    w = Cluster(COORDINATES["water"])
+    w2 = w * 2
 
-#     w6 = 3 * w2
+    w6 = 3 * w2
 
-#     assert isinstance(w2, Cluster)
-#     assert isinstance(w6, Cluster)
-#     assert w2.atoms == 2 * COORDINATES["water"]
-#     assert w6.atoms == 6 * COORDINATES["water"]
+    assert isinstance(w2, Cluster)
+    assert isinstance(w6, Cluster)
+    assert w2.GetMolList() == 2 * COORDINATES["water"]
+    assert w6.GetMolList() == 6 * COORDINATES["water"]
 
 
-# def test_cluster_magic_rmul_fails():
-#     """
-#     Test for cluster magic method rmul fails
-#     """
-#     w = Cluster(COORDINATES["water"])
-#     with pytest.raises(ValueError):
-#         0 * w
+def test_cluster_magic_rmul_fails():
+    """
+    Test for cluster magic method rmul fails
+    """
+    w = Cluster(COORDINATES["water"])
+    with pytest.raises(ValueError):
+        0 * w
 
 
-# def test_cluster_str():
-#     """
-#     Test for Cluster magic str
-#     """
-#     w = Cluster(
-#         {"atoms": [("H1", 0, 0, 0)]}, [("H2", 0, 0, 0), ("H3", 0, 0, 0)]
-#     )
-#     w_str = str(w)
+def test_cluster_str():
+    """
+    Test for Cluster magic str
+    """
+    w = Cluster(
+        {"atoms": [("H", 0, 0, 0)]}, [("H", 0, 0, 0), ("H", 0, 0, 0)]
+    )
+    w_str = str(w)
 
-#     expected_str = (
-#         """Cluster of (2) molecules and (3) total atoms\n"""
-#         """ #0: molecule with 1 atoms:\n"""
-#         """     --> atoms: [('H1', 0, 0, 0)]\n"""
-#         """     --> charge: +0\n"""
-#         """     --> multiplicity: 1\n"""
-#         """ #1: molecule with 2 atoms:\n"""
-#         """     --> atoms: [('H2', 0, 0, 0), ('H3', 0, 0, 0)]\n"""
-#         """     --> charge: +0\n"""
-#         """     --> multiplicity: 1\n"""
-#     )
+    expected_str = (
+        """Cluster of (2) molecules and (3) total atoms\n"""
+        """ #0: molecule with 1 atoms:\n"""
+        """     --> atoms: [('H', 0.0, 0.0, 0.0)]\n"""
+        """     --> charge: +0\n"""
+        """     --> multiplicity: 1\n"""
+        """ #1: molecule with 2 atoms:\n"""
+        """     --> atoms: [('H', 0.0, 0.0, 0.0), ('H', 0.0, 0.0, 0.0)]\n"""
+        """     --> charge: +0\n"""
+        """     --> multiplicity: 1\n"""
+    )
 
-#     assert w_str == expected_str
+    assert w_str == expected_str
 
 
-# def test_cluster_dictionary():
-#     """
-#     Test for Cluster property dictionary
-#     """
-#     w = Cluster([("H", 0, 0, 0)])
+def test_cluster_GetClusterDict():
+    """
+    Test for Cluster property dictionary
+    """
+    w = Cluster([("H", 0, 0, 0)])
 
-#     expected_dict = {0: Molecule([("H", 0, 0, 0)])}
+    expected_dict = {0: Molecule([("H", 0, 0, 0)])}
 
-#     assert w.cluster_dictionary == expected_dict
+    assert w.GetClusterDict() == expected_dict
 
 
-# def test_cluster_setting_frozen_molecule():
-#     """
-#     Test for Cluster setting frozen molecule from value
-#     """
-#     w = Cluster([("H1", 0, 0, 0), ("H2", 0, 0, 0)])
+def test_cluster_SetGetFreezeMol():
+    """
+    Test for Cluster setting frozen molecule from value
+    """
+    w = Cluster([("H", 0, 0, 0), ("H", 0, 0, 0)])
 
-#     w.freeze_molecule = 0
+    w.SetFreezeMol(0)
 
-#     assert w.freeze_molecule == [0]
+    assert w.GetFreezeMol() == [0]
 
 
-# def test_cluster_setting_frozen_molecule_list():
-#     """
-#     Test for Cluster setting frozen molecule from list
-#     """
-#     w = Cluster([("H1", 0, 0, 0), ("H2", 0, 0, 0)])
+def test_cluster_SetGetFreezeMol_List():
+    """
+    Test for Cluster setting frozen molecule from list
+    """
+    w = Cluster([("H", 0, 0, 0), ("H", 0, 0, 0)])
 
-#     w.freeze_molecule = [0, 1]
+    w.SetFreezeMol([0, 1])
 
-#     assert w.freeze_molecule == [0, 1]
+    assert w.GetFreezeMol() == [0, 1]
 
 
-# def test_cluster_setting_sphere_center():
-#     """
-#     Test for Cluster setting sphere center
-#     """
-#     w = Cluster([("H1", 0, 0, 0), ("H2", 0, 0, 0)])
+def test_cluster_SetGetSphereCenter():
+    """
+    Test for Cluster setting sphere center
+    """
+    w = Cluster([("H", 0, 0, 0), ("H", 0, 0, 0)])
 
-#     w.sphere_center = (-1.5, 0, 10)
+    w.SetSphereCenter((-1.5, 0, 10))
 
-#     assert w.sphere_center == (-1.5, 0, 10)
+    assert w.GetSphereCenter() == (-1.5, 0, 10)
 
 
-# def test_cluster_setting_sphere_center_fails():
-#     """
-#     Test for Cluster setting sphere center fails
-#     """
-#     w = Cluster([("H1", 0, 0, 0), ("H2", 0, 0, 0)])
+def test_cluster_SetSphereCenter_Fails():
+    """
+    Test for Cluster setting sphere center fails
+    """
+    w = Cluster([("H", 0, 0, 0), ("H", 0, 0, 0)])
 
-#     with pytest.raises(ValueError):
-#         w.sphere_center = (-1.5, 0)
+    with pytest.raises(ValueError):
+        w.SetSphereCenter((-1.5, 0))
 
 
-# def test_cluster_setting_sphere_radius():
-#     """
-#     Test for Cluster setting sphere radius
-#     """
-#     w = Cluster([("H1", 0, 0, 0), ("H2", 0, 0, 0)])
+def test_cluster_SetGetSphereR():
+    """
+    Test for Cluster setting sphere radius
+    """
+    w = Cluster([("H", 0, 0, 0), ("H", 0, 0, 0)])
 
-#     w.sphere_radius = 20.2
+    w.SetSphereR(20.2)
 
-#     assert w.sphere_radius == 20.2
+    assert w.GetSphereR() == 20.2
 
 
-# def test_cluster_setting_sphere_radius_fails():
-#     """
-#     Test for Cluster setting sphere radius fails
-#     """
-#     w = Cluster([("H1", 0, 0, 0), ("H2", 0, 0, 0)])
+def test_cluster_SetSphereR_fails():
+    """
+    Test for Cluster setting sphere radius fails
+    """
+    w = Cluster([("H", 0, 0, 0), ("H", 0, 0, 0)])
 
-#     with pytest.raises(ValueError):
-#         w.sphere_radius = 0.1
+    with pytest.raises(ValueError):
+        w.SetSphereR(0.1)
 
 
-# def test_cluster_overlap():
-#     """
-#     Testing cluster overlap check method
-#     """
-#     no_overlap = Cluster().overlapping((0, 0, 0), (1, 1, 1), 0.9)
-#     overlap = Cluster().overlapping((0, 0, 0), (1, 1, 1), 1.1)
+def test_cluster_Overlap():
+    """
+    Testing cluster overlap check staticmethod
+    """
+    no_overlap = Cluster().Overlapping((0, 0, 0), (1, 1, 1), 0.9)
+    overlap = Cluster().Overlapping((0, 0, 0), (1, 1, 1), 1.1)
 
-#     assert overlap
-#     assert not no_overlap  # double neg == True
+    assert overlap
+    assert not no_overlap
 
 
-# def test_cluster_add_molecule():
-#     """
-#     Test cluster class add molecule
-#     """
-#     mol = Cluster(COORDINATES["water"])
+@pytest.mark.parametrize(
+    "system",
+    [
+        ("dummy"),
+        ("hf"),
+        ("water"),
+    ],
+)
+def test_cluster_GetMol(system):
+    """
+    Test retriving certain molecule/atom
+    """
+    mol = Cluster(
+        COORDINATES[system],
+        COORDINATES[system],
+        COORDINATES[system],
+    )
 
-#     mol2 = mol.add_molecule(COORDINATES["water"])
+    # getting the first (index) molecule
+    new_system = mol.GetMol(0)
 
-#     assert mol2.atoms == 2 * mol.atoms
+    assert new_system.GetMolList() == COORDINATES[system]
 
 
-# @pytest.mark.parametrize(
-#     "system",
-#     [
-#         ("dummy"),
-#         ("hf"),
-#         ("water"),
-#     ],
-# )
-# def test_cluster_get_molecule(system):
-#     """
-#     Test retriving certain molecule/atom
-#     """
-#     mol = Cluster(
-#         COORDINATES[system],
-#         COORDINATES[system],
-#         COORDINATES[system],
-#     )
+def test_cluster_GetMol_Fails():
+    """
+    Test retriving certain molecule/atom, fail
+    """
+    mol = Cluster(COORDINATES["water"])
 
-#     # getting the first (index) molecule
-#     new_system = mol.get_molecule(0)
+    with pytest.raises(KeyError):
+        mol.GetMol(100)
 
-#     assert new_system.atoms == COORDINATES[system]
 
+def test_cluster_InitializeCluster():
+    """
+    Testing cluster class move (translate and rotate) molecules
+    (if necessary) to avoid any atom overlapping
+    """
+    # a water cluster in which three molecules are at the same point
+    w3 = Cluster(
+        COORDINATES["water"],
+        COORDINATES["water"],
+        COORDINATES["water"],
+        [("Xe", 10, 10, 10)],
+        [("Zn", -10, -10, -10)],
+    )
+
+    w3_no_overlapping = w3.InitializeCluster()
+
+    overlap = []
+    for i in w3_no_overlapping.GetClusterDict():
+        mol1 = w3_no_overlapping.GetClusterDict()[i]
+
+        j = i + 1
+        if j not in w3_no_overlapping.GetClusterDict():
+            continue
 
-# def test_cluster_get_molecule_fails():
-#     """
-#     Test retriving certain molecule/atom
-#     """
-#     mol = Cluster(COORDINATES["water"])
+        mol2 = w3_no_overlapping.GetClusterDict()[j]
+
+        overlap.append(
+            Cluster().Overlapping(mol1.GetAtomicCoordinates(),
+                                  mol2.GetAtomicCoordinates())
+        )
+
+    assert not all(overlap)
+
 
-#     with pytest.raises(IndexError):
-#         mol.get_molecule(100)
-
-
-# def test_cluster_initialize_cluster():
-#     """
-#     Testing cluster class move (translate and rotate) molecules (if necessary)
-#     to avoid any atom overlapping
-#     """
-#     # a water cluster in which three molecules are at the same point
-#     w3 = Cluster(
-#         COORDINATES["water"],
-#         COORDINATES["water"],
-#         COORDINATES["water"],
-#         [("Xe", 10, 10, 10)],
-#         [("Z2", -10, -10, -10)],
-#     )
-
-#     w3_no_overlapping = w3.initialize_cluster()
-
-#     overlap = []
-#     for i in w3_no_overlapping.cluster_dictionary:
-#         mol1 = w3_no_overlapping.cluster_dictionary[i]
-
-#         j = i + 1
-#         if j not in w3_no_overlapping.cluster_dictionary:
-#             continue
-
-#         mol2 = w3_no_overlapping.cluster_dictionary[j]
-
-#         overlap.append(
-#             Cluster().overlapping(mol1.coordinates, mol2.coordinates)
-#         )
-
-#     assert not all(overlap)
-
-
-# def test_cluster_move_molecule():
-#     """
-#     Testing Cluster class move_molecule method, rotating and translating
-#     a molecule avoiding overlaping
-#     """
-#     w5 = Cluster(
-#         COORDINATES["water"],
-#         COORDINATES["water"],
-#         COORDINATES["water"],
-#         COORDINATES["water"],
-#         COORDINATES["water"],
-#     )
-
-#     new_w5 = w5.move_molecule(1)
-#     new_w5 = w5.move_molecule(2)
-#     new_w5 = w5.move_molecule(3)
-#     new_w5 = w5.move_molecule(4)
-
-#     overlap = []
-#     for i in new_w5.cluster_dictionary:
-#         mol1 = new_w5.cluster_dictionary[i]
-
-#         j = i + 1
-#         if j not in new_w5.cluster_dictionary:
-#             continue
-
-#         mol2 = new_w5.cluster_dictionary[j]
-
-#         overlap.append(
-#             Cluster().overlapping(mol1.coordinates, mol2.coordinates)
-#         )
-
-#     assert not all(overlap)
-
-
-# def test_cluster_move_molecule_fails_too_close():
-#     """
-#     Testing Cluster class move_molecule fails
-#     """
-#     w2 = Cluster(
-#         COORDINATES["water"],
-#         COORDINATES["water"],
-#     )
-
-#     with pytest.raises(ValueError):
-#         w2.move_molecule(
-#             molecule=0,
-#             max_step=None,
-#             max_rotation=None,
-#             max_closeness=0.01,
-#         )
-
-
-# def test_cluster_move_molecule_fails_no_space():
-#     """
-#     Testing Cluster class move_molecule fails
-#     """
-#     w2 = Cluster(
-#         COORDINATES["water"],
-#         COORDINATES["water"],
-#     )
-
-#     w2.sphere_radius = 2
-
-#     with pytest.raises(AttributeError):
-#         w2.move_molecule(
-#             molecule=0,
-#             max_step=None,
-#             max_rotation=None,
-#             max_closeness=3,
-#         )
-
-
-# @pytest.mark.parametrize(
-#     "system",
-#     [
-#         ("dummy"),
-#         ("hf"),
-#         ("water"),
-#     ],
-# )
-# def test_cluster_remove_molecule(system):
-#     """
-#     Test deleting an existeing molecule/atom
-#     """
-#     mol = Cluster(
-#         COORDINATES[system],
-#         COORDINATES[system],
-#         COORDINATES[system],
-#     )
-
-#     # deleting the first (index) molecule
-#     new_system = mol.remove_molecule(0)
-
-#     assert (new_system.total_molecules + 1) == mol.total_molecules
-
-
-# def test_cluster_remove_molecule_fails():
-#     """
-#     Test removing certain molecule fails
-#     """
-#     mol = Cluster(COORDINATES["water"])
-
-#     with pytest.raises(IndexError):
-#         mol.remove_molecule(1)
-
-
-# @pytest.mark.parametrize(
-#     "angles, expected_rotation",
-#     [
-#         (  # single rot around x-axis "x=90, y=0, z=0",
-#             # where a1->a1, a2->a3, a3->-a2
-#             (90, 0, 0),
-#             [("a1", 1, 0, 0), ("a2", 0, 0, -1), ("a3", 0, 1, 0)],
-#         ),
-#         (  # single rot around y-axis "x=0, y=90, z=0",
-#             # where a1->a3, a2->a2, a3->-a1
-#             (0, 90, 0),
-#             [("a1", 0, 0, 1), ("a2", 0, 1, 0), ("a3", -1, 0, 0)],
-#         ),
-#         (  # single rot around z-axis "x=0, y=0, z=90",
-#             # where a1->-a2, a2->a1, a3->a3
-#             (0, 0, 90),
-#             [("a1", 0, -1, 0), ("a2", 1, 0, 0), ("a3", 0, 0, 1)],
-#         ),
-#         (  # MULTIPLE rot around "x=90, y=90, z=90",
-#             # where a1->a3, a2->a2, a3->-a1 (equivalent to y=90)
-#             (90, 90, 90),
-#             [("a1", 0, 0, 1), ("a2", 0, 1, 0), ("a3", -1, 0, 0)],
-#         ),
-#     ],
-# )
-# def test_cluster_rotate(angles, expected_rotation):
-#     """
-#     Test rotation
-#     """
-#     dummy = [("a1", 1, 0, 0), ("a2", 0, 1, 0), ("a3", 0, 0, 1)]
-
-#     ax, ay, az = angles
-
-#     mol = Cluster(dummy)
-#     mol_rotated = mol.rotate(0, x=ax, y=ay, z=az)
-
-#     expected_mol = Cluster(expected_rotation)
-
-#     assert np.allclose(
-#         mol_rotated.coordinates,
-#         expected_mol.coordinates,
-#         0.01,
-#     )
-
-
-# def test_cluster_rotate_frozen_molecule():
-#     """
-#     Test rotate a frozen molecule
-#     """
-#     dummy = [("a1", 1, 0, 0), ("a2", 0, 1, 0), ("a3", 0, 0, 1)]
-
-#     mol = Cluster(dummy, [("H", 0, 0, 0)])
-
-#     mol.freeze_molecule = 0
-#     mol_rotated = mol.rotate(0, x=90)
-
-#     assert mol.atoms == mol_rotated.atoms
+def test_cluster_MoveMolecule():
+    """
+    Testing Cluster class MoveMol method, rotating
+    and translating a molecule avoiding overlaping
+    """
+    w5 = Cluster(
+        COORDINATES["water"],
+        COORDINATES["water"],
+        COORDINATES["water"],
+        COORDINATES["water"],
+        COORDINATES["water"],
+    )
+
+    new_w5 = w5.MoveMol(1)
+    new_w5 = w5.MoveMol(2)
+    new_w5 = w5.MoveMol(3)
+    new_w5 = w5.MoveMol(4)
+
+    overlap = []
+    for i in new_w5.GetClusterDict():
+        mol1 = new_w5.GetClusterDict()[i]
+
+        j = i + 1
+        if j not in new_w5.GetClusterDict():
+            continue
+
+        mol2 = new_w5.GetClusterDict()[j]
+
+        overlap.append(
+            Cluster().Overlapping(mol1.GetAtomicCoordinates(),
+                                  mol2.GetAtomicCoordinates())
+        )
+
+    assert not all(overlap)
+
+
+def test_cluster_MoveMolecule_Fails():
+    """
+    Testing Cluster class MoveMol fails
+    """
+    w2 = Cluster(
+        COORDINATES["water"],
+        COORDINATES["water"],
+    )
+
+    # ! Too Close
+    with pytest.raises(ValueError):
+        w2.MoveMol(
+            molecule=0,
+            max_step=None,
+            max_rotation=None,
+            max_closeness=0.01,
+        )
+
+    # ! No Space
+    w2.SetSphereR(2)
+    with pytest.raises(AttributeError):
+        w2.move_molecule(
+            molecule=0,
+            max_step=None,
+            max_rotation=None,
+            max_closeness=3,
+        )
+
+
+@pytest.mark.parametrize(
+    "system",
+    [
+        ("dummy"),
+        ("hf"),
+        ("water"),
+    ],
+)
+def test_cluster_RemoveMol(system):
+    """
+    Test deleting an existeing molecule/atom
+    """
+    mol = Cluster(
+        COORDINATES[system],
+        COORDINATES[system],
+        COORDINATES[system],
+    )
+
+    # deleting the first (index) molecule
+    mol.RemoveMol(0)
+
+    assert (mol.GetTotalMol() + 1) == 3
+
+
+def test_cluster_RemoveMol_Fails():
+    """
+    Test removing certain molecule fails
+    """
+    mol = Cluster(COORDINATES["water"])
+
+    with pytest.raises(IndexError):
+        mol.RemoveMol(1)
+
+
+@pytest.mark.parametrize(
+    "angles, expected_rotation",
+    [
+        (  # single rot around x-axis "x=90, y=0, z=0",
+            (90, 0, 0),
+            [("H", 1, 0, 0.66666667), ("H", 0, 0, -0.33333333), ("H", 0, 1, 0.66666667)],
+        ),
+    ],
+)
+def test_cluster_RotateMol(angles, expected_rotation):
+    """
+    Test RotationMol
+    """
+    dummy = [("H", 1, 0, 0), ("H", 0, 1, 0), ("H", 0, 0, 1)]
+
+    ax, ay, az = angles
+
+    mol = Cluster(dummy)
+    mol_rotated = mol.RotateMol(0, x=ax, y=ay, z=az)
+
+    expected_mol = Cluster(expected_rotation)
+
+    assert np.allclose(
+        mol_rotated.GetAtomicCoordinates(),
+        expected_mol.GetAtomicCoordinates(),
+        0.01,
+    )
+
+
+def test_cluster_RotateMol_FreezeMol():
+    """
+    Test rotate a frozen molecule
+    """
+    dummy = [("H", 1, 0, 0), ("H", 0, 1, 0), ("H", 0, 0, 1)]
+
+    mol = Cluster(dummy, [("H", 0, 0, 0)])
+
+    mol.SetFreezeMol(0)
+    mol_rotated = mol.RotateMol(0, x=90)
+
+    print(mol.GetAtomicCoordinates()[3], mol_rotated.GetAtomicCoordinates()[3])
+
+    assert (mol.GetAtomicCoordinates()[3].all() ==
+            mol_rotated.GetAtomicCoordinates()[3].all())
 
 
 # def test_cluster_rotate_fails():
