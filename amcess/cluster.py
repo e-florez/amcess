@@ -1,5 +1,3 @@
-from copy import deepcopy
-
 import numpy as np
 from scipy.spatial.transform import Rotation
 from rdkit.Chem.rdchem import Mol
