@@ -405,8 +405,8 @@ class Molecule(Mol):
             numbered_atoms.append("".join(line))
         return "\n".join(numbered_atoms)
 
-    def AddAtoms(self, new_atoms: list,
-                 charge = None, multiplicity = None) -> object:
+    def AddAtom(self, new_atoms: list,
+                charge: None = None, multiplicity: None = None) -> object:
         """adding extra atoms can NOT be MOVED or ROTATED
 
         .. rubric:: Parameters
@@ -439,14 +439,27 @@ class Molecule(Mol):
 
         return Molecule(atoms)
 
-    # def add_molecule(self, other) -> object:
-    #     """adding molecule return a new Cluster object"""
-    #     if not isinstance(other, dict):    #Molecule):
-    #         raise TypeError(
-    #             "\nOnly type 'Molecule', list or dict could be added"
-    #             f"\nyou have a type: '{type(other)}', check: \n{other}"
-    #         )
-    #     return Cluster(self, other)
+    def RemoveAtom(self, atom: int,
+                        charge: None = None, multiplicity: None = None) -> object:
+        """remove one atom"""
+        if not isinstance(atom, int) or atom >= self.GetNumAtoms():
+            raise IndexError(
+                f"\nMolecule with {self.GetNumAtoms()} total atoms "
+                f"and index [0-{self.GetNumAtoms() - 1}]"
+                f"\n atom index must be less than {self.GetNumAtoms()}"
+                f"\nCheck! You want to remove atom with index '{atom}'"
+            )
+
+        atoms: list = self.GetMolList()
+
+        del atoms[atom]
+
+        if charge is not None:
+            self.SetMolCharge(charge)
+        if multiplicity is not None:
+            self.SetMolMultiplicity(multiplicity)
+
+        return Molecule(atoms)
 
     def GetAtomWithIndix(self, atom: int) -> list:
         """
@@ -475,18 +488,3 @@ class Molecule(Mol):
             )
         return self.GetMolList()[atom]
 
-    def RemoveAtom(self, atom: int, attribute: None = None) -> object:
-        """remove one atom"""
-        if not isinstance(atom, int) or atom >= self.GetNumAtoms():
-            raise IndexError(
-                f"\nMolecule with {self.GetNumAtoms()} total atoms "
-                f"and index [0-{self.GetNumAtoms() - 1}]"
-                f"\n atom index must be less than {self.GetNumAtoms()}"
-                f"\nCheck! You want to remove atom with index '{atom}'"
-            )
-
-        atoms: list = self.GetMolList()
-
-        del atoms[atom]
-
-        return self._cehck_valid_atoms(attribute, atoms)
