@@ -91,8 +91,10 @@ class Molecule(Mol):
         """
         for line, atom in enumerate(atoms["atoms"]):
             self._check_atom(line, atom, atoms)
-        self._check_valid_charge(attribute, atoms["charge"])
-        self._check_valid_multiplicity(attribute, atoms["multiplicity"])
+        if "charge" in atoms.keys():
+            self._check_valid_charge(attribute, atoms["charge"])
+        if "multiplicity" in atoms.keys():
+            self._check_valid_multiplicity(attribute, atoms["multiplicity"])
 
         total_atoms: int = len(atoms["atoms"]) 
         block_xyz: str = f"""{total_atoms}\n\n"""
