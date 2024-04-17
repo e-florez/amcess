@@ -22,7 +22,7 @@ COORDINATES = {
 # ===============================================================
 # Cluster class
 # ===============================================================
-def test_cluster_init_():
+def test_init_():
     """
     Test for cluster init from list ype
     """
@@ -32,7 +32,7 @@ def test_cluster_init_():
     assert w.GetMolList() == COORDINATES["water"]
 
 
-def test_cluster_init_dict():
+def test_init_dict():
     """
     Test for cluster init from dictionary type
     """
@@ -44,7 +44,7 @@ def test_cluster_init_dict():
     assert w.GetMolList() == COORDINATES["water"]
 
 
-def test_cluster_init_molecule():
+def test_init_molecule():
     """
     Test for cluster init from Molecule class
     """
@@ -56,7 +56,7 @@ def test_cluster_init_molecule():
     assert w.GetMolList() == COORDINATES["water"]
 
 
-def test_cluster_init_cluster():
+def test_init_cluster():
     """
     Test for cluster init from Cluster class
     """
@@ -67,7 +67,7 @@ def test_cluster_init_cluster():
     assert w2.GetMolList() == 2 * COORDINATES["water"]
 
 
-def test_cluster_init_fail():
+def test_init_fail():
     """
     Test for cluster init raise error
     """
@@ -76,7 +76,7 @@ def test_cluster_init_fail():
         Cluster(tuple(COORDINATES["water"]))
 
 
-def test_cluster_magic_add():
+def test_magic_add():
     """
     Test for cluster magic method add
     """
@@ -88,7 +88,7 @@ def test_cluster_magic_add():
     assert w2.GetMolList() == 2 * COORDINATES["water"]
 
 
-def test_cluster_magic_mul_rmul():
+def test_magic_mul_rmul():
     """
     Test for cluster magic method mul and rmul
     """
@@ -104,7 +104,7 @@ def test_cluster_magic_mul_rmul():
     assert w6.GetMolList() == 6 * COORDINATES["water"]
 
 
-def test_cluster_magic_rmul_fails():
+def test_magic_rmul_fails():
     """
     Test for cluster magic method rmul fails
     """
@@ -113,7 +113,7 @@ def test_cluster_magic_rmul_fails():
         0 * w
 
 
-def test_cluster_str():
+def test_str():
     """
     Test for Cluster magic str
     """
@@ -137,7 +137,7 @@ def test_cluster_str():
     assert w_str == expected_str
 
 
-def test_cluster_GetClusterDict():
+def test_GetClusterDict():
     """
     Test for Cluster property dictionary
     """
@@ -148,7 +148,7 @@ def test_cluster_GetClusterDict():
     assert w.GetClusterDict() == expected_dict
 
 
-def test_cluster_SetGetFreezeMol():
+def test_SetGetFreezeMol():
     """
     Test for Cluster setting frozen molecule from value
     """
@@ -159,7 +159,7 @@ def test_cluster_SetGetFreezeMol():
     assert w.GetFreezeMol() == [0]
 
 
-def test_cluster_SetGetFreezeMol_List():
+def test_SetGetFreezeMol_List():
     """
     Test for Cluster setting frozen molecule from list
     """
@@ -170,7 +170,7 @@ def test_cluster_SetGetFreezeMol_List():
     assert w.GetFreezeMol() == [0, 1]
 
 
-def test_cluster_SetGetSphereCenter():
+def test_SetGetSphereCenter():
     """
     Test for Cluster setting sphere center
     """
@@ -181,7 +181,7 @@ def test_cluster_SetGetSphereCenter():
     assert w.GetSphereCenter() == (-1.5, 0, 10)
 
 
-def test_cluster_SetSphereCenter_Fails():
+def test_SetSphereCenter_Fails():
     """
     Test for Cluster setting sphere center fails
     """
@@ -191,7 +191,7 @@ def test_cluster_SetSphereCenter_Fails():
         w.SetSphereCenter((-1.5, 0))
 
 
-def test_cluster_SetGetSphereR():
+def test_SetGetSphereR():
     """
     Test for Cluster setting sphere radius
     """
@@ -202,7 +202,7 @@ def test_cluster_SetGetSphereR():
     assert w.GetSphereR() == 20.2
 
 
-def test_cluster_SetSphereR_fails():
+def test_SetSphereR_fails():
     """
     Test for Cluster setting sphere radius fails
     """
@@ -212,7 +212,7 @@ def test_cluster_SetSphereR_fails():
         w.SetSphereR(0.1)
 
 
-def test_cluster_Overlap():
+def test_Overlap():
     """
     Testing cluster overlap check staticmethod
     """
@@ -231,7 +231,7 @@ def test_cluster_Overlap():
         ("water"),
     ],
 )
-def test_cluster_GetMol(system):
+def test_GetMol(system):
     """
     Test retriving certain molecule/atom
     """
@@ -247,7 +247,7 @@ def test_cluster_GetMol(system):
     assert new_system.GetMolList() == COORDINATES[system]
 
 
-def test_cluster_GetMol_Fails():
+def test_GetMol_Fails():
     """
     Test retriving certain molecule/atom, fail
     """
@@ -257,7 +257,7 @@ def test_cluster_GetMol_Fails():
         mol.GetMol(100)
 
 
-def test_cluster_InitializeCluster():
+def test_InitializeCluster():
     """
     Testing cluster class move (translate and rotate) molecules
     (if necessary) to avoid any atom overlapping
@@ -291,7 +291,7 @@ def test_cluster_InitializeCluster():
     assert not all(overlap)
 
 
-def test_cluster_MoveMolecule():
+def test_MoveMolecule():
     """
     Testing Cluster class MoveMol method, rotating
     and translating a molecule avoiding overlaping
@@ -327,7 +327,7 @@ def test_cluster_MoveMolecule():
     assert not all(overlap)
 
 
-def test_cluster_MoveMolecule_Fails():
+def test_MoveMolecule_Fails():
     """
     Testing Cluster class MoveMol fails
     """
@@ -364,7 +364,7 @@ def test_cluster_MoveMolecule_Fails():
         ("water"),
     ],
 )
-def test_cluster_RemoveMol(system):
+def test_RemoveMol(system):
     """
     Test deleting an existeing molecule/atom
     """
@@ -380,7 +380,7 @@ def test_cluster_RemoveMol(system):
     assert (mol.GetTotalMol() + 1) == 3
 
 
-def test_cluster_RemoveMol_Fails():
+def test_RemoveMol_Fails():
     """
     Test removing certain molecule fails
     """
@@ -399,7 +399,7 @@ def test_cluster_RemoveMol_Fails():
         ),
     ],
 )
-def test_cluster_RotateMol(angles, expected_rotation):
+def test_RotateMol(angles, expected_rotation):
     """
     Test RotationMol
     """
@@ -419,7 +419,7 @@ def test_cluster_RotateMol(angles, expected_rotation):
     )
 
 
-def test_cluster_RotateMol_FreezeMol():
+def test_RotateMol_FreezeMol():
     """
     Test rotate a frozen molecule
     """
@@ -436,7 +436,7 @@ def test_cluster_RotateMol_FreezeMol():
             mol_rotated.GetAtomicCoordinates()[3].all())
 
 
-def test_cluster_RotateMol_Fails():
+def test_RotateMol_Fails():
     """
     Test RotateMol funtions, fails by molecule index does not exist
     """
@@ -450,7 +450,7 @@ def test_cluster_RotateMol_Fails():
         mol.RotateMol(10, x=90)
 
 
-def test_cluster_RotateMol_single_atom():
+def test_RotateMol_single_atom():
     """
     Test RotateMol a single atom. When is selected a molecule
     composed by one atom then that doesn't rotate
@@ -486,7 +486,7 @@ def test_cluster_RotateMol_single_atom():
         ),
     ],
 )
-def test_cluster_TranslateMol(steps, expected_translation):
+def test_TranslateMol(steps, expected_translation):
     """
     Test TranslationMol function
     """
@@ -506,7 +506,7 @@ def test_cluster_TranslateMol(steps, expected_translation):
     )
 
 
-def test_cluster_TranslateMol_FreezeMol():
+def test_TranslateMol_FreezeMol():
     """
     Test TranslateMol funciotn with frozen molecule
     """
@@ -521,7 +521,7 @@ def test_cluster_TranslateMol_FreezeMol():
             mol_rotated.GetAtomicCoordinates().all())
 
 
-def test_cluster_TranslateMol_Fails():
+def test_TranslateMol_Fails():
     """
     Test TranslateMol function fails, molecule index does not exist
     """
