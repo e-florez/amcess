@@ -436,176 +436,179 @@ def test_cluster_RotateMol_FreezeMol():
             mol_rotated.GetAtomicCoordinates()[3].all())
 
 
-# def test_cluster_rotate_fails():
-#     """
-#     Test rotate fails molecule index does not exist
-#     """
-#     dummy = [("a1", 1, 0, 0), ("a2", 0, 1, 0), ("a3", 0, 0, 1)]
+def test_cluster_RotateMol_Fails():
+    """
+    Test RotateMol funtions, fails by molecule index does not exist
+    """
+    dummy = [("H", 1, 0, 0), ("H", 0, 1, 0), ("H", 0, 0, 1)]
 
-#     mol = Cluster(dummy, [("H", 0, 0, 0)])
+    mol = Cluster(dummy, [("H", 0, 0, 0)])
 
-#     with pytest.raises(IndexError):
-#         mol.rotate(-2, x=90)
-#     with pytest.raises(IndexError):
-#         mol.rotate(10, x=90)
-
-
-# def test_cluster_rotate_single_atom():
-#     """
-#     Test rotate a single atom
-#     """
-#     dummy = [("a1", 1, 0, 0), ("a2", 0, 1, 0), ("a3", 0, 0, 1)]
-
-#     mol = Cluster(dummy, [("H", 10, 0, 0)])
-
-#     mol_rotated = mol.rotate(1, x=90)
-
-#     assert mol.atoms == mol_rotated.atoms
+    with pytest.raises(IndexError):
+        mol.RotateMol(-2, x=90)
+    with pytest.raises(IndexError):
+        mol.RotateMol(10, x=90)
 
 
-# @pytest.mark.parametrize(
-#     "steps, expected_translation",
-#     [
-#         (  # single translation on x-axis
-#             (10, 0, 0),
-#             [("a1", 11, 0, 0), ("a2", 10, 1, 0), ("a3", 10, 0, 1)],
-#         ),
-#         (  # single translation on y-axis
-#             (0, 5, 0),
-#             [("a1", 1, 5, 0), ("a2", 0, 6, 0), ("a3", 0, 5, 1)],
-#         ),
-#         (  # single translation on z-axis
-#             (0, 0, 2),
-#             [("a1", 1, 0, 2), ("a2", 0, 1, 2), ("a3", 0, 0, 3)],
-#         ),
-#         (  # MULTIPLE translation on xyz axes
-#             (10, 5, 2),
-#             [("a1", 11, 5, 2), ("a2", 10, 6, 2), ("a3", 10, 5, 3)],
-#         ),
-#     ],
-# )
-# def test_cluster_translate(steps, expected_translation):
-#     """
-#     Test translation
-#     """
-#     dummy = [("a1", 1, 0, 0), ("a2", 0, 1, 0), ("a3", 0, 0, 1)]
+def test_cluster_RotateMol_single_atom():
+    """
+    Test RotateMol a single atom. When is selected a molecule
+    composed by one atom then that doesn't rotate
+    """
+    dummy = [("H", 1, 0, 0), ("H", 0, 1, 0), ("H", 0, 0, 1)]
 
-#     tx, ty, tz = steps
+    mol = Cluster(dummy, [("H", 10, 0, 0)])
 
-#     mol = Cluster(dummy)
-#     mol_translated = mol.translate(0, x=tx, y=ty, z=tz)
+    mol_rotated = mol.RotateMol(1, x=90)
 
-#     expected_mol = Cluster(expected_translation)
-
-#     assert np.allclose(
-#         mol_translated.coordinates,
-#         expected_mol.coordinates,
-#         0.01,
-#     )
+    assert (mol.GetAtomicCoordinates().all() ==
+            mol_rotated.GetAtomicCoordinates().all())
 
 
-# def test_cluster_translate_frozen_molecule():
-#     """
-#     Test translate a frozen molecule
-#     """
-#     dummy = [("a1", 1, 0, 0), ("a2", 0, 1, 0), ("a3", 0, 0, 1)]
+@pytest.mark.parametrize(
+    "steps, expected_translation",
+    [
+        (  # single translation on x-axis
+            (10, 0, 0),
+            [("H", 11, 0, 0), ("H", 10, 1, 0), ("H", 10, 0, 1)],
+        ),
+        (  # single translation on y-axis
+            (0, 5, 0),
+            [("H", 1, 5, 0), ("H", 0, 6, 0), ("H", 0, 5, 1)],
+        ),
+        (  # single translation on z-axis
+            (0, 0, 2),
+            [("H", 1, 0, 2), ("H", 0, 1, 2), ("H", 0, 0, 3)],
+        ),
+        (  # MULTIPLE translation on xyz axes
+            (10, 5, 2),
+            [("H", 11, 5, 2), ("H", 10, 6, 2), ("H", 10, 5, 3)],
+        ),
+    ],
+)
+def test_cluster_TranslateMol(steps, expected_translation):
+    """
+    Test TranslationMol function
+    """
+    dummy = [("H", 1, 0, 0), ("H", 0, 1, 0), ("H", 0, 0, 1)]
 
-#     mol = Cluster(dummy, [("H", 0, 0, 0)])
+    tx, ty, tz = steps
 
-#     mol.freeze_molecule = 1
-#     mol_rotated = mol.translate(1, x=90)
+    mol = Cluster(dummy)
+    mol_translated = mol.TranslateMol(0, x=tx, y=ty, z=tz)
 
-#     assert mol.atoms == mol_rotated.atoms
+    expected_mol = Cluster(expected_translation)
 
-
-# def test_cluster_translate_fails():
-#     """
-#     Test translate fails molecule index does not exist
-#     """
-#     dummy = [("a1", 1, 0, 0), ("a2", 0, 1, 0), ("a3", 0, 0, 1)]
-
-#     mol = Cluster(dummy, [("H", 0, 0, 0)])
-
-#     with pytest.raises(IndexError):
-#         mol.translate(-2, x=90)
-#     with pytest.raises(IndexError):
-#         mol.translate(10, x=90)
-
-
-# @pytest.mark.parametrize(
-#     "molecule1, molecule2, molecule3",
-#     [
-#         (
-#             [("H", 0.0, 0.0, 0.0)],
-#             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-#             [("H", 0.0, 0.0, 3.0), ("H", 0.78, 0.0, 3.0)],
-#         ),
-#     ],
-# )
-# def test_the_biggest_to_initio(molecule1, molecule2, molecule3):
-#     """
-#     Test of method spherical_contour_cluster, re--sort molecule
-#     """
-#     obj_cluster = Cluster(molecule1, molecule2, molecule3)
-#     obj_cluster = obj_cluster.center_radius_sphere()
-#     assert obj_cluster.get_molecule(0).atoms == molecule2
+    assert np.allclose(
+        mol_translated.GetAtomicCoordinates(),
+        expected_mol.GetAtomicCoordinates(),
+        0.01,
+    )
 
 
-# @pytest.mark.parametrize(
-#     "molecule1, molecule2",
-#     [
-#         (
-#             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-#             [("H", 0.0, 0.0, 3.0), ("H", 0.78, 0.0, 3.0)],
-#         ),
-#     ],
-# )
-# def test_TE_center_radius_sphere(molecule1, molecule2):
-#     """
-#     Test of TE of the tolerance argument in the method center_radius_sphere
-#     """
-#     with pytest.raises(TypeError) as e:
-#         obj_cluster = Cluster(molecule1, molecule2)
-#         obj_cluster.center_radius_sphere(add_tolerance_radius=[1])
-#     assert (
-#         str(e.value) == "\n\nThe tolerance for radius is not a float"
-#         f"\nplease, check: '{type([1])}'\n"
-#     )
+def test_cluster_TranslateMol_FreezeMol():
+    """
+    Test TranslateMol funciotn with frozen molecule
+    """
+    dummy = [("H", 1, 0, 0), ("H", 0, 1, 0), ("H", 0, 0, 1)]
+
+    mol = Cluster(dummy, [("H", 0, 0, 0)])
+
+    mol.SetFreezeMol(1)
+    mol_rotated = mol.TranslateMol(1, x=90)
+
+    assert (mol.GetAtomicCoordinates().all() ==
+            mol_rotated.GetAtomicCoordinates().all())
 
 
-# @pytest.mark.parametrize(
-#     "molecule1, molecule2, new_seed, expected",
-#     [
-#         (
-#             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-#             [("H", 0.0, 0.0, 3.0), ("H", 0.78, 0.0, 3.0)],
-#             2,
-#             0.2616121342493164,
-#         ),
-#     ],
-# )
-# def test_Cluster_seed_set(molecule1, molecule2, new_seed, expected):
-#     """
-#     Test for the setter seed
-#     """
-#     obj_cluster = Cluster(molecule1, molecule2)
-#     obj_cluster.seed = new_seed
-#     assert obj_cluster._random_gen.uniform() == expected
+def test_cluster_TranslateMol_Fails():
+    """
+    Test TranslateMol function fails, molecule index does not exist
+    """
+    dummy = [("H", 1, 0, 0), ("H", 0, 1, 0), ("H", 0, 0, 1)]
+
+    mol = Cluster(dummy, [("H", 0, 0, 0)])
+
+    with pytest.raises(IndexError):
+        mol.TranslateMol(-2, x=90)
+    with pytest.raises(IndexError):
+        mol.TranslateMol(10, x=90)
 
 
-# @pytest.mark.parametrize(
-#     "molecule1, molecule2, seed",
-#     [
-#         (
-#             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-#             [("H", 0.0, 0.0, 3.0), ("H", 0.78, 0.0, 3.0)],
-#             2,
-#         ),
-#     ],
-# )
-# def test_Cluster_init_seed(molecule1, molecule2, seed):
-#     """
-#     Seed as argument in the instatiation of the Cluster class
-#     """
-#     obj_cluster = Cluster(molecule1, molecule2, seed=seed)
-#     assert obj_cluster._seed == seed
+@pytest.mark.parametrize(
+    "molecule1, molecule2, molecule3",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            [("H", 0.0, 0.0, 3.0), ("H", 0.78, 0.0, 3.0)],
+        ),
+    ],
+)
+def test_CalCenterRSphere(molecule1, molecule2, molecule3):
+    """
+    Test of CalCenterRSphere method, re--sort molecule
+    """
+    obj_cluster = Cluster(molecule1, molecule2, molecule3)
+    obj_cluster = obj_cluster.CalCentRSphere()
+    assert obj_cluster.GetMol(0).GetMolList() == molecule2
+
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2",
+    [
+        (
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            [("H", 0.0, 0.0, 3.0), ("H", 0.78, 0.0, 3.0)],
+        ),
+    ],
+)
+def test_CalCenterRSphere_TE(molecule1, molecule2):
+    """
+    Test of TE of the tolerance argument in the CalCenterRSphere method
+    """
+    with pytest.raises(TypeError) as e:
+        obj_cluster = Cluster(molecule1, molecule2)
+        obj_cluster.CalCentRSphere(add_tolerance_radius=[1])
+    assert (
+        str(e.value) == "\n\nThe tolerance for radius is not a float"
+        f"\nplease, check: '{type([1])}'\n"
+    )
+
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2, new_seed, expected",
+    [
+        (
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            [("H", 0.0, 0.0, 3.0), ("H", 0.78, 0.0, 3.0)],
+            2,
+            0.2616121342493164,
+        ),
+    ],
+)
+def test_SetSeed(molecule1, molecule2, new_seed, expected):
+    """
+    Test for the setter seed
+    """
+    obj_cluster = Cluster(molecule1, molecule2)
+    obj_cluster.SetSeed(new_seed)
+    assert obj_cluster.GetRandomGen().uniform() == expected
+
+
+@pytest.mark.parametrize(
+    "molecule1, molecule2, seed",
+    [
+        (
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            [("H", 0.0, 0.0, 3.0), ("H", 0.78, 0.0, 3.0)],
+            2,
+        ),
+    ],
+)
+def test_GetSeed(molecule1, molecule2, seed):
+    """
+    Seed as argument in the instatiation of the Cluster class
+    """
+    obj_cluster = Cluster(molecule1, molecule2, seed=seed)
+    assert obj_cluster.GetSeed() == seed
