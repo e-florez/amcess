@@ -20,7 +20,7 @@ COORDINATES = {
 # ===============================================================
 # Molecule class
 # ===============================================================
-def test_molecule_class_input():
+def test_class_input():
     """
     Test inputs of molecule class when is used the list format
     for molecular information
@@ -30,7 +30,7 @@ def test_molecule_class_input():
     assert mol.GetMolMultiplicity() == 10
 
 
-def test_molecule_check_atom():
+def test_check_atom():
     """
     Test check error of expect into _check_atom()
     """
@@ -40,7 +40,7 @@ def test_molecule_check_atom():
         mol._check_atom(0, ('H', 's', 20, 30), atoms)
 
 
-def test_molecule_class_atomic_symbols():
+def test_class_atomic_symbols():
     """
     Test atomic symbols, this is did by rdkit
     """
@@ -52,7 +52,7 @@ def test_molecule_class_atomic_symbols():
         Molecule([("@", 10, 20, 0)], -1, 10)
 
 
-def test_molecule_class_charge_value():
+def test_class_charge_value():
     """
     Test to check the charge molecular
     """
@@ -60,7 +60,7 @@ def test_molecule_class_charge_value():
         Molecule([("H", 10, 20, 0)], 0.4, 10)
 
 
-def test_molecule_class_multiplicity_value():
+def test_class_multiplicity_value():
     """
     Test class init
     """
@@ -68,7 +68,7 @@ def test_molecule_class_multiplicity_value():
         Molecule([("H", 10, 20, 0)], -2, 0)
 
 
-def test_molecule_init_from_dict():
+def test_init_from_dict():
     """
     Test class init
     """
@@ -86,7 +86,7 @@ def test_molecule_init_from_dict():
     assert mol.GetMolMultiplicity() == 10
 
 
-def test_molecule_init_from_dict_wrong():
+def test_init_from_dict_wrong():
     """
     Test atomic symbols, this is did by rdkit
     """
@@ -100,7 +100,7 @@ def test_molecule_init_from_dict_wrong():
         )
 
 
-# #def test_molecule_magic_add():
+# #def test_magic_add():
 # #    """Testing add molecule method (__add__)"""
 # #    mol1 = Molecule([("A", 0, 0, 0), ("B", 1, 1, 1)])
 # #    mol2 = Molecule([("X", 0, 0, 0), ("Y", 1, 1, 1)])
@@ -116,7 +116,7 @@ def test_molecule_init_from_dict_wrong():
 # #    assert new_mol.atoms == mol1.atoms + mol2.atoms
 
 
-# #def test_molecule_magic_add_fail():
+# #def test_magic_add_fail():
 # #    """Testing add molecule method (__add__)"""
 # #    mol = Molecule([("A", 0, 0, 0), ("B", 1, 1, 1)])
 # #    with pytest.raises(TypeError):
@@ -126,7 +126,7 @@ def test_molecule_init_from_dict_wrong():
 # #        mol.add_molecule("H", 0, 0, 0)
 
 
-def test_molecule_magic_mul_rmul():
+def test_magic_mul_rmul():
     """Testing magic mul function"""
     mol1 = Molecule([("H", 0, 0, 0), ("H", 1, 1, 1)])
     mol2 = mol1 * 2
@@ -135,7 +135,7 @@ def test_molecule_magic_mul_rmul():
     assert mol3.GetNumAtoms() == 6
 
 
-def test_molecule_magic_mul_rmul_fail():
+def test_magic_mul_rmul_fail():
     """Testing magic mul function error"""
     mol1 = Molecule([("H", 0, 0, 0), ("H", 1, 1, 1)])
 
@@ -155,7 +155,7 @@ def test_molecule_magic_mul_rmul_fail():
         )
     ],
 )
-def test_molecule_magic_str(system, expected_result):
+def test_magic_str(system, expected_result):
     """
     Test for list of magic funtion str
     """
@@ -170,7 +170,7 @@ def test_molecule_magic_str(system, expected_result):
         ("dummy", [("H", 10, 20, 30), ("H", -0.5, 0, -10)]),
     ],
 )
-def test_molecule_GetMolList(system, expected_atoms):
+def test_GetMolList(system, expected_atoms):
     """
     Test GetMolList() of Molecule Class
     """
@@ -187,7 +187,7 @@ def test_molecule_GetMolList(system, expected_atoms):
           "charge": 0, "multiplicity": 1}),
     ],
 )
-def test_molecule_GetMolDict(system, expected_atoms):
+def test_GetMolDict(system, expected_atoms):
     """
     Test for coordinate in XYZ format
     """
@@ -203,7 +203,7 @@ def test_molecule_GetMolDict(system, expected_atoms):
         ("water", [16, 1, 1]),
     ],
 )
-def test_molecule_GetAtomicMases(system, expected_masses):
+def test_GetAtomicMases(system, expected_masses):
     """
     Test for atomic mases
     """
@@ -218,7 +218,7 @@ def test_molecule_GetAtomicMases(system, expected_masses):
         ("dummy", -2, 20),
     ],
 )
-def test_molecule_SetMolCharge_SetMolMultiplicity(
+def test_SetMolCharge_SetMolMultiplicity(
     system, expected_charge, expected_multiplicity
 ):
     """
@@ -239,7 +239,7 @@ def test_molecule_SetMolCharge_SetMolMultiplicity(
         ("dummy", np.array([[10, 20, 30], [-0.5, 0, -10]])),
     ],
 )
-def test_molecule_GetAtomicCoordinates(system, expected_coordinates):
+def test_GetAtomicCoordinates(system, expected_coordinates):
     """
     Test for coordinate in XYZ format
     """
@@ -256,7 +256,7 @@ def test_molecule_GetAtomicCoordinates(system, expected_coordinates):
         ("water", ["O", "H"]),
     ],
 )
-def test_molecule_GetAtomicSymbols(system, expected_elements):
+def test_GetAtomicSymbols(system, expected_elements):
     """
     Test for list of uniques elements
     """
@@ -275,7 +275,7 @@ def test_molecule_GetAtomicSymbols(system, expected_elements):
         )
     ],
 )
-def test_molecule_GetNumberingAtoms(system, expected_result):
+def test_GetNumberingAtoms(system, expected_result):
     """
     Test GetNumberingAtoms function in Molecule class
     """
@@ -292,7 +292,7 @@ def test_molecule_GetNumberingAtoms(system, expected_result):
         ("water", 18),
     ],
 )
-def test_molecule_GetMolMass(system, expected_mass):
+def test_GetMolMass(system, expected_mass):
     """
     Test for total molecular mass
     """
@@ -308,7 +308,7 @@ def test_molecule_GetMolMass(system, expected_mass):
         ("water", (0, 0, 0)),
     ],
 )
-def test_molecule_GetMolCM(system, expected_cm):
+def test_GetMolCM(system, expected_cm):
     """
     Test GetMolCM function
     """
@@ -324,7 +324,7 @@ def test_molecule_GetMolCM(system, expected_cm):
         ("water", [(0, -0.09, 0), (0.6, 0.7, 0), (-0.6, 0.7, 0)]),
     ],
 )
-def test_molecule_GetMolPrincipalAxes(system, expected_principal_axes):
+def test_GetMolPrincipalAxes(system, expected_principal_axes):
     """
     Test principal axes using internal coordinates system.
     Number of principal axis is equal to number of atoms
@@ -345,7 +345,7 @@ def test_molecule_GetMolPrincipalAxes(system, expected_principal_axes):
         )
     ],
 )
-def test_molecule_GetBlockXYZ(system, expected_result):
+def test_GetBlockXYZ(system, expected_result):
     """
     Test GetBlockXYZ function
     """
@@ -361,7 +361,7 @@ def test_molecule_GetBlockXYZ(system, expected_result):
         ("water", [("H", 0, 0, 0)]),
     ],
 )
-def test_molecule_AddAtom(system, new_atom):
+def test_AddAtom(system, new_atom):
     """
     Test GetAddAtom function
     """
@@ -373,7 +373,7 @@ def test_molecule_AddAtom(system, new_atom):
     assert new_system.GetNumAtoms() == (mol.GetNumAtoms() + len(new_atom))
 
 
-def test_molecule_AddAtom_fail():
+def test_AddAtom_fail():
     """
     Test AddAtom functions, error
     """
@@ -392,7 +392,7 @@ def test_molecule_AddAtom_fail():
         ("water"),
     ],
 )
-def test_molecule_GetAtomWithIndex(system):
+def test_GetAtomWithIndex(system):
     """
     Test GetAtomWithIndex function
     """
@@ -405,7 +405,7 @@ def test_molecule_GetAtomWithIndex(system):
     assert len(new_system) == 4
 
 
-def test_molecule_GetAtomWithIndex_fail():
+def test_GetAtomWithIndex_fail():
     """
     Test GetAtomWithIndex function, error
     """
@@ -425,7 +425,7 @@ def test_molecule_GetAtomWithIndex_fail():
         ("water"),
     ],
 )
-def test_molecule_RemoveAtom(system):
+def test_RemoveAtom(system):
     """
     Test RemoveAtoms function
     """
@@ -437,7 +437,7 @@ def test_molecule_RemoveAtom(system):
     assert new_system.GetNumAtoms() == mol.GetNumAtoms() - 1
 
 
-def test_molecule_RemoveAtom_fail():
+def test_RemoveAtom_fail():
     """
     Test RemoveAtom function, error
     """
