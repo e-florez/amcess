@@ -44,6 +44,32 @@ class Atom(RDKAtom):
         # Build: Atom class from RDKit
         super().__init__(element)
 
+        # Object coordinates
+        self.SetAtomCoord(x, y, z)
+
+    # ===============================================================
+    # MAGIC METHODS
+    # ===============================================================
+    def __str__(self):
+        """Magic method '__str__' to print the object as a dictionary"""
+        return f"atom: {self.GetSymbol()}, x: {self.x}, y: {self.y}, z: {self.z}"
+
+    # ===============================================================
+    # PROPERTIES
+    # ===============================================================
+
+    #################################################################
+    # ! Getter
+    #################################################################
+    def GetAtomCoord(self) -> tuple[float, float, float]:
+        "Return atomic coordinates"
+        return (self.x, self.y, self.z)
+
+    #################################################################
+    # ! Setter
+    #################################################################
+    def SetAtomCoord(self, x: float, y: float, z: float) -> None:
+        "Change atomic coordinates"
         # Coordinate: Must be valid float or int
         for value in [x, y, z]:
             if not isinstance(value, (int, float)):
@@ -54,10 +80,3 @@ class Atom(RDKAtom):
         self.x = x
         self.y = y
         self.z = z
-
-    # ===============================================================
-    # MAGIC METHODS
-    # ===============================================================
-    def __str__(self):
-        """Magic method '__str__' to print the object as a dictionary"""
-        return f"atom: {self.GetSymbol()}, x: {self.x}, y: {self.y}, z: {self.z}"
