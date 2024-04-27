@@ -305,7 +305,7 @@ class Cluster(Molecule):
         center = new_cluster.GetClusterDict()[molecule].GetMolCM()
         # ---------------------------------------------------------------
         # Radius between the sphere center to the furthest atom
-        for xyz in new_cluster.GetAtomicCoordinates():
+        for xyz in new_cluster.GetMolCoord():
             temporal_r = np.linalg.norm(
                 np.asarray(new_cluster.GetSphereCenter()) - np.asarray(xyz)
             )
@@ -381,8 +381,8 @@ class Cluster(Molecule):
             molecule = Cluster(self.GetClusterDict()[i])
             molecule = molecule.TranslateMol(0, sc_x, sc_y, sc_z)
             if Cluster.Overlapping(  # noqa
-                molecule.GetAtomicCoordinates(), 
-                new_cluster.GetAtomicCoordinates()
+                molecule.GetMolCoord(), 
+                new_cluster.GetMolCoord()
                 #molecule.coordinates, new_cluster.coordinates
             ):
                 new_cluster += molecule
@@ -486,7 +486,7 @@ class Cluster(Molecule):
         molecule_to_move: Cluster = Cluster(self.GetClusterDict()[molecule])
 
         cluster_without_molecule: Cluster = self.RemoveMol(molecule)
-        cluster_coordinates = cluster_without_molecule.GetAtomicCoordinates()
+        cluster_coordinates = cluster_without_molecule.GetMolCoord()
 
         random_gen: np.random.Generator = self.GetRandomGen()
 
@@ -520,7 +520,7 @@ class Cluster(Molecule):
                 rotation_z,
             )
 
-            molecule_coordinates: list = new_molecule.GetAtomicCoordinates()
+            molecule_coordinates: list = new_molecule.GetMolCoord()
 
             overlap: bool = Cluster.Overlapping(
                 molecule_coordinates,
