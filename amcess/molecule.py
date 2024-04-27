@@ -234,7 +234,7 @@ class Molecule(Mol):
             )
 
     @_file.validator
-    def _cehck_valid_addHs(self, attribute, file):
+    def _cehck_valid_file(self, attribute, file):
         """check if _file is a bool"""
         if not isinstance(file, bool):
             raise ValueError(
