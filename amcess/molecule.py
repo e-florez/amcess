@@ -69,20 +69,30 @@ class Molecule(Mol):
         """Build Molecule object using Mol class from RDKit"""
         super().__init__(mol)
 
-    def _check_atom(self, line, atom, atoms):
+    def _check_atom(self, atoms) -> None:
         """
         Check atomic information
         """
-        try:
-            #! Check atom informations
-            Atom(*atom)
-        except (ValueError, TypeError) as err:
-            raise TypeError(
-                f"\n\n{err}\ncoordinates format must be a dict: "
-                "{'atoms':[(str, float, float, float), ...], ...}"
-                f"\ncheck atom number {line + 1} --> {atom}\n"
-                f"from --> {atoms}\n"
-            )
+
+        self._molecule: list = []
+        for line, atom in enumerate(atoms):
+            try:
+                #! Check atom informations
+                Atom(*atom)
+            except (ValueError, TypeError) as err:
+                raise TypeError(
+                    f"\n\n{err}\ncoordinates format must be a dict: "
+                    "{'atoms':[(str, float, float, float), ...], ...}"
+                    f"\ncheck atom number {line + 1} --> {atom}\n"
+                    f"from --> {atoms}\n"
+                )
+
+            self._molecule.append(Atom(*atom))
+
+    def _mol_charge_multiplicity(self, mol):
+        """Save charge and multiplicty in variables of object"""
+        self._charge = Chem.rdmolops.GetFormalCharge(mol)
+        self._multiplicity = Descriptors.NumRadicalElectrons(mol) + 1
 
     def _check_atoms_dict(self, attribute, atoms):
         """
@@ -90,10 +100,11 @@ class Molecule(Mol):
         Example:
         {"atoms": [(<element> <X> <Y> <Z>), ...], "charge": 0, "multiplicty": 1}
         """
-        for line, atom in enumerate(atoms["atoms"]):
-            self._check_atom(line, atom, atoms)
+        self._check_atom(atoms["atoms"])
+
         if "charge" in atoms.keys():
             self._check_valid_charge(attribute, atoms["charge"])
+
         if "multiplicity" in atoms.keys():
             self._check_valid_multiplicity(attribute, atoms["multiplicity"])
 
@@ -115,8 +126,7 @@ class Molecule(Mol):
         Example:
         [(<element> <X> <Y> <Z>), ...]
         """
-        for line, atom in enumerate(atoms):
-            self._check_atom(line, atom, atoms)
+        self._check_atom(atoms)
 
         total_atoms: int = len(atoms)
         block_xyz: str = f"""{total_atoms}\n\n"""
@@ -130,11 +140,6 @@ class Molecule(Mol):
         rdDetermineBonds.DetermineConnectivity(mol)
         self._init_mol_rdkit(mol)
 
-    def _mol_charge_multiplicity(self, mol):
-        """Save charge and multiplicty in variables of object"""
-        self._charge = Chem.rdmolops.GetFormalCharge(mol)
-        self._multiplicity = Descriptors.NumRadicalElectrons(mol) + 1
-
     def _check_atoms_smiles(self, attribute, atoms):
         """
         Check that the smiles is Ok
@@ -145,11 +150,20 @@ class Molecule(Mol):
             Chem.MolFromSmiles(atoms, sanitize=False)
         except (ValueError, TypeError) as err:
             raise TypeError(f"\n\n{err}\n atoms must be a smiles: " " 'CCO' ")
+
         mol: Mol = Chem.MolFromSmiles(atoms)
         mol = Chem.AddHs(mol, explicitOnly=self._addHs)
         # NOTE: Explanation of EmbedMolecule process
         #       https://www.rdkit.org/docs/GettingStartedInPython.html#working-with-3d-molecules
         AllChem.EmbedMolecule(mol)
+
+        atoms = [
+            tuple(a.GetSymbol()) + tuple(r)
+            for a, r in zip(mol.GetAtoms(), mol.GetConformer().GetPositions())
+        ]
+
+        self._check_atom(atoms)
+
         self._mol_charge_multiplicity(mol)
         self._init_mol_rdkit(mol)
 
@@ -177,14 +191,24 @@ class Molecule(Mol):
                     "RDKit have problem to add H to mol from " + "mol2 file"
                 )
             mol = Chem.AddHs(mol, addCoords=True)
+
+        atoms = [
+            tuple(a.GetSymbol()) + tuple(r)
+            for a, r in zip(mol.GetAtoms(), mol.GetConformer().GetPositions())
+        ]
+
+        self._check_atom(atoms)
+
         self._mol_charge_multiplicity(mol)
         self._init_mol_rdkit(mol)
 
     @_atoms.validator
     def _cehck_valid_atoms(self, attribute, atoms):
         """check if the atoms are valid"""
+
         if isinstance(atoms, (Molecule, Chem.rdchem.Mol)):
             self._init_mol_rdkit(atoms)
+            self._check_atom(atoms.GetMolList())
         elif self._file:
             self._check_atoms_file(attribute, atoms)
         elif isinstance(atoms, list):
@@ -296,6 +320,12 @@ class Molecule(Mol):
     #################################################################
     # ! Getter
     #################################################################
+    def GetAtoms(self) -> list[Atom]:
+        """
+        Return atoms in a list
+        """
+        return self._molecule
+
     def GetBlockXYZ(self) -> str:
         """Printing Molecule coordinates using XYZ format"""
         write_coordinates: str = ""
@@ -303,17 +333,17 @@ class Molecule(Mol):
             f"charge: {self.GetMolCharge()} multiplicity: {self.GetMolMultiplicity()}"
         )
         write_coordinates += f"{len(self.GetAtomicSymbols())}\n{comment}\n"
-        for atom, xyz in zip(self.GetAtoms(), self.GetConformer().GetPositions()):
+        for atom in self.GetAtoms():
             write_coordinates += f"""{atom.GetSymbol():<6}"""
-            write_coordinates += f"""\t{xyz[0]:> 15.8f}"""
-            write_coordinates += f"""\t{xyz[1]:> 15.8f}"""
-            write_coordinates += f"""\t{xyz[2]:> 15.8f}\n"""
+            write_coordinates += f"""\t{atom.GetCoord()[0]:> 15.8f}"""
+            write_coordinates += f"""\t{atom.GetCoord()[1]:> 15.8f}"""
+            write_coordinates += f"""\t{atom.GetCoord()[2]:> 15.8f}\n"""
 
         return write_coordinates
 
-    def GetAtomicCoordinates(self) -> list[float]:
+    def GetMolCoord(self) -> list[tuple[float, float, float]]:
         """Return the list of coordinates"""
-        return self.GetConformer().GetPositions()
+        return [a.GetCoord() for a in self.GetAtoms()]
 
     def GetAtomicMasses(self) -> list[float]:
         """Atomic mass of the molecule"""
@@ -395,7 +425,7 @@ class Molecule(Mol):
         return tuple(
             np.dot(
                 np.asarray(self.GetAtomicMasses()),
-                np.asarray(self.GetAtomicCoordinates()),
+                np.asarray(self.GetMolCoord()),
             )
             / self.GetMolMass()
         )
@@ -408,11 +438,10 @@ class Molecule(Mol):
             "multiplicity": self.GetMolMultiplicity(),
         }
 
-    def GetMolList(self) -> list[tuple[str, float]]:
+    def GetMolList(self) -> list[tuple[str, float, float, float]]:
         """Return the dict atoms"""
-        list_atoms: list[tuple[str, float]] = [
-            tuple([a.GetSymbol()] + list(xyz))
-            for a, xyz in zip(self.GetAtoms(), self.GetConformer().GetPositions())
+        list_atoms: list[tuple[str, float, float, float]] = [
+            tuple([a.GetSymbol()] + list(a.GetCoord())) for a in self.GetAtoms()
         ]
         return list_atoms
 
@@ -430,7 +459,7 @@ class Molecule(Mol):
             tuple(c)
             for c in
             (  # noqa
-                np.asarray(self.GetAtomicCoordinates()) - np.asarray(self.GetMolCM())
+                np.asarray(self.GetMolCoord()) - np.asarray(self.GetMolCM())
             )
         ]
 

@@ -45,7 +45,7 @@ class Atom(RDKAtom):
         super().__init__(element)
 
         # Object coordinates
-        self.SetAtomCoord(x, y, z)
+        self.SetCoord(x, y, z)
 
     # ===============================================================
     # MAGIC METHODS
@@ -61,14 +61,14 @@ class Atom(RDKAtom):
     #################################################################
     # ! Getter
     #################################################################
-    def GetAtomCoord(self) -> tuple[float, float, float]:
+    def GetCoord(self) -> tuple[float, float, float]:
         "Return atomic coordinates"
         return (self.x, self.y, self.z)
 
     #################################################################
     # ! Setter
     #################################################################
-    def SetAtomCoord(self, x: float, y: float, z: float) -> None:
+    def SetCoord(self, x: float, y: float, z: float) -> None:
         "Change atomic coordinates"
         # Coordinate: Must be valid float or int
         for value in [x, y, z]:
