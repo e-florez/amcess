@@ -226,10 +226,20 @@ class Molecule(Mol):
 
     @_addHs.validator
     def _cehck_valid_addHs(self, attribute, addHs):
+        """check if _addHs is a bool"""
         if not isinstance(addHs, bool):
             raise ValueError(
                 "\n\naddHs must be an bool "  # noqa
                 f"\nyou get --> 'addHs = {addHs}'\n"
+            )
+
+    @_file.validator
+    def _cehck_valid_addHs(self, attribute, file):
+        """check if _file is a bool"""
+        if not isinstance(file, bool):
+            raise ValueError(
+                "\n\nfile must be an bool "  # noqa
+                f"\nyou get --> 'file = {file}'\n"
             )
 
     @_charge.validator
