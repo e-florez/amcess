@@ -70,7 +70,7 @@ class Cluster(Molecule):
         # ----------------------------------------------------
         # attrs post-initialization
 
-        cluster_atoms: list[Molecule] = list()
+        self.cluster_atoms: list[Molecule] = list()
 
         # for count, mol in enumerate(args):
         for mol in args:
@@ -79,7 +79,7 @@ class Cluster(Molecule):
                 for j in mol._cluster_dict:
                     self._cluster_dict[size + j] = mol._cluster_dict[j]
                 self._charge += mol.GetMolCharge()
-                cluster_atoms += mol.GetMolList()
+                self.cluster_atoms += mol.GetMolList()
                 # restarting the loop
                 continue
             elif isinstance(mol, Molecule):
@@ -98,14 +98,14 @@ class Cluster(Molecule):
                     f"\nyou have a NOT valid '{type(mol)}', check: \n{mol}"
                 )
 
-            cluster_atoms += new_molecule.GetMolList() 
+            self.cluster_atoms += new_molecule.GetMolList() 
             # ! how is computed the cluster total multiplicity?
             self._charge += new_molecule.GetMolCharge()
             self._cluster_dict[size] = new_molecule
 
         # ! initializing Cluster as a 'Molecule' (sum of all individual ones)
         super().__init__(
-            atoms=cluster_atoms,
+            atoms=self.cluster_atoms,
             charge=self._charge,
             multiplicity=self._multiplicity,
         )
@@ -185,10 +185,6 @@ class Cluster(Molecule):
     # PROPERTIES
     # ===============================================================
     # ! Getter
-    def GetFreezeMol(self) -> [list[int], int]:
-        """return a list with freezed molecules"""
-        return self._freeze_molecule
-
     def GetClusterDict(self) -> dict:
         """return the cluster dictionary"""
         return self._cluster_dict
@@ -197,9 +193,17 @@ class Cluster(Molecule):
         """return the cluster list"""
         return [mol for mol in self._cluster_dict.values()]
 
-    def GetMol(self, molecule: int) -> Mol:
+    def GetFreezeMol(self) -> [list[int], int]:
+        """return a list with freezed molecules"""
+        return self._freeze_molecule
+
+    def GetMol(self, molecule: int) -> Molecule:
         """Return molecule element"""
-        return self.GetClusterDict()[molecule]
+        return self.GetMols()[molecule]
+
+    def GetMols(self) -> list[Molecule]:
+        """Return a list of molecule element"""
+        return [m for m in self._cluster_dict.values()]
 
     def GetRandomGen(self) -> np.random.Generator:
         """return the random generator"""

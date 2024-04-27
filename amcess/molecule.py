@@ -330,25 +330,7 @@ class Molecule(Mol):
     #################################################################
     # ! Getter
     #################################################################
-    def GetAtoms(self) -> list[Atom]:
-        """
-        Return atoms in a list
-        """
-        return self._molecule
-
-    def GetAtomicMasses(self) -> list[float]:
-        """Atomic mass of the molecule"""
-        return [atom.GetMass() for atom in self.GetAtoms()]
-
-    def GetAtomicNumbers(self) -> list[int]:
-        """Return the list of atoms"""
-        return [a.GetAtomicNum() for a in self.GetAtoms()]
-
-    def GetAtomicSymbols(self) -> list[str]:
-        """Return the list of atoms"""
-        return [a.GetSymbol() for a in self.GetAtoms()]
-
-    def GetAtomWithIndix(self, atom: int) -> list:
+    def GetAtom(self, atom: int) -> list:
         """
         Getting catesian coordinate for an atom
 
@@ -373,7 +355,25 @@ class Molecule(Mol):
                 f"\n atom index must be less than {self.GetNumAtoms()}"
                 f"\nCheck! You want to get atom with index {atom}"
             )
-        return self.GetMolList()[atom]
+        return self.GetAtoms()[atom]
+
+    def GetAtoms(self) -> list[Atom]:
+        """
+        Return atoms in a list
+        """
+        return self._molecule
+
+    def GetAtomicMasses(self) -> list[float]:
+        """Atomic mass of the molecule"""
+        return [atom.GetMass() for atom in self.GetAtoms()]
+
+    def GetAtomicNumbers(self) -> list[int]:
+        """Return the list of atoms"""
+        return [a.GetAtomicNum() for a in self.GetAtoms()]
+
+    def GetAtomicSymbols(self) -> list[str]:
+        """Return the list of atoms"""
+        return [a.GetSymbol() for a in self.GetAtoms()]
 
     def GetBlockXYZ(self) -> str:
         """Printing Molecule coordinates using XYZ format"""
