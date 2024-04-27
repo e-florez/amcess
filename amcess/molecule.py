@@ -336,25 +336,6 @@ class Molecule(Mol):
         """
         return self._molecule
 
-    def GetBlockXYZ(self) -> str:
-        """Printing Molecule coordinates using XYZ format"""
-        write_coordinates: str = ""
-        comment: str = (
-            f"charge: {self.GetMolCharge()} multiplicity: {self.GetMolMultiplicity()}"
-        )
-        write_coordinates += f"{len(self.GetAtomicSymbols())}\n{comment}\n"
-        for atom in self.GetAtoms():
-            write_coordinates += f"""{atom.GetSymbol():<6}"""
-            write_coordinates += f"""\t{atom.GetCoord()[0]:> 15.8f}"""
-            write_coordinates += f"""\t{atom.GetCoord()[1]:> 15.8f}"""
-            write_coordinates += f"""\t{atom.GetCoord()[2]:> 15.8f}\n"""
-
-        return write_coordinates
-
-    def GetMolCoord(self) -> list[tuple[float, float, float]]:
-        """Return the list of coordinates"""
-        return [a.GetCoord() for a in self.GetAtoms()]
-
     def GetAtomicMasses(self) -> list[float]:
         """Atomic mass of the molecule"""
         return [atom.GetMass() for atom in self.GetAtoms()]
@@ -393,6 +374,25 @@ class Molecule(Mol):
                 f"\nCheck! You want to get atom with index {atom}"
             )
         return self.GetMolList()[atom]
+
+    def GetBlockXYZ(self) -> str:
+        """Printing Molecule coordinates using XYZ format"""
+        write_coordinates: str = ""
+        comment: str = (
+            f"charge: {self.GetMolCharge()} multiplicity: {self.GetMolMultiplicity()}"
+        )
+        write_coordinates += f"{len(self.GetAtomicSymbols())}\n{comment}\n"
+        for atom in self.GetAtoms():
+            write_coordinates += f"""{atom.GetSymbol():<6}"""
+            write_coordinates += f"""\t{atom.GetCoord()[0]:> 15.8f}"""
+            write_coordinates += f"""\t{atom.GetCoord()[1]:> 15.8f}"""
+            write_coordinates += f"""\t{atom.GetCoord()[2]:> 15.8f}\n"""
+
+        return write_coordinates
+
+    def GetMolCoord(self) -> list[tuple[float, float, float]]:
+        """Return the list of coordinates"""
+        return [a.GetCoord() for a in self.GetAtoms()]
 
     def GetNumberingAtoms(self) -> str:
         """show atom number line by line
