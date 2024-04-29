@@ -330,7 +330,7 @@ class Molecule(Mol):
     #################################################################
     # ! Getter
     #################################################################
-    def GetAtom(self, atom: int) -> list:
+    def GetAtom(self, atom: int) -> str:
         """
         Getting catesian coordinate for an atom
 
@@ -341,8 +341,8 @@ class Molecule(Mol):
 
         .. rubric:: Returns
 
-        tuple
-            ("element", "X", "Y", "Z")
+        str
+            element: str, x: float, y: float, z: float
 
         .. rubric:: Raises
 
