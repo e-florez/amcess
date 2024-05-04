@@ -199,3 +199,8 @@ epub_exclude_files = ["search.html"]
 
 
 # -- Extension configuration -------------------------------------------------
+
+# -- Figure ------------------------------------------------------------------
+numfig = True
+# numfig_format
+# numfig_secnum_depth

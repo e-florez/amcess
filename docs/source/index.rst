@@ -26,6 +26,7 @@
 
    Home <self>
    About <about>
+   Input <input>
    Basic Example <quickstart>
    AMCESS API <modules>
    support
