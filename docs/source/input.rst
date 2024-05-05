@@ -7,9 +7,18 @@ In this chapter is described the AMCESS's input classes:
 * Molecule class
 * Cluster class
 
+Atom, Molecule, and Cluster classes were designed like is show in the next 
+UML graphic: 
+
+.. _fig_i1:
+
+.. figure:: _static/input_classes_all_propierties.png
+
+   : Representation of the inheritance of the Atom, Molecule, and Cluster classes, through a UML graph, in the AMCESS package.
+
 Molecule objects are list of Atom objects while the cluster objects
 are list of Molecule object or in another words, they are list of
-list of Atom objects (see :numref:`alg_i1`).
+list of Atom objects (see :numref:`fig_i1` and :numref:`alg_i1`).
 
 .. _alg_i1:
 
@@ -32,17 +41,8 @@ list of Atom objects (see :numref:`alg_i1`).
     [<amcess.molecule.Molecule object at 0x3f8qp477rr45>,
     <amcess.molecule.Molecule object at 0x3f8qp3w1z187>]
 
-
-The Atom, Molecule, and Cluster classes were designed like is show in the next 
-UML graphic: 
-
-.. _my-figure:
-
-.. figure:: _static/input_classes_all_propierties.png
-
-   : Representation of the inheritance of the Atom, Molecule, and Cluster classes, through a UML graph, in the AMCESS package.
-
 .. toctree::
+    :maxdepth: 4
 
     input/atom
     input/molecule

@@ -24,7 +24,7 @@ autodoc_mock_imports = ["rdkit"]
 # -- Project information -----------------------------------------------------
 
 project = "AMCESS"
-project_copyright = "2021, Edison Florez"
+project_copyright = "2021, Edison Florez, Andy Zapata"
 author = "Edison Florez, Andy Zapata"
 
 # The short X.Y version
