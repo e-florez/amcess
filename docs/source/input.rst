@@ -3,10 +3,13 @@ Input
 
 In this chapter is described the AMCESS's input classes:
 
-* Atom class
-* Molecule class
-* Cluster class
+.. toctree::
+    :maxdepth: 4
 
+    input/atom
+    input/molecule
+    input/cluster
+    
 Atom, Molecule, and Cluster classes were designed like is show in the next 
 UML graphic: 
 
@@ -40,10 +43,3 @@ list of Atom objects (see :numref:`fig_i1` and :numref:`alg_i1`).
     print(cluster.GetMols())
     [<amcess.molecule.Molecule object at 0x3f8qp477rr45>,
     <amcess.molecule.Molecule object at 0x3f8qp3w1z187>]
-
-.. toctree::
-    :maxdepth: 4
-
-    input/atom
-    input/molecule
-    input/cluster
