@@ -176,13 +176,14 @@ class ElectronicEnergy:
             File name where is save structure and energy
         """
 
-        n_atoms = len(self.store_structures[0]) - 1
+        n_atoms: int = self.GetInitialSystem().GetNumAtoms()
         with open(filename, "w") as f:
             for system in self.store_structures:
                 f.write(str(n_atoms) + "\n")
                 f.write("Energy: " + str(system[0]) + "\n")
-                for terms in system[1:]:
-                    f.write(" ".join([str(x) for x in terms]) + "\n")
+                for mols in system[1:]:
+                    for at in mols.GetMolList():
+                        f.write(" ".join([str(x) for x in at]) + "\n")
 
     def StoreStructure(self):
         """
