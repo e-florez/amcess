@@ -44,7 +44,7 @@ class ElectronicEnergy:
                 basis=self._basis_set,
                 verbose=False,
             )
-            self._e0 = self.SCF(mol)  # calculate_electronic_energy(mol)
+            self._e0 = self.RunSCF(mol)  # calculate_electronic_energy(mol)
             self.energy_before = self._e0
 
     # ===============================================================
@@ -154,13 +154,13 @@ class ElectronicEnergy:
 
         symbols = self.GetCurrentSystem().GetAtomicSymbols()
         self.input_gto_pyscf = "'"
-        for i in range(self.GetCurrentSystem().GetTotalAtoms()):
+        for i in range(self.GetCurrentSystem().GetNumAtoms()):
             self.input_gto_pyscf += str(symbols[i])
             for j in range(3):
                 self.input_gto_pyscf += "  " + str(
-                    self._object_system_current.coordinates[i][j]
+                    self.GetCurrentSystem().GetMolCoord[i][j]
                 )
-            if i < self._object_system_current.total_atoms - 1:
+            if i < self.GetCurrentSystem().GetNumAtoms() - 1:
                 self.input_gto_pyscf += "; "
             else:
                 self.input_gto_pyscf += " '"
@@ -184,7 +184,7 @@ class ElectronicEnergy:
                 for terms in system[1:]:
                     f.write(" ".join([str(x) for x in terms]) + "\n")
 
-    def store_structure(self):
+    def StoreStructure(self):
         """
         Store the accept systems in a list of lists of the energy more
         a tuples with the coordinates
@@ -192,10 +192,10 @@ class ElectronicEnergy:
         [[Energy, ('X', 0., 0., 0.), ('Y', 1., 0., 0.)], [ ... ], ...]
         """
         self.store_structures.append(
-            [self.energy_current] + self._object_system_current.atoms
+            [self.energy_current] + self.GetCurrentSystem().GetClusterList()
         )
 
-    def calculate_electronic_energy(self, mol):
+    def RunSCF(self, mol):
         """
         Calculate electronic energy with pyscf
 
@@ -229,7 +229,7 @@ class ElectronicEnergy:
             print("*** Exception in SCF Calculation \n")
             return float("inf")
 
-    def metropolis(self):
+    def Metropolis(self):
         """
         Metroplois algorithm (symmetric proposal distribution).
         If structure is accepted, it will add into the list of
@@ -239,16 +239,16 @@ class ElectronicEnergy:
         if self.energy_current < self.energy_before:
             print("New configuration ACCEPTED: lower energy")
             self.energy_before = self.energy_current
-            self.store_structure()
+            self.StoreStructure()
         else:
             RE = self.energy_current / self.energy_before
             if np.random.random(1)[0] <= RE:
                 print("New configuration ACCEPTED: Metropolis criterion")
                 self.energy_before = self.energy_current
-                self.store_structure()
+                self.StoreStructure()
 
     @BuildInputPyscf
-    def pyscf(self, x):
+    def Pyscf(self, x):
         """
         Calculate of electronic energy with pyscf
 
@@ -272,11 +272,11 @@ class ElectronicEnergy:
 
         # ------------------------------------------------------
         # Calculate electronic energy with pyscf
-        self.energy_current = self.calculate_electronic_energy(mol)
+        self.energy_current = self.RunSCF(mol)
 
         if self._search_type != "ASCEC":
             # --------------------------------------------------
             # Metroplis
-            self.metropolis()
+            self.Metropolis()
 
         return self.energy_current
