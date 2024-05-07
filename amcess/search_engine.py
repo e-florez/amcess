@@ -3,13 +3,13 @@ from scipy.optimize import dual_annealing, shgo  # type: ignore
 from amcess.ascec import Ascec
 from amcess.cluster import Cluster
 from amcess.electronic_energy import ElectronicEnergy
-#from amcess.gaussian_process import solve_gaussian_processes
+# from amcess.gaussian_process import solve_gaussian_processes
 
 METHODS = {
     "ASCEC": Ascec,
     "dual_annealing": dual_annealing,
-    #"SHGO": shgo,
-    #"Bayesian": solve_gaussian_processes,
+    # "SHGO": shgo,
+    # "Bayesian": solve_gaussian_processes,
 }
 
 
@@ -95,36 +95,36 @@ class SearchConfig:
     # ===============================================================
     # ! Getter
     def GetBasisSet(self):
-        """ Basis set """
+        """Basis set"""
         return self._basis_set
 
     def GetBounds(self):
-        """ System limit """
+        """System limit"""
         return self._bounds
 
     def GetFuncCost(self):
-        """ Cost function """
+        """Cost function"""
         return self._func_cost
 
     def GetMethodology(self):
-        """ Hamiltonian or energy methodology """
+        """Hamiltonian or energy methodology"""
         return self._methodology
 
     def GetOutputName(self):
-        """ Output file name """
+        """Output file name"""
         return self._output_name
 
     def GetSearchType(self):
-        """ Search/optimization type """
-        return self._search_methodology
+        """Search/optimization type"""
+        return self._search_type
 
     def GetSystemObject(self):
-        """ System """
+        """System"""
         return self._system_object
 
     # ! Setter
     def SetBasisSet(self, new_basis_set):
-        """ Basis set """
+        """Basis set"""
         if not isinstance(new_basis_set, str):
             raise TypeError(
                 "\n\nThe new name to basis set is not a string"
@@ -134,7 +134,7 @@ class SearchConfig:
         self._basis_set = new_basis_set
 
     def SetBounds(self, new_bounds):
-        """ System limit """
+        """System limit"""
         if len(new_bounds) != len(self._bounds):
             raise ValueError(
                 "\n\nArray dimensions insufficient: "
@@ -145,7 +145,7 @@ class SearchConfig:
         self._bounds = new_bounds
 
     def SetFuncCost(self, new_func_cost):
-        """ Cost function """
+        """Cost function"""
         if not isinstance(new_func_cost, str):
             raise TypeError(
                 "\n\nThe new cost function is not a string"
@@ -155,7 +155,7 @@ class SearchConfig:
         self._func_cost = new_func_cost
 
     def SetMethodology(self, new_methodology):
-        """ Hamiltonian or energy methodology """
+        """Hamiltonian or energy methodology"""
         if not isinstance(new_methodology, str):
             raise TypeError(
                 "\n\nThe new name to methodology is not a string"
@@ -165,7 +165,7 @@ class SearchConfig:
         self._methodology = new_methodology
 
     def SetOutputName(self, new_name_output):
-        """ Output file name"""
+        """Output file name"""
         if not isinstance(new_name_output, str):
             raise TypeError(
                 "\n\nThe new name to output is not a string"
@@ -175,7 +175,7 @@ class SearchConfig:
         self._output_name = new_name_output
 
     def SetSearchType(self, change_search_methodology):
-        """ Search/optimization type """
+        """Search/optimization type"""
         if not isinstance(change_search_methodology, str):
             raise TypeError(
                 "\n\nThe new search methodology is not a string"
@@ -187,10 +187,10 @@ class SearchConfig:
             available = list(METHODS.keys())
             raise ValueError(f"Invalid value. options are: {available}")
 
-        self._search_methodology = change_search_methodology
+        self._search_type
 
     def SetSystemObject(self, new_object):
-        """ System """
+        """System"""
         if new_object is None:
             raise TypeError("System_object isn't difinite\n" "It's NoneType")
         if not isinstance(new_object, Cluster):
@@ -204,7 +204,7 @@ class SearchConfig:
     # Methods
     # ===============================================================
 
-    def run(self, **kwargs):
+    def RunSearch(self, **kwargs):
         """
         Alternative to execute the searching methodologies in METHODS
 
@@ -217,37 +217,37 @@ class SearchConfig:
         # ---------------------------------------------------------------
         # Choose the search methodologies
         func = (
-            self._search_methodology
-            if callable(self._search_methodology)
-            else METHODS[self._search_methodology]
+            self.GetSearchType()
+            if callable(self.GetSearchType())
+            else METHODS[self.GetSearchType()]
         )
         # ---------------------------------------------------------------
         # Execute the search methodologies
-        if self._search_methodology == "ASCEC":
+        if self.GetSearchType() == "ASCEC":
             print("*** Minimization: ASCEC ***")
             self._search = func(
                 object_system=self._system_object,
-                search_type=self._search_methodology,
-                methodology=self._methodology,
-                basis_set=self._basis_set,
-                program=self._func_cost,
-                bounds=self._bounds,
+                search_type=self.GetSearchType(),
+                methodology=self.GetMethodology,
+                basis_set=self.GetBasisSet(),
+                program=self.GetFuncCost(),
+                bounds=self.GetBounds(),
                 **kwargs,
             )
-            self._search.ascec_run()
-            self._search.write_to_file(self.output_name)
+            self._search.RunASCEC()
+            self._search.WriteOutPut(self.GetOutputName())
         else:
-            if self._search_methodology == "dual_annealing":
+            if self.GetSearchType() == "dual_annealing":
                 print("*** Minimization: Dual Annealing ***")
-            if self._search_methodology == "SHGO":
-                print("*** Minimization: SHGO from Scipy ***")
-            if self._search_methodology == "Bayesian":
-                print("*** Minimization: Bayesian ***")
+            # if self.GetSearchType() == "SHGO":
+            #    print("*** Minimization: SHGO from Scipy ***")
+            # if self.GetSearchType() == "Bayesian":
+            #    print("*** Minimization: Bayesian ***")
 
-            if self._search_methodology != "ASCEC":
+            if self.GetSearchType() != "ASCEC":
                 obj_ee = ElectronicEnergy(
                     self._system_object,
-                    self._search_methodology,
+                    self.GetSearchType(),
                     self._methodology,
                     self._basis_set,
                 )
@@ -256,7 +256,7 @@ class SearchConfig:
 
             self._search = func(
                 cost_func,
-                bounds=self._bounds,
+                bounds=self.GetBounds(),
                 **kwargs,
             )
-            obj_ee.write_to_file(self.output_name)
+            obj_ee.WriteOutPut(self.GetOutputName())
