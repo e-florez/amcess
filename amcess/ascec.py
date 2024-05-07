@@ -59,14 +59,14 @@ class Ascec(ElectronicEnergy):
         self._maxCylces = maxCycles
 
         # initial energy
-        self.electronic_e(np.zeros(len(bounds)))
+        self.ElectronicEn(np.zeros(len(bounds)))
         self._e0 = self.energy_current
         self.e_before = self._e0
 
     # ===============================================================
     # Methods
     # ===============================================================
-    def electronic_e(self, x):
+    def ElectronicEn(self, x):
         """Evaluate the electronic energy
 
         .. rubric:: Parameters
@@ -82,7 +82,7 @@ class Ascec(ElectronicEnergy):
         if self._call_program == "pyscf":
             self.energy_current = self.pyscf(x)
 
-    def random_mov(self, n):
+    def RandomMovimient(self, n):
         """
         Randomly move the molecules
 
@@ -104,7 +104,7 @@ class Ascec(ElectronicEnergy):
         rotate = np.random.uniform(low=-180.0, high=180.0, size=(int(n / 2),))
         return np.concatenate((translate, rotate))
 
-    def ascec_criterion(self, temperature):
+    def AscecCriterion(self, temperature):
         """
         ASCEC criterion for acceptance, based in Markov Chain Monte Carlo
 
@@ -160,13 +160,13 @@ class Ascec(ElectronicEnergy):
                 )
                 # ------------------------------------------------------------
                 # Generate 3 random values to translate and other 3 to rotate
-                x = self.random_mov(len(self._bounds))
+                x = self.RandomMovimient(len(self._bounds))
                 # ------------------------------------------------------------
                 # Electronic energy calculation
-                self.electronic_e(x)
+                self.ElectronicEn(x)
                 # ------------------------------------------------------------
                 # ASCEC criterion
-                accepted, lower_energy = self.ascec_criterion(temperature)
+                accepted, lower_energy = self.AscecCriterion(temperature)
                 if accepted:
                     # --------------------------------------------------------
                     # -- Counter of accepted configurations
@@ -174,7 +174,7 @@ class Ascec(ElectronicEnergy):
                     # -- Store the new energy
                     self.e_before = self.energy_current
                     # -- Store the new configuration
-                    self.store_structure()
+                    self.StoreStructure()
                     # --------------------------------------------------------
                     # Skip to the next temperature
                     if lower_energy:
