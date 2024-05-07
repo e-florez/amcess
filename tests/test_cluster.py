@@ -375,7 +375,7 @@ def test_RemoveMol(system):
     # deleting the first (index) molecule
     mol.RemoveMol(0)
 
-    assert (mol.GetTotalMol() + 1) == 3
+    assert (mol.GetNumMols() + 1) == 3
 
 
 def test_RemoveMol_Fails():
