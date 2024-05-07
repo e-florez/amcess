@@ -80,7 +80,7 @@ class Ascec(ElectronicEnergy):
             Electronic energy of the new configuration
         """
         if self._call_program == "pyscf":
-            self.energy_current = self.pyscf(x)
+            self.energy_current = self.Pyscf(x)
 
     def RandomMovimient(self, n):
         """

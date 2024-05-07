@@ -74,10 +74,10 @@ class ElectronicEnergy:
             # ------------------------------------------------------------
             # Rotate and translate each molecule into object Cluster
             new_geom = dict()
-            new_geom[0] = {"atoms": system_object.GetMol(0).GetAtoms()}
+            new_geom[0] = system_object.GetMol(0).GetAtoms()
             for i in range(system_object.GetNumMols() - 1):
-                new_geom[i + 1] = {
-                    "atoms": system_object.TranslateMol(
+                new_geom[i + 1] = (
+                    system_object.TranslateMol(
                         i + 1,
                         x=x[i * 3],
                         y=x[i * 3 + 1],
@@ -91,7 +91,7 @@ class ElectronicEnergy:
                     )
                     .GetMol(i + 1)
                     .GetAtoms()
-                }
+                )
 
             # ------------------------------------------------------------
             # New object Cluster with new geometries
@@ -158,7 +158,7 @@ class ElectronicEnergy:
             self.input_gto_pyscf += str(symbols[i])
             for j in range(3):
                 self.input_gto_pyscf += "  " + str(
-                    self.GetCurrentSystem().GetMolCoord[i][j]
+                    self.GetCurrentSystem().GetMolCoord()[i][j]
                 )
             if i < self.GetCurrentSystem().GetNumAtoms() - 1:
                 self.input_gto_pyscf += "; "
