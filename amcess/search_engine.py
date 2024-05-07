@@ -94,13 +94,21 @@ class SearchConfig:
     # PROPERTIES
     # ===============================================================
     # ! Getter
-    def GetSystemObject(self):
-        """ System """
-        return self._system_object
+    def GetBasisSet(self):
+        """ Basis set """
+        return self._basis_set
 
     def GetBounds(self):
         """ System limit """
         return self._bounds
+
+    def GetFuncCost(self):
+        """ Cost function """
+        return self._func_cost
+
+    def GetMethodology(self):
+        """ Hamiltonian or energy methodology """
+        return self._methodology
 
     def GetOutputName(self):
         """ Output file name """
@@ -110,17 +118,9 @@ class SearchConfig:
         """ Search/optimization type """
         return self._search_methodology
 
-    def GetMethodology(self):
-        """ Hamiltonian or energy methodology """
-        return self._methodology
-
-    def GetBasisSet(self):
-        """ Basis set """
-        return self._basis_set
-
-    def GetFuncCost(self):
-        """ Cost function """
-        return self._func_cost
+    def GetSystemObject(self):
+        """ System """
+        return self._system_object
 
     # ! Setter
     def SetSystemObject(self, new_object):
