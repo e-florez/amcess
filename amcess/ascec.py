@@ -5,6 +5,7 @@ from amcess.electronic_energy import ElectronicEnergy
 
 class Ascec(ElectronicEnergy):
     """
+    reference:
     ASCEC algorithm
     J. F. Pérez, C. Z. Hadad, A. Restrepo.
     Int. J. Quantum Chem. 2008, 108, 1653--1659
@@ -138,7 +139,7 @@ class Ascec(ElectronicEnergy):
 
         return accepted, lower_energy
 
-    def ascec_run(self):
+    def RunASCEC(self):
         """
         Run ASCEC algoritm.
         """

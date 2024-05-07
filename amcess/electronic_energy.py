@@ -167,7 +167,7 @@ class ElectronicEnergy:
                 self.input_gto_pyscf += " '"
         return self.input_gto_pyscf
 
-    def write_to_file(self, filename):
+    def WriteOutPut(self, filename):
         """
         Write all accepted structures to a file
 
