@@ -83,10 +83,10 @@ class SearchConfig:
         bound_rotate = [(-180, 180), (-180, 180), (-180, 180)]
         # -- Multiply bounds by the amount of molecules
         bound_translate = (  # noqa
-            self._system_object.GetTotalMol() - 1
+            self._system_object.GetNumMols() - 1
         ) * bound_translate
 
-        bound_rotate = bound_rotate * (self._system_object.GetTotalMol() - 1)
+        bound_rotate = bound_rotate * (self._system_object.GetNumMols() - 1)
         # -- concatenate bounds
         self._bounds = bound_translate + bound_rotate
 
@@ -174,20 +174,18 @@ class SearchConfig:
 
         self._output_name = new_name_output
 
-    def SetSearchType(self, change_search_methodology):
+    def SetSearchType(self, change_search_type):
         """Search/optimization type"""
-        if not isinstance(change_search_methodology, str):
+        if not isinstance(change_search_type, str):
             raise TypeError(
                 "\n\nThe new search methodology is not a string"
-                f"\nplease, check: '{type(change_search_methodology)}'\n"
+                f"\nplease, check: '{type(change_search_type)}'\n"
             )
-        if change_search_methodology not in METHODS and not callable(
-            change_search_methodology
-        ):
+        if change_search_type not in METHODS and not callable(change_search_type):
             available = list(METHODS.keys())
             raise ValueError(f"Invalid value. options are: {available}")
 
-        self._search_type
+        self._search_type = change_search_type
 
     def SetSystemObject(self, new_object):
         """System"""

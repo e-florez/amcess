@@ -126,7 +126,7 @@ class Cluster(Molecule):
         new_cluster: dict = {}
         for count, m in self.GetClusterDict().items():
             new_cluster[count] = m.GetMolDict()
-        new_cluster[self.GetTotalMol] = Molecule(other).GetMolDict()
+        new_cluster[self.GetNumMols] = Molecule(other).GetMolDict()
         return Cluster(*new_cluster.values(),
                        sphere_center=self.GetSphereCenter(),
                        sphere_radius=self.GetSphereR())
@@ -167,7 +167,7 @@ class Cluster(Molecule):
         cluster_dict: dict = self._cluster_dict
 
         cluster_string: str = (
-            f"Cluster of ({self.GetTotalMol()}) molecules"
+            f"Cluster of ({self.GetNumMols()}) molecules"
             f" and ({self.GetNumAtoms()}) total atoms\n"
         )
         for key, molecule in cluster_dict.items():
@@ -222,7 +222,7 @@ class Cluster(Molecule):
         """return the seed for the random generator"""
         return self._seed
 
-    def GetTotalMol(self) -> int:
+    def GetNumMols(self) -> int:
         """return the total number of molecules in the cluster"""
         return len(self._cluster_dict)
 
@@ -299,7 +299,7 @@ class Cluster(Molecule):
         max_atoms = 0
         # ---------------------------------------------------------------
         # The biggest molecule
-        molecules_number: int = new_cluster.GetTotalMol()
+        molecules_number: int = new_cluster.GetNumMols()
         for i in range(molecules_number):
             if new_cluster.GetClusterDict()[i].GetNumAtoms() > max_atoms:
                 max_atoms = new_cluster.GetClusterDict()[i].GetNumAtoms()
@@ -380,7 +380,7 @@ class Cluster(Molecule):
         molecule = Cluster(self.GetClusterDict()[0])
         new_cluster = molecule.TranslateMol(0, sc_x, sc_y, sc_z)
 
-        for i in range(1, self.GetTotalMol()):
+        for i in range(1, self.GetNumMols()):
             # moving the next single molecule into the cluster sphere
             molecule = Cluster(self.GetClusterDict()[i])
             molecule = molecule.TranslateMol(0, sc_x, sc_y, sc_z)
@@ -559,9 +559,9 @@ class Cluster(Molecule):
         """Removing molecule from cluster"""
         if molecule not in self.GetClusterDict():
             raise IndexError(
-                f"\nMolecule with {self.GetTotalMol()} total atoms "
-                f"and index [0-{self.GetTotalMol() - 1}]"
-                f"\n molecule index must be less than {self.GetTotalMol()}"
+                f"\nMolecule with {self.GetNumMols()} total atoms "
+                f"and index [0-{self.GetNumMols() - 1}]"
+                f"\n molecule index must be less than {self.GetNumMols()}"
                 f"\nCheck! You want to remove molecule with index {molecule}"
             )
         new_cluster: Cluster = self
@@ -591,13 +591,13 @@ class Cluster(Molecule):
 
         if (
             not isinstance(molecule, int)
-            or molecule >= self.GetTotalMol()
+            or molecule >= self.GetNumMols()
             or molecule < 0
         ):
             raise IndexError(
-                f"\nMolecule with {self.GetTotalMol()} total molecules "
-                f"and index [0-{self.GetTotalMol() - 1}]"
-                f"\nmolecule index must be less than {self.GetTotalMol()}"
+                f"\nMolecule with {self.GetNumMols()} total molecules "
+                f"and index [0-{self.GetNumMols() - 1}]"
+                f"\nmolecule index must be less than {self.GetNumMols()}"
                 f"\nCheck! You want to remove molecule with index {molecule}"
             )
 
@@ -652,13 +652,13 @@ class Cluster(Molecule):
 
         if (
             not isinstance(molecule, int)
-            or molecule >= self.GetTotalMol()
+            or molecule >= self.GetNumMols()
             or molecule < 0
         ):
             raise IndexError(
-                f"\nMolecule with {self.GetTotalMol()} total molecules "
-                f"and index [0-{self.GetTotalMol() - 1}]"
-                f"\nmolecule index must be less than {self.GetTotalMol()}"
+                f"\nMolecule with {self.GetNumMols()} total molecules "
+                f"and index [0-{self.GetNumMols() - 1}]"
+                f"\nmolecule index must be less than {self.GetNumMols()}"
                 f"\nCheck! You want to remove molecule with index {molecule}"
             )
 
