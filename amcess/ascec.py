@@ -104,7 +104,7 @@ class Ascec(ElectronicEnergy):
         rotate = np.random.uniform(low=-180.0, high=180.0, size=(int(n / 2),))
         return np.concatenate((translate, rotate))
 
-    def AscecCriterion(self, temperature):
+    def ASCECCriterion(self, temperature):
         """
         ASCEC criterion for acceptance, based in Markov Chain Monte Carlo
 
@@ -166,7 +166,7 @@ class Ascec(ElectronicEnergy):
                 self.ElectronicEn(x)
                 # ------------------------------------------------------------
                 # ASCEC criterion
-                accepted, lower_energy = self.AscecCriterion(temperature)
+                accepted, lower_energy = self.ASCECCriterion(temperature)
                 if accepted:
                     # --------------------------------------------------------
                     # -- Counter of accepted configurations

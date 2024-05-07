@@ -226,7 +226,7 @@ class SearchConfig:
             self._search = func(
                 object_system=self._system_object,
                 search_type=self.GetSearchType(),
-                methodology=self.GetMethodology,
+                methodology=self.GetMethodology(),
                 basis_set=self.GetBasisSet(),
                 program=self.GetFuncCost(),
                 bounds=self.GetBounds(),
