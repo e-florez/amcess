@@ -3,13 +3,13 @@ from scipy.optimize import dual_annealing, shgo  # type: ignore
 from amcess.ascec import Ascec
 from amcess.cluster import Cluster
 from amcess.electronic_energy import ElectronicEnergy
-from amcess.gaussian_process import solve_gaussian_processes
+#from amcess.gaussian_process import solve_gaussian_processes
 
 METHODS = {
     "ASCEC": Ascec,
     "dual_annealing": dual_annealing,
-    "SHGO": shgo,
-    "Bayesian": solve_gaussian_processes,
+    #"SHGO": shgo,
+    #"Bayesian": solve_gaussian_processes,
 }
 
 
@@ -22,7 +22,7 @@ class SearchConfig:
 
     system_object : object
         Object made with the Cluster class
-    search_methodology : int
+    search_type : int
         Integer associated with type of searching
     basis : string
         Label of basis set
@@ -46,8 +46,8 @@ class SearchConfig:
 
     def __init__(
         self,
-        system_object: None | Cluster = None,
-        search_methodology: str = "ASCEC",
+        system_object: Cluster = None,
+        search_type: str = "ASCEC",
         methodology: str = "HF",
         basis: str = "sto-3g",
         outxyz: str = "configurations.xyz",
@@ -57,12 +57,11 @@ class SearchConfig:
         # Verfication and instantiation (type, value)
         # -- Cluster Object
         #    Calculate center and radius sphere when are null
-        if system_object._sphere_radius is None:
-            self.system_object = system_object.center_radius_sphere()
-        else:
-            self.system_object = system_object
+        self.system_object = system_object
+        if self.system_object.GetSphereR() is None:
+            self.system_object = system_object.CalCentRSphere()
         # -- Search Methodology: ASCEC, SHGO, dual_annealing, Bayesian
-        self.search_type = search_methodology
+        self.search_type = search_type
         # -- Methodology: HF, DFT, MP2, etc.
         self.methodology = methodology
         # -- Basis Set: sto-3g, 6-31g, 6-31g**, etc.
@@ -73,7 +72,7 @@ class SearchConfig:
         self.func_cost = cost_function
         # ---------------------------------------------------------------
         # Build bounds, format for scipy functions
-        sphere_radius = self._system_object._sphere_radius
+        sphere_radius = self._system_object.GetSphereR()
         # -- translate bounds
         bound_translate = [
             (-sphere_radius, sphere_radius),
@@ -84,10 +83,10 @@ class SearchConfig:
         bound_rotate = [(-180, 180), (-180, 180), (-180, 180)]
         # -- Multiply bounds by the amount of molecules
         bound_translate = (  # noqa
-            self._system_object.total_molecules - 1
+            self._system_object.GetTotalMol() - 1
         ) * bound_translate
 
-        bound_rotate = bound_rotate * (self._system_object.total_molecules - 1)
+        bound_rotate = bound_rotate * (self._system_object.GetTotalMol() - 1)
         # -- concatenate bounds
         self._bounds = bound_translate + bound_rotate
 
