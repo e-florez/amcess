@@ -93,12 +93,38 @@ class SearchConfig:
     # ===============================================================
     # PROPERTIES
     # ===============================================================
-    @property
-    def system_object(self):
+    # ! Getter
+    def GetSystemObject(self):
+        """ System """
         return self._system_object
 
-    @system_object.setter
-    def system_object(self, new_object):
+    def GetBounds(self):
+        """ System limit """
+        return self._bounds
+
+    def GetOutputName(self):
+        """ Output file name """
+        return self._output_name
+
+    def GetSearchType(self):
+        """ Search/optimization type """
+        return self._search_methodology
+
+    def GetMethodology(self):
+        """ Hamiltonian or energy methodology """
+        return self._methodology
+
+    def GetBasisSet(self):
+        """ Basis set """
+        return self._basis_set
+
+    def GetFuncCost(self):
+        """ Cost function """
+        return self._func_cost
+
+    # ! Setter
+    def SetSystemObject(self, new_object):
+        """ System """
         if new_object is None:
             raise TypeError("System_object isn't difinite\n" "It's NoneType")
         if not isinstance(new_object, Cluster):
@@ -108,12 +134,8 @@ class SearchConfig:
             )
         self._system_object = new_object
 
-    @property
-    def bounds(self):
-        return self._bounds
-
-    @bounds.setter
-    def bounds(self, new_bounds):
+    def SetBounds(self, new_bounds):
+        """ System limit """
         if len(new_bounds) != len(self._bounds):
             raise ValueError(
                 "\n\nArray dimensions insufficient: "
@@ -123,12 +145,8 @@ class SearchConfig:
 
         self._bounds = new_bounds
 
-    @property
-    def output_name(self):
-        return self._output_name
-
-    @output_name.setter
-    def output_name(self, new_name_output):
+    def SetOutputName(self, new_name_output):
+        """ Output file name"""
         if not isinstance(new_name_output, str):
             raise TypeError(
                 "\n\nThe new name to output is not a string"
@@ -137,12 +155,8 @@ class SearchConfig:
 
         self._output_name = new_name_output
 
-    @property
-    def search_type(self):
-        return self._search_methodology
-
-    @search_type.setter
-    def search_type(self, change_search_methodology):
+    def SetSearchType(self, change_search_methodology):
+        """ Search/optimization type """
         if not isinstance(change_search_methodology, str):
             raise TypeError(
                 "\n\nThe new search methodology is not a string"
@@ -156,12 +170,8 @@ class SearchConfig:
 
         self._search_methodology = change_search_methodology
 
-    @property
-    def methodology(self):
-        return self._methodology
-
-    @methodology.setter
-    def methodology(self, new_methodology):
+    def SetMethodology(self, new_methodology):
+        """ Hamiltonian or energy methodology """
         if not isinstance(new_methodology, str):
             raise TypeError(
                 "\n\nThe new name to methodology is not a string"
@@ -170,12 +180,8 @@ class SearchConfig:
 
         self._methodology = new_methodology
 
-    @property
-    def basis_set(self):
-        return self._basis_set
-
-    @basis_set.setter
-    def basis_set(self, new_basis_set):
+    def SetBasisSet(self, new_basis_set):
+        """ Basis set """
         if not isinstance(new_basis_set, str):
             raise TypeError(
                 "\n\nThe new name to basis set is not a string"
@@ -184,12 +190,8 @@ class SearchConfig:
 
         self._basis_set = new_basis_set
 
-    @property
-    def func_cost(self):
-        return self._func_cost
-
-    @func_cost.setter
-    def func_cost(self, new_func_cost):
+    def SetFuncCost(self, new_func_cost):
+        """ Cost function """
         if not isinstance(new_func_cost, str):
             raise TypeError(
                 "\n\nThe new cost function is not a string"
