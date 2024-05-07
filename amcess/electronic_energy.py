@@ -31,7 +31,7 @@ class ElectronicEnergy:
         self._method = methodology.split()[0]
         if len(methodology.split()) > 1:
             self._functional = methodology.split()[1]
-            
+
         self._basis_set = basis_set
 
         self._move_seed = seed
@@ -73,10 +73,10 @@ class ElectronicEnergy:
 
             # ------------------------------------------------------------
             # Rotate and translate each molecule into object Cluster
-            new_geom = dict()
-            new_geom[0] = system_object.GetMol(0).GetAtoms()
+            new_geom = []
+            new_geom.append(system_object.GetMol(0).GetMolList())
             for i in range(system_object.GetNumMols() - 1):
-                new_geom[i + 1] = (
+                new_geom.append(
                     system_object.TranslateMol(
                         i + 1,
                         x=x[i * 3],
@@ -90,15 +90,15 @@ class ElectronicEnergy:
                         z=x[(i + system_object.GetNumMols() - 1) * 3 + 2],
                     )
                     .GetMol(i + 1)
-                    .GetAtoms()
+                    .GetMolList()
                 )
 
             # ------------------------------------------------------------
             # New object Cluster with new geometries
             self.current_system = Cluster(
-                *new_geom.values(),
+                *new_geom,
                 sphere_radius=system_object.GetSphereR(),
-                sphere_center=system_object.GetSphereCenter()
+                sphere_center=system_object.GetSphereCenter(),
             )
             # ------------------------------------------------------------
             # Build input to pyscf
@@ -134,7 +134,7 @@ class ElectronicEnergy:
     def SetCurrentSystem(self, new_current_system):
         self.SetBeforeSystem(self._current_system)
         self._current_system = new_current_system
-    
+
     def SetBeforeSystem(self, new_before_system):
         self._before_system = new_before_system
 
