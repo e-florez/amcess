@@ -57,19 +57,19 @@ class SearchConfig:
         # Verfication and instantiation (type, value)
         # -- Cluster Object
         #    Calculate center and radius sphere when are null
-        self.system_object = system_object
-        if self.system_object.GetSphereR() is None:
-            self.system_object = system_object.CalCentRSphere()
+        self._system_object = system_object
+        if self._system_object.GetSphereR() is None:
+            self._system_object = system_object.CalCentRSphere()
         # -- Search Methodology: ASCEC, SHGO, dual_annealing, Bayesian
-        self.search_type = search_type
+        self._search_type = search_type
         # -- Methodology: HF, DFT, MP2, etc.
-        self.methodology = methodology
+        self._methodology = methodology
         # -- Basis Set: sto-3g, 6-31g, 6-31g**, etc.
-        self.basis_set = basis
+        self._basis_set = basis
         # -- Output name: xyz
-        self.output_name = outxyz
+        self._output_name = outxyz
         # -- Cost function: pyscf, Lennard_Jones
-        self.func_cost = cost_function
+        self._func_cost = cost_function
         # ---------------------------------------------------------------
         # Build bounds, format for scipy functions
         sphere_radius = self._system_object.GetSphereR()
