@@ -123,16 +123,15 @@ class SearchConfig:
         return self._system_object
 
     # ! Setter
-    def SetSystemObject(self, new_object):
-        """ System """
-        if new_object is None:
-            raise TypeError("System_object isn't difinite\n" "It's NoneType")
-        if not isinstance(new_object, Cluster):
+    def SetBasisSet(self, new_basis_set):
+        """ Basis set """
+        if not isinstance(new_basis_set, str):
             raise TypeError(
-                "System_object isn't difinite as an object Cluster\n"
-                f"please, check:\n'{new_object}'"
+                "\n\nThe new name to basis set is not a string"
+                f"\nplease, check: '{type(new_basis_set)}'\n"
             )
-        self._system_object = new_object
+
+        self._basis_set = new_basis_set
 
     def SetBounds(self, new_bounds):
         """ System limit """
@@ -144,6 +143,26 @@ class SearchConfig:
             )
 
         self._bounds = new_bounds
+
+    def SetFuncCost(self, new_func_cost):
+        """ Cost function """
+        if not isinstance(new_func_cost, str):
+            raise TypeError(
+                "\n\nThe new cost function is not a string"
+                f"\nplease, check: '{type(new_func_cost)}'\n"
+            )
+
+        self._func_cost = new_func_cost
+
+    def SetMethodology(self, new_methodology):
+        """ Hamiltonian or energy methodology """
+        if not isinstance(new_methodology, str):
+            raise TypeError(
+                "\n\nThe new name to methodology is not a string"
+                f"\nplease, check: '{type(new_methodology)}'\n"
+            )
+
+        self._methodology = new_methodology
 
     def SetOutputName(self, new_name_output):
         """ Output file name"""
@@ -170,35 +189,16 @@ class SearchConfig:
 
         self._search_methodology = change_search_methodology
 
-    def SetMethodology(self, new_methodology):
-        """ Hamiltonian or energy methodology """
-        if not isinstance(new_methodology, str):
+    def SetSystemObject(self, new_object):
+        """ System """
+        if new_object is None:
+            raise TypeError("System_object isn't difinite\n" "It's NoneType")
+        if not isinstance(new_object, Cluster):
             raise TypeError(
-                "\n\nThe new name to methodology is not a string"
-                f"\nplease, check: '{type(new_methodology)}'\n"
+                "System_object isn't difinite as an object Cluster\n"
+                f"please, check:\n'{new_object}'"
             )
-
-        self._methodology = new_methodology
-
-    def SetBasisSet(self, new_basis_set):
-        """ Basis set """
-        if not isinstance(new_basis_set, str):
-            raise TypeError(
-                "\n\nThe new name to basis set is not a string"
-                f"\nplease, check: '{type(new_basis_set)}'\n"
-            )
-
-        self._basis_set = new_basis_set
-
-    def SetFuncCost(self, new_func_cost):
-        """ Cost function """
-        if not isinstance(new_func_cost, str):
-            raise TypeError(
-                "\n\nThe new cost function is not a string"
-                f"\nplease, check: '{type(new_func_cost)}'\n"
-            )
-
-        self._func_cost = new_func_cost
+        self._system_object = new_object
 
     # ===============================================================
     # Methods
