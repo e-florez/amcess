@@ -205,6 +205,10 @@ class Cluster(Molecule):
         """Return a list of molecule element"""
         return [m for m in self._cluster_dict.values()]
 
+    def GetNumMols(self) -> int:
+        """return the total number of molecules in the cluster"""
+        return len(self._cluster_dict)
+
     def GetRandomGen(self) -> np.random.Generator:
         """return the random generator"""
         # self._random_gen: np.random.Generator = np.random.default_rng(seed)
@@ -221,10 +225,6 @@ class Cluster(Molecule):
     def GetSeed(self) -> int:
         """return the seed for the random generator"""
         return self._seed
-
-    def GetNumMols(self) -> int:
-        """return the total number of molecules in the cluster"""
-        return len(self._cluster_dict)
 
     # ! Setter
     def SetFreezeMol(self, id: list[int]) -> None:
