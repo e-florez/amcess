@@ -51,7 +51,7 @@ class SearchConfig:
         methodology: str = "HF",
         basis: str = "sto-3g",
         outxyz: str = "configurations.xyz",
-        cost_function="pyscf",
+        cost_fun="pyscf",
         bounds=None,
     ) -> None:
         # ---------------------------------------------------------------
@@ -70,7 +70,7 @@ class SearchConfig:
         # -- Output name: xyz
         self._output_name = outxyz
         # -- Cost function: pyscf, Lennard_Jones
-        self._func_cost = cost_function
+        self._cost_fun = cost_fun
         # ---------------------------------------------------------------
         if bounds is None:
             # Build bounds, format for scipy functions
@@ -106,9 +106,9 @@ class SearchConfig:
         """System limit"""
         return self._bounds
 
-    def GetFuncCost(self):
+    def GetCostFun(self):
         """Cost function"""
-        return self._func_cost
+        return self._cost_fun
 
     def GetMethodology(self):
         """Hamiltonian or energy methodology"""
@@ -137,6 +137,16 @@ class SearchConfig:
 
         self._basis_set = new_basis_set
 
+    def SetCostFun(self, new_cost_fun):
+        """Cost function"""
+        if not isinstance(new_cost_fun, str):
+            raise TypeError(
+                "\n\nThe new cost function is not a string"
+                f"\nplease, check: '{type(new_cost_fun)}'\n"
+            )
+
+        self._cost_func = new_cost_fun
+
     def SetBounds(self, new_bounds):
         """System limit"""
         if len(new_bounds) != len(self._bounds):
@@ -147,16 +157,6 @@ class SearchConfig:
             )
 
         self._bounds = new_bounds
-
-    def SetFuncCost(self, new_func_cost):
-        """Cost function"""
-        if not isinstance(new_func_cost, str):
-            raise TypeError(
-                "\n\nThe new cost function is not a string"
-                f"\nplease, check: '{type(new_func_cost)}'\n"
-            )
-
-        self._func_cost = new_func_cost
 
     def SetMethodology(self, new_methodology):
         """Hamiltonian or energy methodology"""

@@ -222,292 +222,298 @@ def test_ClusterObjectSetBounds(molecule1, molecule2, new_bounds):
     assert obj_sc.GetBounds() == new_bounds
 
 
-# @pytest.mark.parametrize(
-#     "molecule1, molecule2, new_bounds",
-#     [
-#         (
-#             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-#             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-#             [
-#                 (-1.6341135544995076, 1.6341135544995076),
-#                 (0, math.pi),
-#                 (0, math.pi),
-#                 (0, math.pi),
-#                 (0, math.pi),
-#                 (0, math.pi),
-#                 (0, math.pi),
-#             ],
-#         ),
-#     ],
-# )
-# def test_SC_bounds_set_TypeError(molecule1, molecule2, new_bounds):
-#     """
-#     Test @bounds.setter, ValueError associated with len(bounds)
-#     """
-#     with pytest.raises(ValueError) as e:
-#         SearchConfig(Cluster(molecule1, molecule2)).bounds = new_bounds
-#     assert (
-#         str(e.value) == "\n\nArray dimensions insufficient: "
-#         f"\ndimensions of old bounds: '{6}'\n"
-#         f"\ndimensions of new bounds: '{len(new_bounds)}'\n"
-#     )
+@pytest.mark.parametrize(
+    "molecule1, molecule2, new_bounds",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            [
+                (-1.6341135544995076, 1.6341135544995076),
+                (0, math.pi),
+                (0, math.pi),
+                (0, math.pi),
+                (0, math.pi),
+                (0, math.pi),
+                (0, math.pi),
+            ],
+        ),
+    ],
+)
+def test_ClusterObjectSetBoundsTypeError(molecule1, molecule2, new_bounds):
+    """
+    Test ValueError associated with len(bounds)
+    """
+    with pytest.raises(ValueError) as e:
+        SearchConfig(Cluster(molecule1, molecule2)).SetBounds(new_bounds)
+
+    assert (
+        str(e.value) == "\n\nArray dimensions insufficient: "
+        f"\ndimensions of old bounds: '{6}'\n"
+        f"\ndimensions of new bounds: '{len(new_bounds)}'\n"
+    )
 
 
-# @pytest.mark.parametrize(
-#     "molecule1, molecule2, expected_name",
-#     [
-#         (
-#             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-#             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-#             "configurations.xyz",
-#         ),
-#     ],
-# )
-# def test_SC_output_name_grep(molecule1, molecule2, expected_name):
-#     """
-#     Test @property associated with output_name variable
-#     """
-#     assert SearchConfig(Cluster(molecule1, molecule2)).output_name == expected_name
+@pytest.mark.parametrize(
+    "molecule1, molecule2, expected_name",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            "configurations.xyz",
+        ),
+    ],
+)
+def test_GetOutPutName(molecule1, molecule2, expected_name):
+    """
+    Test get out_put name associated with output_name variable
+    """
+    search_config = SearchConfig(Cluster(molecule1, molecule2))
+
+    assert search_config.GetOutputName() == expected_name
 
 
-# @pytest.mark.parametrize(
-#     "molecule1, molecule2, new_name",
-#     [
-#         (
-#             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-#             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-#             "output.xyz",
-#         ),
-#     ],
-# )
-# def test_SC_output_new_name_set(molecule1, molecule2, new_name):
-#     """
-#     Test @output_name.setter associated with output_name variable
-#     """
-#     obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-#     obj_sc.output_name = new_name
-#     assert obj_sc.output_name == new_name
+@pytest.mark.parametrize(
+    "molecule1, molecule2, new_name",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            "output.xyz",
+        ),
+    ],
+)
+def test_SetOutPutName(molecule1, molecule2, new_name):
+    """
+    Test set output_name associated with output_name variable
+    """
+    obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+    obj_sc.SetOutputName(new_name)
+    assert obj_sc.GetOutputName() == new_name
 
 
-# @pytest.mark.parametrize(
-#     "molecule1, molecule2",
-#     [
-#         (
-#             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-#             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-#         ),
-#     ],
-# )
-# def test_SC_output_name_TE_set(molecule1, molecule2):
-#     """
-#     Test TypeError into @output_name.setter
-#     """
-#     with pytest.raises(TypeError) as e:
-#         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-#         obj_sc.output_name = 1
-#     assert (
-#         str(e.value) == "\n\nThe new name to output is not a string"
-#         f"\nplease, check: '{type(1)}'\n"
-#     )
-#     with pytest.raises(TypeError) as e:
-#         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-#         obj_sc.output_name = 1.0
-#     assert (
-#         str(e.value) == "\n\nThe new name to output is not a string"
-#         f"\nplease, check: '{type(1.0)}'\n"
-#     )
-#     with pytest.raises(TypeError) as e:
-#         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-#         obj_sc.output_name = (1,)
-#     assert (
-#         str(e.value) == "\n\nThe new name to output is not a string"
-#         f"\nplease, check: '{type((1,))}'\n"
-#     )
+@pytest.mark.parametrize(
+    "molecule1, molecule2",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+        ),
+    ],
+)
+def test_SetOutPutNameTypeError(molecule1, molecule2):
+    """
+    Test TypeError into SetOutputName
+    """
+    with pytest.raises(TypeError) as e:
+        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+        obj_sc.SetOutputName(1)
+    assert (
+        str(e.value) == "\n\nThe new name to output is not a string"
+        f"\nplease, check: '{type(1)}'\n"
+    )
+    with pytest.raises(TypeError) as e:
+        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+        obj_sc.SetOutputName(1.0)
+    assert (
+        str(e.value) == "\n\nThe new name to output is not a string"
+        f"\nplease, check: '{type(1.0)}'\n"
+    )
+    with pytest.raises(TypeError) as e:
+        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+        obj_sc.SetOutputName((1,))
+    assert (
+        str(e.value) == "\n\nThe new name to output is not a string"
+        f"\nplease, check: '{type((1,))}'\n"
+    )
 
 
-# @pytest.mark.parametrize(
-#     "molecule1, molecule2, expected_search",
-#     [
-#         (
-#             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-#             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-#             "ASCEC",
-#         ),
-#     ],
-# )
-# def test_SC_search_type_grep(molecule1, molecule2, expected_search):
-#     """
-#     Test @property associated with search methodology type
-#     """
-#     assert SearchConfig(Cluster(molecule1, molecule2)).search_type == expected_search
+@pytest.mark.parametrize(
+    "molecule1, molecule2, expected_search",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            "ASCEC",
+        ),
+    ],
+)
+def test_GetSearchType(molecule1, molecule2, expected_search):
+    """
+    Test associated with search methodology type
+    """
+    search_config = SearchConfig(Cluster(molecule1, molecule2))
+    assert search_config.GetSearchType() == expected_search
 
 
-# @pytest.mark.parametrize(
-#     "molecule1, molecule2",
-#     [
-#         (
-#             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-#             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-#         ),
-#     ],
-# )
-# def test_SC_search_type_TP_set(molecule1, molecule2):
-#     """
-#     Test Type Error @property associated with search methodology type
-#     """
-#     with pytest.raises(TypeError) as e:
-#         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-#         obj_sc.search_type = 1.0
-#     assert (
-#         str(e.value) == "\n\nThe new search methodology is not a string"
-#         f"\nplease, check: '{type(1.0)}'\n"
-#     )
-#     with pytest.raises(TypeError) as e:
-#         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-#         obj_sc.search_type = (1.0,)
-#     assert (
-#         str(e.value) == "\n\nThe new search methodology is not a string"
-#         f"\nplease, check: '{type((1.0,))}'\n"
-#     )
-#     with pytest.raises(TypeError) as e:
-#         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-#         obj_sc.search_type = 1
-#     assert (
-#         str(e.value) == "\n\nThe new search methodology is not a string"
-#         f"\nplease, check: '{type(1)}'\n"
-#     )
+@pytest.mark.parametrize(
+    "molecule1, molecule2",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+        ),
+    ],
+)
+def test_SetSearchTypeTypeError(molecule1, molecule2):
+    """
+    Test Type Error associated with search methodology type
+    """
+    with pytest.raises(TypeError) as e:
+        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+        obj_sc.SetSearchType(1.0)
+    assert (
+        str(e.value) == "\n\nThe new search methodology is not a string"
+        f"\nplease, check: '{type(1.0)}'\n"
+    )
+    with pytest.raises(TypeError) as e:
+        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+        obj_sc.SetSearchType((1.0,))
+    assert (
+        str(e.value) == "\n\nThe new search methodology is not a string"
+        f"\nplease, check: '{type((1.0,))}'\n"
+    )
+    with pytest.raises(TypeError) as e:
+        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+        obj_sc.SetSearchType(1)
+    assert (
+        str(e.value) == "\n\nThe new search methodology is not a string"
+        f"\nplease, check: '{type(1)}'\n"
+    )
 
 
-# @pytest.mark.parametrize(
-#     "molecule1, molecule2, search_methodology",
-#     [
-#         (
-#             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-#             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-#             "SHGOS",
-#         ),
-#     ],
-# )
-# def test_SC_search_type_TE_set(molecule1, molecule2, search_methodology):
-#     """
-#     Test ValueError @property associated with search methodology type
-#     when search metodology choose is higher than 3
-#     """
-#     with pytest.raises(ValueError) as e:
-#         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-#         obj_sc.search_type = search_methodology
-#     assert str(e.value) == f"Invalid value. options are: {available}"
+@pytest.mark.parametrize(
+    "molecule1, molecule2, search_methodology",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            "SHGOS",
+        ),
+    ],
+)
+def test_SetSearchTypeAllow(molecule1, molecule2, search_methodology):
+    """
+    Test ValueError associated with search methodology type
+    when search metodology choose is higher than 3
+    """
+    with pytest.raises(ValueError) as e:
+        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+        obj_sc.SetSearchType(search_methodology)
+
+    assert str(e.value) == f"Invalid value. options are: {available}"
 
 
-# @pytest.mark.parametrize(
-#     "molecule1, molecule2, new_search_methodology",
-#     [
-#         (
-#             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-#             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-#             "dual_annealing",
-#         ),
-#     ],
-# )
-# def test_SC_new_search_type_set(molecule1, molecule2, new_search_methodology):
-#     """
-#     Test @search_type.setter when search metodology choose is lower than 3
-#     or equal to 3
-#     """
-#     obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-#     obj_sc.search_type = new_search_methodology
-#     assert obj_sc.search_type == new_search_methodology
+@pytest.mark.parametrize(
+    "molecule1, molecule2, new_search_methodology",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            "dual_annealing",
+        ),
+    ],
+)
+def test_SetGetSearchType(molecule1, molecule2, new_search_methodology):
+    """
+    Test SetSearchType when search metodology choose is lower than 3
+    or equal to 3
+    """
+    obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+    obj_sc.SetSearchType(new_search_methodology)
+
+    assert obj_sc.GetSearchType() == new_search_methodology
 
 
-# @pytest.mark.parametrize(
-#     "molecule1, molecule2, new_basis_set",
-#     [
-#         (
-#             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-#             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-#             "3-21g",
-#         ),
-#     ],
-# )
-# def test_SC_basis_set_grep(molecule1, molecule2, new_basis_set):
-#     """
-#     Test @basis_set.setter for new basis set
-#     """
-#     obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-#     obj_sc.basis_set = new_basis_set
-#     assert obj_sc.basis_set == new_basis_set
+@pytest.mark.parametrize(
+    "molecule1, molecule2, new_basis_set",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            "3-21g",
+        ),
+    ],
+)
+def test_SetGetBasisSet(molecule1, molecule2, new_basis_set):
+    """
+    Test SetBasisSet for new basis set
+    """
+    obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+    obj_sc.SetBasisSet(new_basis_set)
+    assert obj_sc.GetBasisSet() == new_basis_set
 
 
-# @pytest.mark.parametrize(
-#     "molecule1, molecule2",
-#     [
-#         (
-#             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-#             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-#         ),
-#     ],
-# )
-# def test_SC_basis_set_set(molecule1, molecule2):
-#     """
-#     Test Type Error @property associated with basis set
-#     """
-#     with pytest.raises(TypeError) as e:
-#         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-#         obj_sc.basis_set = 1.0
-#     assert (
-#         str(e.value) == "\n\nThe new name to basis set is not a string"
-#         f"\nplease, check: '{type(1.0)}'\n"
-#     )
-#     with pytest.raises(TypeError) as e:
-#         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-#         obj_sc.basis_set = (1.0,)
-#     assert (
-#         str(e.value) == "\n\nThe new name to basis set is not a string"
-#         f"\nplease, check: '{type((1.0,))}'\n"
-#     )
-#     with pytest.raises(TypeError) as e:
-#         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-#         obj_sc.basis_set = 1
-#     assert (
-#         str(e.value) == "\n\nThe new name to basis set is not a string"
-#         f"\nplease, check: '{type(1)}'\n"
-#     )
+@pytest.mark.parametrize(
+    "molecule1, molecule2",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+        ),
+    ],
+)
+def test_SetBasisSetTypeError(molecule1, molecule2):
+    """
+    Test Type Error associated with basis set
+    """
+    with pytest.raises(TypeError) as e:
+        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+        obj_sc.SetBasisSet(1.0)
+    assert (
+        str(e.value) == "\n\nThe new name to basis set is not a string"
+        f"\nplease, check: '{type(1.0)}'\n"
+    )
+    with pytest.raises(TypeError) as e:
+        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+        obj_sc.SetBasisSet((1.0,))
+    assert (
+        str(e.value) == "\n\nThe new name to basis set is not a string"
+        f"\nplease, check: '{type((1.0,))}'\n"
+    )
+    with pytest.raises(TypeError) as e:
+        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+        obj_sc.SetBasisSet(1)
+    assert (
+        str(e.value) == "\n\nThe new name to basis set is not a string"
+        f"\nplease, check: '{type(1)}'\n"
+    )
 
 
-# @pytest.mark.parametrize(
-#     "molecule1, molecule2",
-#     [
-#         (
-#             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-#             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-#         ),
-#     ],
-# )
-# def test_SC_cost_function_TE_set(molecule1, molecule2):
-#     """
-#     Test TypeError @sphere_radius.setter
-#     """
-#     with pytest.raises(TypeError) as e:
-#         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-#         obj_sc.func_cost = 1.0
-#     assert (
-#         str(e.value) == "\n\nThe new cost function is not a string"
-#         f"\nplease, check: '{type(1.0)}'\n"
-#     )
-#     with pytest.raises(TypeError) as e:
-#         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-#         obj_sc.func_cost = [1.0]
-#     assert (
-#         str(e.value) == "\n\nThe new cost function is not a string"
-#         f"\nplease, check: '{type([1.0])}'\n"
-#     )
-#     with pytest.raises(TypeError) as e:
-#         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-#         obj_sc.func_cost = (1.0,)
-#     assert (
-#         str(e.value) == "\n\nThe new cost function is not a string"
-#         f"\nplease, check: '{type((1.0,))}'\n"
-#     )
+@pytest.mark.parametrize(
+    "molecule1, molecule2",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+        ),
+    ],
+)
+def test_SetCostFunctionTypeError(molecule1, molecule2):
+    """
+    Test TypeError SetCostFunction
+    """
+    with pytest.raises(TypeError) as e:
+        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+        obj_sc.SetCostFun(1.0)
+    assert (
+        str(e.value) == "\n\nThe new cost function is not a string"
+        f"\nplease, check: '{type(1.0)}'\n"
+    )
+    with pytest.raises(TypeError) as e:
+        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+        obj_sc.SetCostFun([1.0])
+    assert (
+        str(e.value) == "\n\nThe new cost function is not a string"
+        f"\nplease, check: '{type([1.0])}'\n"
+    )
+    with pytest.raises(TypeError) as e:
+        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+        obj_sc.SetCostFun((1.0,))
+    assert (
+        str(e.value) == "\n\nThe new cost function is not a string"
+        f"\nplease, check: '{type((1.0,))}'\n"
+    )
 
 
 # @pytest.mark.parametrize(
