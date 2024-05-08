@@ -199,6 +199,13 @@ class Cluster(Molecule):
 
     def GetMol(self, molecule: int) -> Molecule:
         """Return molecule element"""
+        if not isinstance(molecule, int) or molecule >= self.GetNumMols():
+            raise IndexError(
+                f"\nCluster with {self.GetNumMols()} total molecules "
+                f"and index [0-{self.GetNumMols() - 1}]"
+                f"\n atom index must be less than {self.GetNumMols()}"
+                f"\nCheck! You want to get atom with index {molecule}"
+            )
         return self.GetMols()[molecule]
 
     def GetMols(self) -> list[Molecule]:

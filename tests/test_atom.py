@@ -9,7 +9,7 @@ from amcess.atom import Atom
 @pytest.mark.parametrize(
     "atom, expected_result",
     [
-        (("H", 0, 0, 0), {"element": "H", "x": 0, "y": 0, "z": 0}),
+        (("H", 0, 0, 0), f'atom: H, x: {0}, y: {0}, z: {0}'),
     ],
 )
 def test_atom_str_magic_function(atom, expected_result):
@@ -22,7 +22,7 @@ def test_atom_str_magic_function(atom, expected_result):
     """
     input_atom = str(Atom(*atom))
 
-    assert input_atom == str(expected_result)
+    assert input_atom == expected_result
 
 
 @pytest.mark.parametrize(

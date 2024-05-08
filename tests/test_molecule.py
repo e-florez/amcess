@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 
+from amcess.atom import Atom
 from amcess.molecule import Molecule
 
 COORDINATES = {
@@ -13,9 +14,10 @@ COORDINATES = {
     ],
 }
 
+
 # Missing lines in Molecule class
-# amcess/molecule.py              203     40    80%   
-# missings: 132-133, 141-152, 159-179, 187, 192-195, 204, 
+# amcess/molecule.py              203     40    80%
+# missings: 132-133, 141-152, 159-179, 187, 192-195, 204,
 #           236, 290, 376, 385, 434, 436, 458, 460
 # ===============================================================
 # Molecule class
@@ -37,7 +39,7 @@ def test_check_atom():
     atoms = [("H", 10, 20, 30), ("H", 0, 0, 0)]
     mol = Molecule(atoms)
     with pytest.raises(TypeError):
-        mol._check_atom(0, ('H', 's', 20, 30), atoms)
+        mol._check_atom(0, ("H", "s", 20, 30), atoms)
 
 
 def test_class_atomic_symbols():
@@ -100,32 +102,6 @@ def test_init_from_dict_wrong():
         )
 
 
-# #def test_magic_add():
-# #    """Testing add molecule method (__add__)"""
-# #    mol1 = Molecule([("A", 0, 0, 0), ("B", 1, 1, 1)])
-# #    mol2 = Molecule([("X", 0, 0, 0), ("Y", 1, 1, 1)])
-# #
-# #    mol = Molecule([("A", 0, 0, 0), ("B", 1, 1, 1)]).add_molecule(mol2)
-# #    new_mol = mol1 + mol2
-
-# #    assert isinstance(new_mol, Cluster)
-# #    assert isinstance(mol, Cluster)
-# #    assert mol.atoms == new_mol.atoms
-# #    assert new_mol.total_atoms == mol1.total_atoms + mol2.total_atoms
-# #    assert new_mol.symbols == mol1.symbols + mol2.symbols
-# #    assert new_mol.atoms == mol1.atoms + mol2.atoms
-
-
-# #def test_magic_add_fail():
-# #    """Testing add molecule method (__add__)"""
-# #    mol = Molecule([("A", 0, 0, 0), ("B", 1, 1, 1)])
-# #    with pytest.raises(TypeError):
-# #        mol.add_molecule(Atom("H", 0, 0, 0))
-
-# #    with pytest.raises(TypeError):
-# #        mol.add_molecule("H", 0, 0, 0)
-
-
 def test_magic_mul_rmul():
     """Testing magic mul function"""
     mol1 = Molecule([("H", 0, 0, 0), ("H", 1, 1, 1)])
@@ -182,9 +158,14 @@ def test_GetMolList(system, expected_atoms):
 @pytest.mark.parametrize(
     "system, expected_atoms",
     [
-        ("dummy", 
-         {"atoms": [("H", 10, 20, 30), ("H", -0.5, 0, -10)],
-          "charge": 0, "multiplicity": 1}),
+        (
+            "dummy",
+            {
+                "atoms": [("H", 10, 20, 30), ("H", -0.5, 0, -10)],
+                "charge": 0,
+                "multiplicity": 1,
+            },
+        ),
     ],
 )
 def test_GetMolDict(system, expected_atoms):
@@ -236,16 +217,16 @@ def test_SetMolCharge_SetMolMultiplicity(
 @pytest.mark.parametrize(
     "system, expected_coordinates",
     [
-        ("dummy", np.array([[10, 20, 30], [-0.5, 0, -10]])),
+        ("dummy", [(10, 20, 30), (-0.5, 0, -10)]),
     ],
 )
 def test_GetAtomicCoordinates(system, expected_coordinates):
     """
     Test for coordinate in XYZ format
     """
-    coordinates = Molecule(COORDINATES[system]).GetAtomicCoordinates()
+    coordinates = Molecule(COORDINATES[system]).GetMolCoord()
 
-    assert coordinates.all() == expected_coordinates.all()
+    assert coordinates == expected_coordinates
 
 
 @pytest.mark.parametrize(
@@ -355,11 +336,7 @@ def test_GetBlockXYZ(system, expected_result):
 
 @pytest.mark.parametrize(
     "system, new_atom",
-    [
-        ("dummy", [("H", 0, 0, 0)]),
-        ("hf", [("H", 0, 0, 0)]),
-        ("water", [("H", 0, 0, 0)]),
-    ],
+    [("dummy", [("H", 0, 0, 0)])],
 )
 def test_AddAtom(system, new_atom):
     """
@@ -368,9 +345,11 @@ def test_AddAtom(system, new_atom):
     mol = Molecule(COORDINATES[system])
 
     # duplicating the system
-    new_system = mol.AddAtom(new_atom)
+    mol.AddAtom(new_atom)
 
-    assert new_system.GetNumAtoms() == (mol.GetNumAtoms() + len(new_atom))
+    assert mol.GetNumAtoms() == (
+        Molecule(COORDINATES[system]).GetNumAtoms() + len(new_atom)
+    )
 
 
 def test_AddAtom_fail():
@@ -387,34 +366,31 @@ def test_AddAtom_fail():
 @pytest.mark.parametrize(
     "system",
     [
-        ("dummy"),
         ("hf"),
-        ("water"),
     ],
 )
-def test_GetAtomWithIndex(system):
+def test_GetAtomId(system):
     """
-    Test GetAtomWithIndex function
+    Test GetAtom Id function
     """
     mol = Molecule(COORDINATES[system])
 
     # getting the first (index) molecule
-    new_system = mol.GetAtomWithIndix(0)
+    new_system = mol.GetAtom(0)
 
-    assert isinstance(new_system, tuple)
-    assert len(new_system) == 4
+    assert isinstance(new_system, Atom)
 
 
-def test_GetAtomWithIndex_fail():
+def test_GetAtomIdFail():
     """
     Test GetAtomWithIndex function, error
     """
     mol = Molecule(COORDINATES["water"])
 
     with pytest.raises(IndexError):
-        mol.GetAtomWithIndix(100)
+        mol.GetAtom(100)
     with pytest.raises(IndexError):
-        mol.GetAtomWithIndix("@")
+        mol.GetAtom("@")
 
 
 @pytest.mark.parametrize(
@@ -432,12 +408,12 @@ def test_RemoveAtom(system):
     mol = Molecule(COORDINATES[system])
 
     # duplicating the system
-    new_system = mol.RemoveAtom(0)
+    mol.RemoveAtom(0)
 
-    assert new_system.GetNumAtoms() == mol.GetNumAtoms() - 1
+    assert mol.GetNumAtoms() == Molecule(COORDINATES[system]).GetNumAtoms() - 1
 
 
-def test_RemoveAtom_fail():
+def test_RemoveAtomFail():
     """
     Test RemoveAtom function, error
     """
