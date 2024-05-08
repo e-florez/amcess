@@ -30,7 +30,7 @@ class ElectronicEnergy:
 
         self._method = methodology.split()[0]
         if len(methodology.split()) > 1:
-            self._functional = methodology.split()[1]
+            self._dft_functional = methodology.split()[1]
 
         self._basis_set = basis_set
 
@@ -111,14 +111,29 @@ class ElectronicEnergy:
     # ===============================================================
     # PROPERTIES
     # ===============================================================
-    def GetInitialSystem(self):
-        return self._initial_system
+    def GetBeforeSystem(self):
+        return self._before_system
 
     def GetCurrentSystem(self):
         return self._current_system
+    
+    def GetDFTFunctional(self):
+        return self._dft_functional
 
-    def GetBeforeSystem(self):
-        return self._before_system
+    def GetInitialSystem(self):
+        return self._initial_system
+
+    # ! Setter
+
+    def SetCurrentSystem(self, new_current_system):
+        self.SetBeforeSystem(self._current_system)
+        self._current_system = new_current_system
+
+    def SetBeforeSystem(self, new_before_system):
+        self._before_system = new_before_system
+
+    def SetDFTFunctional(self, new_functional):
+        self._dft_functional = new_functional
 
     def SetInitialSystem(self, new_initial_system):
         (
@@ -130,14 +145,6 @@ class ElectronicEnergy:
             new_initial_system,
             new_initial_system,
         )
-
-    def SetCurrentSystem(self, new_current_system):
-        self.SetBeforeSystem(self._current_system)
-        self._current_system = new_current_system
-
-    def SetBeforeSystem(self, new_before_system):
-        self._before_system = new_before_system
-
     # ===============================================================
     # Methods
     # ===============================================================
@@ -214,7 +221,7 @@ class ElectronicEnergy:
                 return scf.RHF(mol).kernel()
             elif self._method == "DFT":
                 dft_call = dft.RKS(mol)
-                dft_call.xc = self._functional
+                dft_call.xc = self._dft_functional
                 return dft_call.kernel()
             elif self._method == "MP2":
                 mf = scf.RHF(mol).run()

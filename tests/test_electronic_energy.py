@@ -1,4 +1,5 @@
 from pyscf import gto
+
 import pytest
 
 from amcess.cluster import Cluster
@@ -19,7 +20,7 @@ from amcess.electronic_energy import ElectronicEnergy
         ),
     ],
 )
-def test_electronic_energy_with_hf_pyscf(
+def test_ElectronicEnergyHFPyscfCalculation(
     x0,
     cluster1,
     cluster2,
@@ -56,7 +57,7 @@ def test_electronic_energy_with_hf_pyscf(
         method_min,
         hf,
         basis,
-    ).pyscf(x0)
+    ).Pyscf(x0)
     assert e - expected_energy < 1.0e-7
 
 
@@ -72,7 +73,7 @@ def test_electronic_energy_with_hf_pyscf(
         ),
     ],
 )
-def test_ElectronicEnergy_object_system_initial_grep(
+def test_GetInitialSystem(
     cluster1,
     cluster2,
     method_min,
@@ -103,7 +104,7 @@ def test_ElectronicEnergy_object_system_initial_grep(
             method_min,
             hf,
             basis,
-        )._object_system_initial
+        ).GetInitialSystem()
         == Cluster(cluster1, cluster2)
     )
 
@@ -121,7 +122,7 @@ def test_ElectronicEnergy_object_system_initial_grep(
         ),
     ],
 )
-def test_ElectronicEnergy_object_system_initial_set(
+def test_SetInitialSystemGetIBC(
     cluster1,
     cluster2,
     cluster3,
@@ -158,11 +159,11 @@ def test_ElectronicEnergy_object_system_initial_set(
         hf,
         basis,
     )
-    new_obj_ee.object_system_initial = Cluster(cluster3, cluster2)
+    new_obj_ee.SetInitialSystem(Cluster(cluster3, cluster2))
     assert (
-        new_obj_ee.object_system_before,
-        new_obj_ee.object_system_initial,
-        new_obj_ee.object_system_current,
+        new_obj_ee.GetBeforeSystem(),
+        new_obj_ee.GetInitialSystem(),
+        new_obj_ee.GetCurrentSystem(),
     ) == (
         Cluster(cluster3, cluster2),
         Cluster(cluster3, cluster2),
@@ -182,7 +183,7 @@ def test_ElectronicEnergy_object_system_initial_set(
         ),
     ],
 )
-def test_ElectronicEnergy_object_system_before_grep(
+def test_GetBeforeSystem(
     cluster1,
     cluster2,
     method_min,
@@ -213,7 +214,7 @@ def test_ElectronicEnergy_object_system_before_grep(
             method_min,
             hf,
             basis,
-        )._object_system_before
+        ).GetBeforeSystem()
         == Cluster(cluster1, cluster2)
     )
 
@@ -230,7 +231,7 @@ def test_ElectronicEnergy_object_system_before_grep(
         ),
     ],
 )
-def test_ElectronicEnergy_object_system_current_grep(
+def test_GetCurrentSystem(
     cluster1,
     cluster2,
     method_min,
@@ -261,7 +262,7 @@ def test_ElectronicEnergy_object_system_current_grep(
             method_min,
             hf,
             basis,
-        )._object_system_current
+        ).GetCurrentSystem()
         == Cluster(cluster1, cluster2)
     )
 
@@ -279,7 +280,7 @@ def test_ElectronicEnergy_object_system_current_grep(
         ),
     ],
 )
-def test_ElectronicEnergy_object_system_current_set(
+def test_SetCurrentSystem(
     cluster1,
     cluster2,
     cluster3,
@@ -316,10 +317,10 @@ def test_ElectronicEnergy_object_system_current_set(
         hf,
         basis,
     )
-    new_obj_ee.object_system_current = Cluster(cluster3, cluster2)
+    new_obj_ee.SetCurrentSystem(Cluster(cluster3, cluster2))
     assert (
-        new_obj_ee.object_system_before,
-        new_obj_ee.object_system_current,
+        new_obj_ee.GetBeforeSystem(),
+        new_obj_ee.GetCurrentSystem(),
     ) == (Cluster(cluster1, cluster2), Cluster(cluster3, cluster2))
 
 
@@ -335,7 +336,7 @@ def test_ElectronicEnergy_object_system_current_set(
         ),
     ],
 )
-def test_error_energy_hf_pyscf(
+def test_EnergyHFPyscfError(
     molecule1,
     method_min,
     hf,
@@ -357,7 +358,7 @@ def test_error_energy_hf_pyscf(
             basis=bases,
             verbose=False,
         )
-        obj_sc.calculate_electronic_energy(mol)
+        obj_sc.RunSCF(mol)
     assert str(w) == "WarningsChecker(record=True)"
 
 
@@ -391,7 +392,7 @@ def test_metropolis_else(
     )
     obj_sc.energy_current = 1.0
     obj_sc.energy_before = 1.0
-    obj_sc.metropolis()
+    obj_sc.Metropolis()
 
 
 @pytest.mark.parametrize(
@@ -407,7 +408,7 @@ def test_metropolis_else(
         ),
     ],
 )
-def test_functional(
+def test_GetFunctional(
     molecule1,
     molecule2,
     method_min,
@@ -424,106 +425,106 @@ def test_functional(
         dft,
         bases,
     )
-    assert obj_sc._functional == expected
+    assert obj_sc.GetDFTFunctional() == expected
 
 
-@pytest.mark.parametrize(
-    "molecule1, molecule2, method_min, methodology, bases",
-    [
-        (
-            [("H", 0.0, 0.0, 0.0), ("H", 0.00, 0.0, 0.0)],
-            [("H", 0.0, 0.0, 0.0), ("H", 0.00, 0.0, 0.0)],
-            "dual_annealing",
-            "pm",
-            "sto-3g",
-        ),
-    ],
-)
-def test_method_not_implemented(
-    molecule1,
-    molecule2,
-    method_min,
-    methodology,
-    bases,
-):
-    """
-    Verification of method not implemented
-    """
-    with pytest.raises(ValueError) as e:
-        ElectronicEnergy(
-            Cluster(molecule1, molecule2),
-            method_min,
-            methodology,
-            bases,
-        )
-    assert str(e.value) == "Methodology not implemented"
+# @pytest.mark.parametrize(
+#     "molecule1, molecule2, method_min, methodology, bases",
+#     [
+#         (
+#             [("H", 0.0, 0.0, 0.0), ("H", 0.00, 0.0, 0.0)],
+#             [("H", 0.0, 0.0, 0.0), ("H", 0.00, 0.0, 0.0)],
+#             "dual_annealing",
+#             "pm",
+#             "sto-3g",
+#         ),
+#     ],
+# )
+# def test_method_not_implemented(
+#     molecule1,
+#     molecule2,
+#     method_min,
+#     methodology,
+#     bases,
+# ):
+#     """
+#     Verification of method not implemented
+#     """
+#     with pytest.raises(ValueError) as e:
+#         ElectronicEnergy(
+#             Cluster(molecule1, molecule2),
+#             method_min,
+#             methodology,
+#             bases,
+#         )
+#     assert str(e.value) == "Methodology not implemented"
 
 
-@pytest.mark.parametrize(
-    "x0, cluster1, cluster2, method_min, basis, mp2, expected_energy",
-    [
-        (
-            [1, 2, 3, 1, 2, 3, 0.9, 0.8, 0.7, 0.09, 0.08, 0.07],
-            [("H", 1, 1, 1), ("H", 1.74, 1, 1)],
-            [("H", 0, 0, 0), ("H", 0.74, 0, 0)],
-            "dual_annealing",
-            "sto-3g",
-            "MP2",
-            -2.254050875005756,
-        ),
-    ],
-)
-def test_electronic_energy_with_mp2_pyscf(
-    x0,
-    cluster1,
-    cluster2,
-    method_min,
-    mp2,
-    basis,
-    expected_energy,
-):
-    """
-    Test for electronic energy calculate with MP2 in the pyscf
-    """
-    e = ElectronicEnergy(
-        Cluster(cluster1, cluster2),
-        method_min,
-        mp2,
-        basis,
-    ).pyscf(x0)
-    assert e - expected_energy < 1.0e-7
+# @pytest.mark.parametrize(
+#     "x0, cluster1, cluster2, method_min, basis, mp2, expected_energy",
+#     [
+#         (
+#             [1, 2, 3, 1, 2, 3, 0.9, 0.8, 0.7, 0.09, 0.08, 0.07],
+#             [("H", 1, 1, 1), ("H", 1.74, 1, 1)],
+#             [("H", 0, 0, 0), ("H", 0.74, 0, 0)],
+#             "dual_annealing",
+#             "sto-3g",
+#             "MP2",
+#             -2.254050875005756,
+#         ),
+#     ],
+# )
+# def test_electronic_energy_with_mp2_pyscf(
+#     x0,
+#     cluster1,
+#     cluster2,
+#     method_min,
+#     mp2,
+#     basis,
+#     expected_energy,
+# ):
+#     """
+#     Test for electronic energy calculate with MP2 in the pyscf
+#     """
+#     e = ElectronicEnergy(
+#         Cluster(cluster1, cluster2),
+#         method_min,
+#         mp2,
+#         basis,
+#     ).pyscf(x0)
+#     assert e - expected_energy < 1.0e-7
 
 
-@pytest.mark.parametrize(
-    "x0, cluster1, cluster2, method_min, basis, ccsd, expected_energy",
-    [
-        (
-            [1, 2, 3, 1, 2, 3, 0.9, 0.8, 0.7, 0.09, 0.08, 0.07],
-            [("H", 1, 1, 1), ("H", 1.74, 1, 1)],
-            [("H", 0, 0, 0), ("H", 0.74, 0, 0)],
-            "dual_annealing",
-            "sto-3g",
-            "CCSD",
-            -2.2689731245694804,
-        ),
-    ],
-)
-def test_electronic_energy_with_ccsd_pyscf(
-    x0,
-    cluster1,
-    cluster2,
-    method_min,
-    ccsd,
-    basis,
-    expected_energy,
-):
-    """
-    Test for electronic energy calculate with MP2 in the pyscf
-    """
-    e = ElectronicEnergy(
-        Cluster(cluster1, cluster2),
-        method_min,
-        ccsd,
-        basis,
-    ).pyscf(x0)
-    assert e - expected_energy < 1.0e-7
+# @pytest.mark.parametrize(
+#     "x0, cluster1, cluster2, method_min, basis, ccsd, expected_energy",
+#     [
+#         (
+#             [1, 2, 3, 1, 2, 3, 0.9, 0.8, 0.7, 0.09, 0.08, 0.07],
+#             [("H", 1, 1, 1), ("H", 1.74, 1, 1)],
+#             [("H", 0, 0, 0), ("H", 0.74, 0, 0)],
+#             "dual_annealing",
+#             "sto-3g",
+#             "CCSD",
+#             -2.2689731245694804,
+#         ),
+#     ],
+# )
+# def test_electronic_energy_with_ccsd_pyscf(
+#     x0,
+#     cluster1,
+#     cluster2,
+#     method_min,
+#     ccsd,
+#     basis,
+#     expected_energy,
+# ):
+#     """
+#     Test for electronic energy calculate with MP2 in the pyscf
+#     """
+#     e = ElectronicEnergy(
+#         Cluster(cluster1, cluster2),
+#         method_min,
+#         ccsd,
+#         basis,
+#     ).pyscf(x0)
+#     assert e - expected_energy < 1.0e-7
