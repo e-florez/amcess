@@ -8,8 +8,6 @@ from amcess.electronic_energy import ElectronicEnergy
 METHODS = {
     "ASCEC": Ascec,
     "dual_annealing": dual_annealing,
-    # "SHGO": shgo,
-    # "Bayesian": solve_gaussian_processes,
 }
 
 
@@ -241,10 +239,6 @@ class SearchConfig:
         else:
             if self.GetSearchType() == "dual_annealing":
                 print("*** Minimization: Dual Annealing ***")
-            # if self.GetSearchType() == "SHGO":
-            #    print("*** Minimization: SHGO from Scipy ***")
-            # if self.GetSearchType() == "Bayesian":
-            #    print("*** Minimization: Bayesian ***")
 
             if self.GetSearchType() != "ASCEC":
                 obj_ee = ElectronicEnergy(

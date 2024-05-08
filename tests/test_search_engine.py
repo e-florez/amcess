@@ -57,9 +57,7 @@ def test_CoordibatesClusterObject(molecule1, molecule2, expected_coordinates):
         ),
     ],
 )
-def test_SymbolsClusterObject(
-    molecule1, molecule2, expected_coordinates
-):
+def test_SymbolsClusterObject(molecule1, molecule2, expected_coordinates):
     """[summary]
     Test: Passed of object from Cluser to SearchConfig
     Args:
@@ -190,10 +188,7 @@ def test_ClusterObjectGrepBounds(molecule1, molecule2, radius, expected_bounds):
     Test bounds of Cluster object
     """
     search_config = SearchConfig(Cluster(molecule1, molecule2, sphere_radius=radius))
-    assert (
-        search_config.GetBounds()
-        == expected_bounds
-    )
+    assert search_config.GetBounds() == expected_bounds
 
 
 @pytest.mark.parametrize(
