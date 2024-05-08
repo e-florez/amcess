@@ -47,177 +47,179 @@ def test_CoordibatesClusterObject(molecule1, molecule2, expected_coordinates):
     assert search_config.GetSystemObject().GetMolList() == expected_coordinates
 
 
-# @pytest.mark.parametrize(
-#     "molecule1, molecule2, expected_coordinates",
-#     [
-#         (
-#             [("H", 0, 0, 0), ("F", 0.917, 0, 0)],
-#             [("H", 0, 0, 0), ("H", 0.74, 0, 0)],
-#             ["F", "H"],
-#         ),
-#     ],
-# )
-# def test_cluster_object_elements_into_search_conf(
-#     molecule1, molecule2, expected_coordinates
-# ):
-#     """[summary]
-#     Test: Passed of object from Cluser to SearchConfig
-#     Args:
-#         molecule1 ([dict]): dictionary with symbols and coordinates
-#                             of the first molecule
-#         molecule2 ([dict]): dictionary with symbols and coordinates
-#                             of the second molecule
-#         expected_coordinates ([list]): expected coordinates plus symbols
-#     """
-#     search_config = SearchConfig(Cluster(molecule1, molecule2))
-#     # it is necessary to sort to avoid errors because the elements attr
-#     # can return in different order the symbols
-#     assert sorted(search_config._system_object.elements) == expected_coordinates
+@pytest.mark.parametrize(
+    "molecule1, molecule2, expected_coordinates",
+    [
+        (
+            [("H", 0, 0, 0), ("F", 0.917, 0, 0)],
+            [("H", 0, 0, 0), ("H", 0.74, 0, 0)],
+            ["H", "F", "H", "H"],
+        ),
+    ],
+)
+def test_SymbolsClusterObject(
+    molecule1, molecule2, expected_coordinates
+):
+    """[summary]
+    Test: Passed of object from Cluser to SearchConfig
+    Args:
+        molecule1 ([dict]): dictionary with symbols and coordinates
+                            of the first molecule
+        molecule2 ([dict]): dictionary with symbols and coordinates
+                            of the second molecule
+        expected_coordinates ([list]): expected coordinates plus symbols
+    """
+    search_config = SearchConfig(Cluster(molecule1, molecule2))
+
+    assert search_config.GetSystemObject().GetAtomicSymbols() == expected_coordinates
 
 
-# @pytest.mark.parametrize(
-#     "molecule1, molecule2, expected_basis",
-#     [
-#         (
-#             [("H", 0, 0, 0), ("F", 0.917, 0, 0)],
-#             [("H", 0, 0, 0), ("H", 0.74, 0, 0)],
-#             "sto-3g",
-#         ),
-#     ],
-# )
-# def test_search_conf_basis_default(molecule1, molecule2, expected_basis):
-#     """[summary]
-#     Test: Basis set by default (sto-3g)
-#     Args:
-#         molecule1 ([dict]): dictionary with symbols and coordinates
-#                             of the first molecule
-#         molecule2 ([dict]): dictionary with symbols and coordinates
-#                             of the second molecule
-#         expected_basis ([string]): basis set
-#     """
-#     search_config = SearchConfig(Cluster(molecule1, molecule2))
-#     assert search_config._basis_set == expected_basis
+@pytest.mark.parametrize(
+    "molecule1, molecule2, expected_basis",
+    [
+        (
+            [("H", 0, 0, 0), ("F", 0.917, 0, 0)],
+            [("H", 0, 0, 0), ("H", 0.74, 0, 0)],
+            "sto-3g",
+        ),
+    ],
+)
+def test_BasisSetSearchConf(molecule1, molecule2, expected_basis):
+    """[summary]
+    Test: Basis set by default (sto-3g)
+    Args:
+        molecule1 ([dict]): dictionary with symbols and coordinates
+                            of the first molecule
+        molecule2 ([dict]): dictionary with symbols and coordinates
+                            of the second molecule
+        expected_basis ([string]): basis set
+    """
+    search_config = SearchConfig(Cluster(molecule1, molecule2))
+
+    assert search_config.GetBasisSet() == expected_basis
 
 
-# @pytest.mark.parametrize(
-#     "molecule1, molecule2",
-#     [
-#         (
-#             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-#             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-#         ),
-#     ],
-# )
-# def test_SC_init_first_value_error(molecule1, molecule2):
-#     """
-#     Test first TypeError into __init__ method of SearchConfig class
-#     when cluster object is None
-#     """
-#     with pytest.raises(TypeError) as e:
-#         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-#         obj_sc.system_object = None
-#     assert str(e.value) == "System_object isn't difinite\n" "It's NoneType"
+@pytest.mark.parametrize(
+    "molecule1, molecule2",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+        ),
+    ],
+)
+def test_ClusterObjectErrorOne(molecule1, molecule2):
+    """
+    Test first TypeError into __init__ method of SearchConfig class
+    when cluster object is None
+    """
+    with pytest.raises(TypeError) as e:
+        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+        obj_sc.SetSystemObject(None)
+
+    assert str(e.value) == "System_object isn't difinite\n" "It's NoneType"
 
 
-# @pytest.mark.parametrize(
-#     "molecule1, molecule2",
-#     [
-#         (
-#             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-#             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-#         ),
-#     ],
-# )
-# def test_SC_init_second_value_error(molecule1, molecule2):
-#     """
-#     Test second TypeError into __init__ method of SearchConfig class
-#     when cluster object is not object type
-#     """
-#     obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-#     with pytest.raises(TypeError) as e:
-#         obj_sc.system_object = 1.0
-#     assert (
-#         str(e.value) == "System_object isn't difinite as an object Cluster\n"
-#         f"please, check:\n'{1.0}'"
-#     )
-#     with pytest.raises(TypeError) as e:
-#         obj_sc.system_object = 1
-#     assert (
-#         str(e.value) == "System_object isn't difinite as an object Cluster\n"
-#         f"please, check:\n'{1}'"
-#     )
-#     with pytest.raises(TypeError) as e:
-#         obj_sc.system_object = (1.0,)
-#     assert (
-#         str(e.value) == "System_object isn't difinite as an object Cluster\n"
-#         f"please, check:\n'{(1.0,)}'"
-#     )
-#     with pytest.raises(TypeError) as e:
-#         obj_sc.system_object = [1.0]
-#     assert (
-#         str(e.value) == "System_object isn't difinite as an object Cluster\n"
-#         f"please, check:\n'{[1.0]}'"
-#     )
-#     with pytest.raises(TypeError) as e:
-#         obj_sc.system_object = Molecule(molecule1)
-#     assert (
-#         str(e.value) == "System_object isn't difinite as an object Cluster\n"
-#         f"please, check:\n'{Molecule(molecule1)}'"
-#     )
+@pytest.mark.parametrize(
+    "molecule1, molecule2",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+        ),
+    ],
+)
+def test_ClusterObjectErrorTwo(molecule1, molecule2):
+    """
+    Test second TypeError into __init__ method of SearchConfig class
+    when cluster object is not object type
+    """
+    obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+    with pytest.raises(TypeError) as e:
+        obj_sc.SetSystemObject(1.0)
+    assert (
+        str(e.value) == "System_object isn't difinite as an object Cluster\n"
+        f"please, check:\n'{1.0}'"
+    )
+    with pytest.raises(TypeError) as e:
+        obj_sc.SetSystemObject(1)
+    assert (
+        str(e.value) == "System_object isn't difinite as an object Cluster\n"
+        f"please, check:\n'{1}'"
+    )
+    with pytest.raises(TypeError) as e:
+        obj_sc.SetSystemObject((1.0,))
+    assert (
+        str(e.value) == "System_object isn't difinite as an object Cluster\n"
+        f"please, check:\n'{(1.0,)}'"
+    )
+    with pytest.raises(TypeError) as e:
+        obj_sc.SetSystemObject([1.0])
+    assert (
+        str(e.value) == "System_object isn't difinite as an object Cluster\n"
+        f"please, check:\n'{[1.0]}'"
+    )
+    with pytest.raises(TypeError) as e:
+        obj_sc.SetSystemObject(Molecule(molecule1))
+    assert (
+        str(e.value) == "System_object isn't difinite as an object Cluster\n"
+        f"please, check:\n'{Molecule(molecule1)}'"
+    )
 
 
-# @pytest.mark.parametrize(
-#     "molecule1, molecule2, radius, expected_bounds",
-#     [
-#         (
-#             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-#             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-#             2.07335921293852,
-#             [
-#                 (-2.07335921293852, 2.07335921293852),
-#                 (-2.07335921293852, 2.07335921293852),
-#                 (-2.07335921293852, 2.07335921293852),
-#                 (-180.0, 180.0),
-#                 (-180.0, 180.0),
-#                 (-180.0, 180.0),
-#             ],
-#         ),
-#     ],
-# )
-# def test_SC_bounds_grep(molecule1, molecule2, radius, expected_bounds):
-#     """
-#     Test @property associated with bounds variable
-#     """
-#     assert (
-#         SearchConfig(Cluster(molecule1, molecule2, sphere_radius=radius)).bounds
-#         == expected_bounds
-#     )
+@pytest.mark.parametrize(
+    "molecule1, molecule2, radius, expected_bounds",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            2.07335921293852,
+            [
+                (-2.07335921293852, 2.07335921293852),
+                (-2.07335921293852, 2.07335921293852),
+                (-2.07335921293852, 2.07335921293852),
+                (-180.0, 180.0),
+                (-180.0, 180.0),
+                (-180.0, 180.0),
+            ],
+        ),
+    ],
+)
+def test_ClusterObjectGrepBounds(molecule1, molecule2, radius, expected_bounds):
+    """
+    Test bounds of Cluster object
+    """
+    search_config = SearchConfig(Cluster(molecule1, molecule2, sphere_radius=radius))
+    assert (
+        search_config.GetBounds()
+        == expected_bounds
+    )
 
 
-# @pytest.mark.parametrize(
-#     "molecule1, molecule2, new_bounds",
-#     [
-#         (
-#             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-#             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-#             [
-#                 (-2.6341135544995076, 1.6341135544995076),
-#                 (-2.6341135544995076, 1.6341135544995076),
-#                 (-2.6341135544995076, 1.6341135544995076),
-#                 (0, 3.16),
-#                 (0, 3.16),
-#                 (0, 3.16),
-#             ],
-#         ),
-#     ],
-# )
-# def test_SC_new_bounds_grep(molecule1, molecule2, new_bounds):
-#     """
-#     Test @property associated with bounds variable
-#     """
-#     obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-#     obj_sc.bounds = new_bounds
-#     assert obj_sc.bounds == new_bounds
+@pytest.mark.parametrize(
+    "molecule1, molecule2, new_bounds",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            [
+                (-2.6341135544995076, 1.6341135544995076),
+                (-2.6341135544995076, 1.6341135544995076),
+                (-2.6341135544995076, 1.6341135544995076),
+                (0, 3.16),
+                (0, 3.16),
+                (0, 3.16),
+            ],
+        ),
+    ],
+)
+def test_ClusterObjectSetBounds(molecule1, molecule2, new_bounds):
+    """
+    Test SetBounds
+    """
+    obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+    obj_sc.SetBounds(new_bounds)
+    assert obj_sc.GetBounds() == new_bounds
 
 
 # @pytest.mark.parametrize(

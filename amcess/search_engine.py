@@ -52,13 +52,14 @@ class SearchConfig:
         basis: str = "sto-3g",
         outxyz: str = "configurations.xyz",
         cost_function="pyscf",
+        bounds=None,
     ) -> None:
         # ---------------------------------------------------------------
         # Verfication and instantiation (type, value)
         # -- Cluster Object
         #    Calculate center and radius sphere when are null
         self._system_object = system_object
-        if self._system_object.GetSphereR() is None:
+        if self._system_object.GetSphereR() is None and bounds is None:
             self._system_object = system_object.CalCentRSphere()
         # -- Search Methodology: ASCEC, SHGO, dual_annealing, Bayesian
         self._search_type = search_type
@@ -71,24 +72,27 @@ class SearchConfig:
         # -- Cost function: pyscf, Lennard_Jones
         self._func_cost = cost_function
         # ---------------------------------------------------------------
-        # Build bounds, format for scipy functions
-        sphere_radius = self._system_object.GetSphereR()
-        # -- translate bounds
-        bound_translate = [
-            (-sphere_radius, sphere_radius),
-            (-sphere_radius, sphere_radius),
-            (-sphere_radius, sphere_radius),
-        ]
-        # -- rotate bounds
-        bound_rotate = [(-180, 180), (-180, 180), (-180, 180)]
-        # -- Multiply bounds by the amount of molecules
-        bound_translate = (  # noqa
-            self._system_object.GetNumMols() - 1
-        ) * bound_translate
+        if bounds is None:
+            # Build bounds, format for scipy functions
+            sphere_radius = self._system_object.GetSphereR()
+            # -- translate bounds
+            bound_translate = [
+                (-sphere_radius, sphere_radius),
+                (-sphere_radius, sphere_radius),
+                (-sphere_radius, sphere_radius),
+            ]
+            # -- rotate bounds
+            bound_rotate = [(-180, 180), (-180, 180), (-180, 180)]
+            # -- Multiply bounds by the amount of molecules
+            bound_translate = (  # noqa
+                self._system_object.GetNumMols() - 1
+            ) * bound_translate
 
-        bound_rotate = bound_rotate * (self._system_object.GetNumMols() - 1)
-        # -- concatenate bounds
-        self._bounds = bound_translate + bound_rotate
+            bound_rotate = bound_rotate * (self._system_object.GetNumMols() - 1)
+            # -- concatenate bounds
+            self._bounds = bound_translate + bound_rotate
+        else:
+            self._bounds = bounds
 
     # ===============================================================
     # PROPERTIES
