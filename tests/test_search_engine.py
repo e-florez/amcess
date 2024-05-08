@@ -516,289 +516,123 @@ def test_SetCostFunctionTypeError(molecule1, molecule2):
     )
 
 
-# @pytest.mark.parametrize(
-#     "molecule1, molecule2, new_methodology",
-#     [
-#         (
-#             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-#             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-#             2,
-#         ),
-#     ],
-# )
-# def test_SC_methodology_VE_set(molecule1, molecule2, new_methodology):
-#     """
-#     Test TypeError @methodology.setter
-#     """
-#     with pytest.raises(TypeError) as e:
-#         obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-#         obj_sc.methodology = new_methodology
-#     assert (
-#         str(e.value) == "\n\nThe new name to methodology is not a string"
-#         f"\nplease, check: '{type(new_methodology)}'\n"
-#     )
+@pytest.mark.parametrize(
+    "molecule1, molecule2, expectation",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            "pyscf",
+        ),
+    ],
+)
+def test_GetCostFunction(molecule1, molecule2, expectation):
+    """
+    Test GetCostFun
+    """
+    obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+    assert obj_sc.GetCostFun() == expectation
 
 
-# @pytest.mark.parametrize(
-#     "molecule1, molecule2, expected",
-#     [
-#         (
-#             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-#             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-#             "HF",
-#         ),
-#     ],
-# )
-# def test_SC_methodology_number_grep(molecule1, molecule2, expected):
-#     """
-#     Test default methodology (Hartree-Fock)
-#     """
-#     obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-#     assert obj_sc.methodology == expected
+@pytest.mark.parametrize(
+    "molecule1, molecule2, new_methodology",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            2,
+        ),
+    ],
+)
+def test_SetMethodology(molecule1, molecule2, new_methodology):
+    """
+    Test TypeError associated with set methodology/Hamiltonian
+    """
+    with pytest.raises(TypeError) as e:
+        obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+        obj_sc.SetMethodology(new_methodology)
+    assert (
+        str(e.value) == "\n\nThe new name to methodology is not a string"
+        f"\nplease, check: '{type(new_methodology)}'\n"
+    )
 
 
-# @pytest.mark.parametrize(
-#     "molecule1, molecule2, expected",
-#     [
-#         (
-#             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-#             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-#             "DFT",
-#         ),
-#     ],
-# )
-# def test_SC_methodology_number_set(molecule1, molecule2, expected):
-#     """
-#     Test default methodology (Hartree-Fock)
-#     """
-#     obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-#     obj_sc.methodology = expected
-#     assert obj_sc.methodology == expected
+@pytest.mark.parametrize(
+    "molecule1, molecule2, expected",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            "HF",
+        ),
+    ],
+)
+def test_GetMethodology(molecule1, molecule2, expected):
+    """
+    Test default methodology (Hartree-Fock)
+    """
+    obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+    assert obj_sc.GetMethodology() == expected
 
 
-# @pytest.mark.parametrize(
-#     "molecule1, molecule2, expectation",
-#     [
-#         (
-#             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-#             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-#             "pyscf",
-#         ),
-#     ],
-# )
-# def test_SC_new_cost_function(molecule1, molecule2, expectation):
-#     """
-#     Test ValueError @sphere_radius.setter
-#     """
-#     obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-#     assert obj_sc._func_cost == expectation
+@pytest.mark.parametrize(
+    "molecule1, molecule2, expected",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            "DFT",
+        ),
+    ],
+)
+def test_SetGetMethodology(molecule1, molecule2, expected):
+    """
+    Test default methodology (Hartree-Fock)
+    """
+    obj_sc = SearchConfig(Cluster(molecule1, molecule2))
+    obj_sc.SetMethodology(expected)
+    assert obj_sc.GetMethodology() == expected
 
 
-# @pytest.mark.parametrize(
-#     "molecule1, molecule2",
-#     [
-#         (
-#             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-#             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-#         ),
-#     ],
-# )
-# def test_SC_run_ascec_method(molecule1, molecule2):
-#     """
-#     Test SC.run method for ascec
-#     """
-#     kwargs = {"number_temperatures": 1, "maxCycles": 10}
-#     SearchConfig(Cluster(molecule1, molecule2)).run(**kwargs)
-#     with open("configurations.xyz", "r") as f:
-#         readl = f.readline()
-#     os.remove("configurations.xyz")
-#     assert readl == "4\n"
+@pytest.mark.parametrize(
+    "molecule1, molecule2",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+        ),
+    ],
+)
+def test_RunSearchASCEC(molecule1, molecule2):
+    """
+    Test SC.RunSearch with ASCEC
+    """
+    kwargs = {"number_temperatures": 1, "maxCycles": 10}
+    SearchConfig(Cluster(molecule1, molecule2)).RunSearch(**kwargs)
+    with open("configurations.xyz", "r") as f:
+        readl = f.readline()
+    os.remove("configurations.xyz")
+    assert readl == "4\n"
 
 
-# @pytest.mark.parametrize(
-#     "molecule1, molecule2, method_min",
-#     [
-#         (
-#             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-#             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-#             "dual_annealing",
-#         ),
-#     ],
-# )
-# def test_SC_run_da_method(molecule1, molecule2, method_min):
-#     """
-#     Test SC.run method for dual annealing
-#     """
-#     SearchConfig(Cluster(molecule1, molecule2), search_methodology=method_min).run(
-#         maxfun=1, maxiter=1
-#     )
-#     with open("configurations.xyz", "r") as f:
-#         readl = f.readline()
-#     os.remove("configurations.xyz")
-#     assert readl == "4\n"
-
-
-# # @pytest.mark.parametrize(
-# #     "molecule1, molecule2, search_meth",
-# #     [
-# #         (
-# #             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-# #             [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
-# #             "SHGO",
-# #         ),
-# #     ],
-# # )
-# # def test_SC_run_shgo_method(molecule1, molecule2, search_meth):
-# #     """
-# #     Test SC.run method for shgo
-# #     """
-# #     SearchConfig(Cluster(molecule1, molecule2), search_methodology=search_meth).run(
-# #         sampling_method="sobol", n=1
-# #     )
-# #     with open("configurations.xyz", "r") as f:
-# #         readl = f.readline()
-# #     os.remove("configurations.xyz")
-# #     assert readl == "4\n"
-
-
-# @pytest.mark.parametrize(
-#     "molecule1, molecule2, search_meth, initer, maxiter",
-#     [
-#         (
-#             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-#             [("H", 0.0, 0.0, 3.0), ("H", 0.78, 0.0, 3.0)],
-#             "Bayesian",
-#             3,
-#             3,
-#         ),
-#     ],
-# )
-# def test_SC_run_bayesian_method(molecule1, molecule2, search_meth, initer, maxiter):
-#     """
-#     Test SC.run method for bayesian
-#     """
-#     SearchConfig(Cluster(molecule1, molecule2), search_methodology=search_meth).run(
-#         initer=initer, maxiter=maxiter
-#     )
-#     with open("configurations.xyz", "r") as f:
-#         readl = f.readline()
-#     os.remove("configurations.xyz")
-#     assert readl == "4\n"
-
-
-# @pytest.mark.parametrize(
-#     "molecule1, molecule2, search_meth, initer, maxiter, num_cores",
-#     [
-#         (
-#             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-#             [("H", 0.0, 0.0, 3.0), ("H", 0.78, 0.0, 3.0)],
-#             "Bayesian",
-#             3,
-#             3,
-#             2,
-#         ),
-#     ],
-# )
-# def test_SC_run_parallel_bayesian_method(
-#     molecule1, molecule2, search_meth, initer, maxiter, num_cores
-# ):
-#     """
-#     Test SC.run method for bayesian
-#     """
-#     SearchConfig(Cluster(molecule1, molecule2), search_methodology=search_meth).run(
-#         initer=initer, maxiter=maxiter, num_cores=num_cores
-#     )
-#     with open("configurations.xyz", "r") as f:
-#         readl = f.readline()
-#     os.remove("configurations.xyz")
-#     assert readl == "4\n"
-
-
-# @pytest.mark.parametrize(
-#     "molecule1, molecule2, search_meth, initer, maxiter, MCMC",
-#     [
-#         (
-#             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-#             [("H", 0.0, 0.0, 3.0), ("H", 0.78, 0.0, 3.0)],
-#             "Bayesian",
-#             3,
-#             3,
-#             True,
-#         ),
-#     ],
-# )
-# def test_SC_run_MCMC_bayesian_method(
-#     molecule1, molecule2, search_meth, initer, maxiter, MCMC
-# ):
-#     """
-#     Test SC.run method for bayesian
-#     """
-#     SearchConfig(Cluster(molecule1, molecule2), search_methodology=search_meth).run(
-#         initer=initer, maxiter=maxiter, MCMC=MCMC
-#     )
-#     with open("configurations.xyz", "r") as f:
-#         readl = f.readline()
-#     os.remove("configurations.xyz")
-#     assert readl == "4\n"
-
-
-# @pytest.mark.parametrize(
-#     "molecule1, molecule2",
-#     [
-#         (
-#             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-#             [("H", 0.0, 0.0, 3.0), ("H", 0.78, 0.0, 3.0)],
-#         ),
-#     ],
-# )
-# def test_system_object_grep(molecule1, molecule2):
-#     """
-#     Test Ascec.criterion else
-#     """
-#     obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-#     obj_sc.system_object
-
-
-# @pytest.mark.parametrize(
-#     "molecule1, molecule2, expected",
-#     [
-#         (
-#             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-#             [("H", 0.0, 0.0, 3.0), ("H", 0.78, 0.0, 3.0)],
-#             "pyscf",
-#         ),
-#     ],
-# )
-# def test_func_cost_grep(molecule1, molecule2, expected):
-#     """
-#     Test func_cost grep
-#     """
-#     assert SearchConfig(Cluster(molecule1, molecule2)).func_cost == expected
-
-
-# # This test is for ascec criterion
-# @pytest.mark.parametrize(
-#     "molecule1, molecule2",
-#     [
-#         (
-#             [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
-#             [("H", 0.0, 0.0, 3.0), ("H", 0.78, 0.0, 3.0)],
-#         ),
-#     ],
-# )
-# def test_Ascec_ascec_method(molecule1, molecule2):
-#     """
-#     Test Ascec.criterion else
-#     """
-#     obj_sc = SearchConfig(Cluster(molecule1, molecule2))
-#     ascec = Ascec(
-#         obj_sc._system_object,
-#         obj_sc._search_methodology,
-#         obj_sc._methodology,
-#         obj_sc._basis_set,
-#         program="pyscf",
-#         bounds=obj_sc._bounds,
-#     )
-#     ascec.e_before = -0.0001
-#     ascec.energy_current = 0.0001
-#     ascec.ascec_criterion(100.0)
+@pytest.mark.parametrize(
+    "molecule1, molecule2, method_min",
+    [
+        (
+            [("H", 0.0, 0.0, 0.0), ("H", 0.78, 0.0, 0.0)],
+            [("H", 0.0, 0.0, 1.0), ("H", 0.78, 0.0, 1.0)],
+            "dual_annealing",
+        ),
+    ],
+)
+def test_RunSearchDualAnnealing(molecule1, molecule2, method_min):
+    """
+    Test SC.RunSearch method for dual annealing
+    """
+    SearchConfig(Cluster(molecule1, molecule2), search_type=method_min).RunSearch(
+        maxfun=1, maxiter=1
+    )
+    with open("configurations.xyz", "r") as f:
+        readl = f.readline()
+    os.remove("configurations.xyz")
+    assert readl == "4\n"

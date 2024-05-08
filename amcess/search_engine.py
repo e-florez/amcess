@@ -232,7 +232,7 @@ class SearchConfig:
                 search_type=self.GetSearchType(),
                 methodology=self.GetMethodology(),
                 basis_set=self.GetBasisSet(),
-                program=self.GetFuncCost(),
+                program=self.GetCostFun(),
                 bounds=self.GetBounds(),
                 **kwargs,
             )
@@ -254,7 +254,7 @@ class SearchConfig:
                     self._basis_set,
                 )
 
-            cost_func = obj_ee.Pyscf()
+            cost_func = obj_ee.Pyscf # ! with parenthesis return error
 
             self._search = func(
                 cost_func,
