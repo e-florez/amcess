@@ -394,23 +394,6 @@ class Molecule(Mol):
         """Return the list of coordinates"""
         return [a.GetCoord() for a in self.GetAtoms()]
 
-    def GetNumberingAtoms(self) -> str:
-        """show atom number line by line
-
-        .. rubric:: Returns
-
-        str
-            atom number line by line
-        """
-        numbered_atoms = list()
-        for count, axyz in enumerate(self.GetMolList()):
-            line = list(f"\r  atom #{count} --> {axyz[0]:<6}")
-            line.append(f"{axyz[1]:> 15.8f}")
-            line.append(f"{axyz[2]:> 15.8f}")
-            line.append(f"{axyz[3]:> 15.8f}")
-            numbered_atoms.append("".join(line))
-        return "\n".join(numbered_atoms)
-
     def GetMolCharge(self) -> int:
         """Total molecular/atomic charge"""
         return self._charge
@@ -462,6 +445,23 @@ class Molecule(Mol):
     def GetMolMultiplicity(self) -> int:
         """Return the molecular/atomic multiplicity"""
         return self._multiplicity
+
+    def GetNumberingAtoms(self) -> str:
+        """show atom number line by line
+
+        .. rubric:: Returns
+
+        str
+            atom number line by line
+        """
+        numbered_atoms = list()
+        for count, axyz in enumerate(self.GetMolList()):
+            line = list(f"\r  atom #{count} --> {axyz[0]:<6}")
+            line.append(f"{axyz[1]:> 15.8f}")
+            line.append(f"{axyz[2]:> 15.8f}")
+            line.append(f"{axyz[3]:> 15.8f}")
+            numbered_atoms.append("".join(line))
+        return "\n".join(numbered_atoms)
 
     def GetMolPrincipalAxes(self) -> list[float]:
         """Principal axes for according to Jacobi coordinates"""
