@@ -59,7 +59,7 @@ setup(
     edisonffhc@gmail.com,
     danianescobarv@gmail.com
     """,
-    packages=["amcess", "amcess/data"],
+    packages=["amcess"],
     install_requires=REQUIREMENTS,
     license="The GPLv3 License",
     description="Atomic and Molecular Cluster Energy Surface Sampler",

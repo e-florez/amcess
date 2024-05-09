@@ -46,7 +46,7 @@ class Molecule(Mol):
         total molecular/atomic charge, by default zero (0)
 
     multiplicity : int
-        larger than zero, by defaul one (1)
+        larger than zero, by default one (1)
     """
 
     # ! attributes initial of Molecule class, some they have default value

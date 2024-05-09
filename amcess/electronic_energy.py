@@ -111,31 +111,39 @@ class ElectronicEnergy:
     # ===============================================================
     # PROPERTIES
     # ===============================================================
-    def GetBeforeSystem(self):
+    def GetBeforeSystem(self) -> object:
+        """Before Cluster Object in the Searching"""
         return self._before_system
 
-    def GetCurrentSystem(self):
+    def GetCurrentSystem(self) -> object:
+        """Current Cluster Object in the Searching"""
         return self._current_system
-    
-    def GetDFTFunctional(self):
+
+    def GetDFTFunctional(self) -> str:
+        """DFT Functional Name"""
         return self._dft_functional
 
-    def GetInitialSystem(self):
+    def GetInitialSystem(self) -> object:
+        """Initial Cluster Object in the Searching"""
         return self._initial_system
 
     # ! Setter
 
+    def SetBeforeSystem(self, new_before_system):
+        """Before Cluster Object in the Searching"""
+        self._before_system = new_before_system
+
     def SetCurrentSystem(self, new_current_system):
+        """Current Cluster Object in the Searching"""
         self.SetBeforeSystem(self._current_system)
         self._current_system = new_current_system
 
-    def SetBeforeSystem(self, new_before_system):
-        self._before_system = new_before_system
-
     def SetDFTFunctional(self, new_functional):
+        """DFT Functional Name"""
         self._dft_functional = new_functional
 
     def SetInitialSystem(self, new_initial_system):
+        """Initial Cluster Object in the Searching"""
         (
             self._initial_system,
             self._before_system,
@@ -145,9 +153,11 @@ class ElectronicEnergy:
             new_initial_system,
             new_initial_system,
         )
+
     # ===============================================================
     # Methods
     # ===============================================================
+
     def InputMolPyscf(self):
         """
         Build a portion of the input for the gto object of pyscf

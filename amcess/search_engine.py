@@ -1,9 +1,8 @@
-from scipy.optimize import dual_annealing, shgo  # type: ignore
+from scipy.optimize import dual_annealing  # noqa
 
 from amcess.ascec import Ascec
 from amcess.cluster import Cluster
 from amcess.electronic_energy import ElectronicEnergy
-# from amcess.gaussian_process import solve_gaussian_processes
 
 METHODS = {
     "ASCEC": Ascec,
@@ -86,7 +85,7 @@ class SearchConfig:
                 self._system_object.GetNumMols() - 1
             ) * bound_translate
 
-            bound_rotate = bound_rotate * (self._system_object.GetNumMols() - 1)
+            bound_rotate = bound_rotate * (self._system_object.GetNumMols() - 1) # noqa
             # -- concatenate bounds
             self._bounds = bound_translate + bound_rotate
         else:
@@ -183,7 +182,7 @@ class SearchConfig:
                 "\n\nThe new search methodology is not a string"
                 f"\nplease, check: '{type(change_search_type)}'\n"
             )
-        if change_search_type not in METHODS and not callable(change_search_type):
+        if change_search_type not in METHODS and not callable(change_search_type): # noqa
             available = list(METHODS.keys())
             raise ValueError(f"Invalid value. options are: {available}")
 
@@ -248,7 +247,8 @@ class SearchConfig:
                     self._basis_set,
                 )
 
-            cost_func = obj_ee.Pyscf # ! with parenthesis return error
+            # ! with parenthesis return error
+            cost_func = obj_ee.Pyscf
 
             self._search = func(
                 cost_func,
