@@ -335,17 +335,17 @@ class Cluster(Molecule):
                 if i == 0:
                     mol = new_cluster.GetMol(molecule)
                     new_geom[i] = Molecule(
-                        mol.GetMolList(), mol.GetMolCharge(), mol.GetMolMultiplicity()
+                        mol.GetMolList(), mol.GetMolCharge(), mol.GetMolMultiplicity() # noqa
                     )
                 elif i == molecule:
                     mol = new_cluster.GetMol(0)
                     new_geom[i] = Molecule(
-                        mol.GetMolList(), mol.GetMolCharge(), mol.GetMolMultiplicity()
+                        mol.GetMolList(), mol.GetMolCharge(), mol.GetMolMultiplicity() # noqa
                     )
                 else:
                     mol = new_cluster.GetMol(i)
                     new_geom[i] = Molecule(
-                        mol.GetMolList(), mol.GetMolCharge(), mol.GetMolMultiplicity()
+                        mol.GetMolList(), mol.GetMolCharge(), mol.GetMolMultiplicity() # noqa
                     )
             # ---------------------------------------------------------------
             # Instantiation of Cluster object with radius and center sphere
@@ -359,7 +359,7 @@ class Cluster(Molecule):
             for i in range(molecules_number):
                 mol = new_cluster.GetMol(i)
                 new_geom[i] = Molecule(
-                    mol.GetMolList(), mol.GetMolCharge(), mol.GetMolMultiplicity()
+                    mol.GetMolList(), mol.GetMolCharge(), mol.GetMolMultiplicity() # noqa
                 )
             return self.__class__(
                 *new_geom.values(),
