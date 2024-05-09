@@ -1,6 +1,6 @@
 import numpy as np
-from scipy.spatial.transform import Rotation
-from rdkit.Chem.rdchem import Mol
+from scipy.spatial.transform import Rotation  # noqa
+from rdkit.Chem.rdchem import Mol  # noqa
 
 from amcess.molecule import Molecule
 
@@ -9,8 +9,8 @@ class Cluster(Molecule):
     """
     This class inherits attributes of the Molecule class and therefore,
     the Mol class from RDKit, for more information:
-        *) https://www.rdkit.org/docs/source/rdkit.Chem.rdchem.html#rdkit.Chem.rdchem.Mol
-    
+    *) https://www.rdkit.org/docs/source/rdkit.Chem.rdchem.html#rdkit.Chem.rdchem.Mol # noqa
+
     ! Class description:
     Create a Cluster with molecules/atoms to move and rotate
     using spherical boundary conditions (SBC).
@@ -43,9 +43,9 @@ class Cluster(Molecule):
     def __init__(
         self,
         *args,
-        freeze_molecule = None,
-        sphere_radius = None,
-        sphere_center: tuple[float, float, float] = (0., 0., 0.),
+        freeze_molecule=None,
+        sphere_radius=None,
+        sphere_center: tuple[float, float, float] = (0.0, 0.0, 0.0),
         seed: int = None,
     ):
         self._cluster_dict: dict = dict()
@@ -98,7 +98,7 @@ class Cluster(Molecule):
                     f"\nyou have a NOT valid '{type(mol)}', check: \n{mol}"
                 )
 
-            self.cluster_atoms += new_molecule.GetMolList() 
+            self.cluster_atoms += new_molecule.GetMolList()
             # ! how is computed the cluster total multiplicity?
             self._charge += new_molecule.GetMolCharge()
             self._cluster_dict[size] = new_molecule
@@ -127,9 +127,11 @@ class Cluster(Molecule):
         for count, m in self.GetClusterDict().items():
             new_cluster[count] = m.GetMolDict()
         new_cluster[self.GetNumMols] = Molecule(other).GetMolDict()
-        return Cluster(*new_cluster.values(),
-                       sphere_center=self.GetSphereCenter(),
-                       sphere_radius=self.GetSphereR())
+        return Cluster(
+            *new_cluster.values(),
+            sphere_center=self.GetSphereCenter(),
+            sphere_radius=self.GetSphereR(),
+        )
 
     def __mul__(self, value: int) -> object:
         """multiply the cluster by a number"""
@@ -158,9 +160,11 @@ class Cluster(Molecule):
         for _ in range(value):
             new_cluster += self
 
-        return Cluster(*new_cluster.GetClusterDict().values(),
-                       sphere_center=self.GetSphereCenter(),
-                       sphere_radius=self.GetSphereR())
+        return Cluster(
+            *new_cluster.GetClusterDict().values(),
+            sphere_center=self.GetSphereCenter(),
+            sphere_radius=self.GetSphereR(),
+        )
 
     def __str__(self) -> str:
         """print the cluster"""
@@ -188,7 +192,7 @@ class Cluster(Molecule):
     def GetClusterDict(self) -> dict:
         """return the cluster dictionary"""
         return self._cluster_dict
-    
+
     def GetClusterList(self) -> list:
         """return the cluster list"""
         return [mol for mol in self._cluster_dict.values()]
@@ -234,14 +238,14 @@ class Cluster(Molecule):
         return self._seed
 
     # ! Setter
-    def SetFreezeMol(self, id: list[int]) -> None:
+    def SetFreezeMol(self, idx: list) -> None:
         """set the freeze molecules"""
-        if isinstance(id, list):
-            self._freeze_molecule = id
-        elif isinstance(id, int):
-            self._freeze_molecule = [id]
+        if isinstance(idx, list):
+            self._freeze_molecule = idx
+        elif isinstance(idx, int):
+            self._freeze_molecule = [idx]
         else:
-            raise TypeError(f"id {type(id)} can only be a list or int")
+            raise TypeError(f"id {type(idx)} can only be a list or int")
 
     def SetSeed(self, seed: int) -> None:
         """set the seed for the random generator"""
@@ -330,19 +334,19 @@ class Cluster(Molecule):
             for i in range(molecules_number):
                 if i == 0:
                     mol = new_cluster.GetMol(molecule)
-                    new_geom[i] = Molecule(mol.GetMolList(),
-                                           mol.GetMolCharge(),
-                                           mol.GetMolMultiplicity())
+                    new_geom[i] = Molecule(
+                        mol.GetMolList(), mol.GetMolCharge(), mol.GetMolMultiplicity()
+                    )
                 elif i == molecule:
                     mol = new_cluster.GetMol(0)
-                    new_geom[i] = Molecule(mol.GetMolList(),
-                                           mol.GetMolCharge(),
-                                           mol.GetMolMultiplicity())
+                    new_geom[i] = Molecule(
+                        mol.GetMolList(), mol.GetMolCharge(), mol.GetMolMultiplicity()
+                    )
                 else:
                     mol = new_cluster.GetMol(i)
-                    new_geom[i] = Molecule(mol.GetMolList(),
-                                           mol.GetMolCharge(),
-                                           mol.GetMolMultiplicity())
+                    new_geom[i] = Molecule(
+                        mol.GetMolList(), mol.GetMolCharge(), mol.GetMolMultiplicity()
+                    )
             # ---------------------------------------------------------------
             # Instantiation of Cluster object with radius and center sphere
             return self.__class__(
@@ -354,9 +358,9 @@ class Cluster(Molecule):
             new_geom = {}
             for i in range(molecules_number):
                 mol = new_cluster.GetMol(i)
-                new_geom[i] = Molecule(mol.GetMolList(),
-                                       mol.GetMolCharge(),
-                                       mol.GetMolMultiplicity())
+                new_geom[i] = Molecule(
+                    mol.GetMolList(), mol.GetMolCharge(), mol.GetMolMultiplicity()
+                )
             return self.__class__(
                 *new_geom.values(),
                 sphere_center=center,
@@ -392,9 +396,9 @@ class Cluster(Molecule):
             molecule = Cluster(self.GetClusterDict()[i])
             molecule = molecule.TranslateMol(0, sc_x, sc_y, sc_z)
             if Cluster.Overlapping(  # noqa
-                molecule.GetMolCoord(), 
-                new_cluster.GetMolCoord()
-                #molecule.coordinates, new_cluster.coordinates
+                molecule.GetMolCoord(),
+                new_cluster.GetMolCoord(),
+                # molecule.coordinates, new_cluster.coordinates
             ):
                 new_cluster += molecule
                 new_cluster = new_cluster.MoveMol(
@@ -412,7 +416,7 @@ class Cluster(Molecule):
             sphere_radius=self.GetSphereR(),
             sphere_center=self.GetSphereCenter(),
         )
-    
+
     @staticmethod
     def Overlapping(
         first_coordinates: list,
@@ -504,7 +508,6 @@ class Cluster(Molecule):
         max_overlap_cycle: int = 10000
 
         for count in range(max_overlap_cycle):
-
             if count % 10 == 0:
                 max_step *= 1.1
                 max_rotation *= 1.1
@@ -654,7 +657,7 @@ class Cluster(Molecule):
         """Returns a NEW Molecule Object with a TRANSLATED fragment"""
         # avoiding to rotate a FROZEN molecule
         if molecule in self.GetFreezeMol():
-            #return deepcopy(self)
+            # return deepcopy(self)
             return self
 
         if (
@@ -685,7 +688,6 @@ class Cluster(Molecule):
             translatedcoordinates - np.asarray(self.GetSphereCenter())
         )
         if self.GetSphereR() and (distance > self.GetSphereR()):
-
             max_distance: float = self.GetSphereR() / np.linalg.norm(
                 translatedcoordinates - np.asarray(self.GetSphereCenter())
             )
@@ -710,5 +712,5 @@ class Cluster(Molecule):
             *new_cluster._cluster_dict.values(),
             freeze_molecule=new_cluster.GetFreezeMol(),
             sphere_radius=new_cluster.GetSphereR(),
-            sphere_center=new_cluster.GetSphereCenter()
+            sphere_center=new_cluster.GetSphereCenter(),
         )

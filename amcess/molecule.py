@@ -1,19 +1,14 @@
-# from copy import deepcopy
-# from rdkit.Chem import AllChem  # type: ignore
 from pathlib import Path
 
 import attr
 import numpy as np
 from rdkit import Chem
-from rdkit.Chem import AllChem
-from rdkit.Chem import Descriptors
+from rdkit.Chem import AllChem  # type: ignore
+from rdkit.Chem import Descriptors  # type: ignore
 from rdkit.Chem import rdDetermineBonds
 from rdkit.Chem.rdchem import Mol
 
-
 from amcess.atom import Atom
-from rdkit import Chem  # type: ignore
-from rdkit.Chem import AllChem, Descriptors  # type: ignore
 
 # This dictionary is a menu to call  RDKit's function according
 # input's format that contains the molecular information
@@ -33,7 +28,7 @@ class Molecule(Mol):
     """
     This class inherits attributes of the Mol class from RDKit,
     for more information:
-        *) https://www.rdkit.org/docs/source/rdkit.Chem.rdchem.html#rdkit.Chem.rdchem.Mol
+    *) https://www.rdkit.org/docs/source/rdkit.Chem.rdchem.html#rdkit.Chem.rdchem.Mol # noqa
 
     !Class description:
     Create a Molecule that is at least ONE atom.
@@ -77,7 +72,7 @@ class Molecule(Mol):
         self._molecule: list = []
         for line, atom in enumerate(atoms):
             try:
-                #! Check atom informations
+                # ! Check atom informations
                 Atom(*atom)
             except (ValueError, TypeError) as err:
                 raise TypeError(
@@ -98,7 +93,9 @@ class Molecule(Mol):
         """
         Check that information in dict is Ok
         Example:
-        {"atoms": [(<element> <X> <Y> <Z>), ...], "charge": 0, "multiplicty": 1}
+        {"atoms": [(<element> <X> <Y> <Z>), ...],
+         "charge": 0,
+         "multiplicty": 1}
         """
         self._check_atom(atoms["atoms"])
 
@@ -183,7 +180,7 @@ class Molecule(Mol):
             if Path(file).suffix.lower() in [".xyz"]:
                 rdDetermineBonds.DetermineConnectivity(mol)
         else:
-            mol = EXT_FILE[Path(file).suffix.lower()](file, removeHs=self._removeHs)
+            mol = EXT_FILE[Path(file).suffix.lower()](file, removeHs=self._removeHs)  # noqa
 
         if self._addHs:
             if Path(file).suffix.lower() == ".mol2":
@@ -309,7 +306,7 @@ class Molecule(Mol):
                 f"\ncheck --> '{value}'"
             )
 
-        tcoordinates: list = [at for i in range(value) for at in self.GetMolList()]
+        tcoordinates: list = [at for i in range(value) for at in self.GetMolList()]  # noqa
         tcharge: int = 0
         tmultiplicity: int = 0
         for i in range(value):
@@ -378,9 +375,9 @@ class Molecule(Mol):
     def GetBlockXYZ(self) -> str:
         """Printing Molecule coordinates using XYZ format"""
         write_coordinates: str = ""
-        comment: str = (
-            f"charge: {self.GetMolCharge()} multiplicity: {self.GetMolMultiplicity()}"
-        )
+        charge = self.GetMolCharge()
+        multiplicity = self.GetMolMultiplicity()
+        comment: str = f"charge: {charge} multiplicity: {multiplicity}"
         write_coordinates += f"{len(self.GetAtomicSymbols())}\n{comment}\n"
         for atom in self.GetAtoms():
             write_coordinates += f"""{atom.GetSymbol():<6}"""
@@ -433,8 +430,9 @@ class Molecule(Mol):
 
     def GetMolList(self) -> list[tuple[str, float, float, float]]:
         """Return the dict atoms"""
+        atoms = self.GetAtoms()
         list_atoms: list[tuple[str, float, float, float]] = [
-            tuple([a.GetSymbol()] + list(a.GetCoord())) for a in self.GetAtoms()
+            tuple([a.GetSymbol()] + list(a.GetCoord())) for a in atoms
         ]
         return list_atoms
 
@@ -463,15 +461,10 @@ class Molecule(Mol):
             numbered_atoms.append("".join(line))
         return "\n".join(numbered_atoms)
 
-    def GetMolPrincipalAxes(self) -> list[float]:
+    def GetMolPrincipalAxes(self) -> list[tuple[float, float, float]]:
         """Principal axes for according to Jacobi coordinates"""
-        return [
-            tuple(c)
-            for c in
-            (  # noqa
-                np.asarray(self.GetMolCoord()) - np.asarray(self.GetMolCM())
-            )
-        ]
+        axes = np.asarray(self.GetMolCoord()) - np.asarray(self.GetMolCM())
+        return [tuple(c) for c in axes]
 
     #################################################################
     # ! Setter
@@ -480,7 +473,8 @@ class Molecule(Mol):
         """Set the total molecular/atomic charge"""
         if not isinstance(charge, int):
             raise ValueError(
-                "\n\ncharge must be an integer " f"\nyou get --> 'charge = {charge}'\n"
+                "\n\ncharge must be an integer "  # type: ignore
+                f"\nyou get --> 'charge = {charge}'\n"
             )
         self._charge = charge
 

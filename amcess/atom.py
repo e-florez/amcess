@@ -1,7 +1,5 @@
 from rdkit.Chem.rdchem import Atom as RDKAtom
 
-from .data.atomic_data import atomic_mass
-
 
 class Atom(RDKAtom):
     # ===============================================================
@@ -34,7 +32,12 @@ class Atom(RDKAtom):
         .. rubric:: Returns
 
         atom : object
-            object like dict {'element': str, 'x': float, 'y': float, 'z': float}
+            object like dict {
+                              'element': str,
+                                    'x': float,
+                                    'y': float,
+                                    'z': float
+                             }
 
         .. rubric:: Raises
 
@@ -52,7 +55,8 @@ class Atom(RDKAtom):
     # ===============================================================
     def __str__(self):
         """Magic method '__str__' to print the object as a dictionary"""
-        return f"atom: {self.GetSymbol()}, x: {self.x}, y: {self.y}, z: {self.z}"
+        atom = self.GetSymbol()
+        return f"atom: {atom}, x: {self.x}, y: {self.y}, z: {self.z}"
 
     # ===============================================================
     # PROPERTIES
@@ -75,7 +79,8 @@ class Atom(RDKAtom):
             if not isinstance(value, (int, float)):
                 raise ValueError(
                     "\n\nMust be valid NOT empty float"
-                    f"\nyou get --> '{value}' with type: '{type(value).__name__}'"
+                    f"\nyou get --> '{value}' with type:"
+                    f"'{type(value).__name__}'"
                 )
         self.x = x
         self.y = y
