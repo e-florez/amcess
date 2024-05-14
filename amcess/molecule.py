@@ -201,10 +201,10 @@ class Molecule(Mol):
         multiplicity : int
             larger than zero, by default one (1)
 
-        NOTE: The description is here to avoid errors with sphinx, because the 
+        NOTE: The description is here to avoid errors with sphinx, because the
               class doesn't start with __init__ method
         """
-        
+
         if isinstance(atoms, (Molecule, Chem.rdchem.Mol)):
             self._init_mol_rdkit(atoms)
             self._check_atom(atoms.GetMolList())

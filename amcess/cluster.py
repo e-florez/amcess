@@ -12,7 +12,7 @@ class Cluster(Molecule):
         freeze_molecule=None,
         sphere_radius=None,
         sphere_center: tuple[float, float, float] = (0.0, 0.0, 0.0),
-        seed: int = None
+        seed: int = None,
     ):
         """
         This class inherits attributes of the Molecule class and therefore,
