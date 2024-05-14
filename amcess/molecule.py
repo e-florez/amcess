@@ -10,6 +10,7 @@ from rdkit.Chem.rdchem import Mol
 
 from amcess.atom import Atom
 
+
 # This dictionary is a menu to call  RDKit's function according
 # input's format that contains the molecular information
 EXT_FILE: dict[str] = {
@@ -25,30 +26,9 @@ EXT_FILE: dict[str] = {
 
 @attr.s(frozen=False)
 class Molecule(Mol):
-    """
-    This class inherits attributes of the Mol class from RDKit,
-    for more information:
-    *) https://www.rdkit.org/docs/source/rdkit.Chem.rdchem.html#rdkit.Chem.rdchem.Mol # noqa
-
-    !Class description:
-    Create a Molecule that is at least ONE atom.
-
-    The format of the INPUT coordinates must be:
-
-    {"atoms": [(<element> <X> <Y> <Z>), (<element> <X> <Y> <Z>), ...]}
-
-    .. rubric:: Parameters
-
-    atoms : list[tuple(str, float, float, float)]
-        Cartesian coordinates of each atom, by default empty list
-
-    charge : int
-        total molecular/atomic charge, by default zero (0)
-
-    multiplicity : int
-        larger than zero, by default one (1)
-    """
-
+    # ===============================================================
+    # VALIDATORS
+    # ===============================================================
     # ! attributes initial of Molecule class, some they have default value
     _atoms = attr.ib()
     _charge: int = attr.ib(default=0)
@@ -57,9 +37,6 @@ class Molecule(Mol):
     _addHs: bool = attr.ib(default=False)
     _removeHs: bool = attr.ib(default=False)
 
-    # ===============================================================
-    # VALIDATORS
-    # ===============================================================
     def _init_mol_rdkit(self, mol):
         """Build Molecule object using Mol class from RDKit"""
         super().__init__(mol)
@@ -200,9 +177,34 @@ class Molecule(Mol):
         self._init_mol_rdkit(mol)
 
     @_atoms.validator
-    def _cehck_valid_atoms(self, attribute, atoms):
-        """check if the atoms are valid"""
+    def _check_valid_atoms(self, attribute, atoms):
+        """
+        The molecule class inherits attributes of the Mol class from RDKit,
+        for more information:
+        *) https://www.rdkit.org/docs/source/rdkit.Chem.rdchem.html#rdkit.Chem.rdchem.Mol # noqa
 
+        !Class description:
+        Create a Molecule that is at least ONE atom.
+
+        The format of the INPUT coordinates must be:
+
+        {"atoms": [(<element> <X> <Y> <Z>), (<element> <X> <Y> <Z>), ...]}
+
+        .. rubric:: Parameters
+
+        atoms : list[tuple(str, float, float, float)]
+            Cartesian coordinates of each atom, by default empty list
+
+        charge : int
+            total molecular/atomic charge, by default zero (0)
+
+        multiplicity : int
+            larger than zero, by default one (1)
+
+        NOTE: The description is here to avoid errors with sphinx, because the 
+              class doesn't start with __init__ method
+        """
+        
         if isinstance(atoms, (Molecule, Chem.rdchem.Mol)):
             self._init_mol_rdkit(atoms)
             self._check_atom(atoms.GetMolList())
@@ -222,7 +224,7 @@ class Molecule(Mol):
             )
 
     @_addHs.validator
-    def _cehck_valid_addHs(self, attribute, addHs):
+    def _check_valid_addHs(self, attribute, addHs):
         """check if _addHs is a bool"""
         if not isinstance(addHs, bool):
             raise ValueError(
@@ -231,7 +233,7 @@ class Molecule(Mol):
             )
 
     @_file.validator
-    def _cehck_valid_file(self, attribute, file):
+    def _check_valid_file(self, attribute, file):
         """check if _file is a bool"""
         if not isinstance(file, bool):
             raise ValueError(

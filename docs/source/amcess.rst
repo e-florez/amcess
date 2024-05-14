@@ -36,14 +36,6 @@ amcess.electronic\_energy module
    :undoc-members:
    :show-inheritance:
 
-amcess.gaussian\_process module
--------------------------------
-
-.. automodule:: amcess.gaussian_process
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 amcess.search\_engine module
 ----------------------------
 

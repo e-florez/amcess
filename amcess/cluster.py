@@ -6,48 +6,47 @@ from amcess.molecule import Molecule
 
 
 class Cluster(Molecule):
-    """
-    This class inherits attributes of the Molecule class and therefore,
-    the Mol class from RDKit, for more information:
-    *) https://www.rdkit.org/docs/source/rdkit.Chem.rdchem.html#rdkit.Chem.rdchem.Mol # noqa
-
-    ! Class description:
-    Create a Cluster with molecules/atoms to move and rotate
-    using spherical boundary conditions (SBC).
-    The format of the INPUT coordinates is as follows (any):
-
-    1. Dictionary type: {"atoms": [(<element> <X> <Y> <Z>), ...]}
-    2. List type: [(<element> <X> <Y> <Z>), ...]
-    3. Molecule/Cluster type (Objects)
-
-    .. rubric:: Parameters
-
-    args : List, Dict, Molecule, Cluster
-        coordinates of each molecule/atom comma separates (support +,-,*)
-    freeze_molecule : integer, optional
-        fixing molecule to NOT move or rotate, by default NEGATIVE
-        integer means all molecules can be moved freely
-    sphere_radius : float, optional
-        radius for the spherical boundary condition, by default None
-    sphere_center : tuple, optional
-        Center of the sphere, by default (0, 0, 0)
-    seed : int, optional
-        seed to initialize the random generator function, by default None
-
-    .. rubric:: Raises
-
-    TypeError
-        for a wrong input argument
-    """
-
     def __init__(
         self,
         *args,
         freeze_molecule=None,
         sphere_radius=None,
         sphere_center: tuple[float, float, float] = (0.0, 0.0, 0.0),
-        seed: int = None,
+        seed: int = None
     ):
+        """
+        This class inherits attributes of the Molecule class and therefore,
+        the Mol class from RDKit, for more information:
+        *) https://www.rdkit.org/docs/source/rdkit.Chem.rdchem.html#rdkit.Chem.rdchem.Mol # noqa
+
+        ! Class description:
+        Create a Cluster with molecules/atoms to move and rotate
+        using spherical boundary conditions (SBC).
+        The format of the INPUT coordinates is as follows (any):
+
+        1. Dictionary type: {"atoms": [(<element> <X> <Y> <Z>), ...]}
+        2. List type: [(<element> <X> <Y> <Z>), ...]
+        3. Molecule/Cluster type (Objects)
+
+        .. rubric:: Parameters
+
+        args : List, Dict, Molecule, Cluster
+            coordinates of each molecule/atom comma separates (support +,-,*)
+        freeze_molecule : integer, optional
+            fixing molecule to NOT move or rotate, by default NEGATIVE
+            integer means all molecules can be moved freely
+        sphere_radius : float, optional
+            radius for the spherical boundary condition, by default None
+        sphere_center : tuple, optional
+            Center of the sphere, by default (0, 0, 0)
+        seed : int, optional
+            seed to initialize the random generator function, by default None
+
+        .. rubric:: Raises
+
+        TypeError
+            for a wrong input argument
+        """
         self._cluster_dict: dict = dict()
         self._multiplicity: int = 1
         self._charge: int = 0
@@ -335,17 +334,23 @@ class Cluster(Molecule):
                 if i == 0:
                     mol = new_cluster.GetMol(molecule)
                     new_geom[i] = Molecule(
-                        mol.GetMolList(), mol.GetMolCharge(), mol.GetMolMultiplicity() # noqa
+                        mol.GetMolList(),
+                        mol.GetMolCharge(),
+                        mol.GetMolMultiplicity(),  # noqa
                     )
                 elif i == molecule:
                     mol = new_cluster.GetMol(0)
                     new_geom[i] = Molecule(
-                        mol.GetMolList(), mol.GetMolCharge(), mol.GetMolMultiplicity() # noqa
+                        mol.GetMolList(),
+                        mol.GetMolCharge(),
+                        mol.GetMolMultiplicity(),  # noqa
                     )
                 else:
                     mol = new_cluster.GetMol(i)
                     new_geom[i] = Molecule(
-                        mol.GetMolList(), mol.GetMolCharge(), mol.GetMolMultiplicity() # noqa
+                        mol.GetMolList(),
+                        mol.GetMolCharge(),
+                        mol.GetMolMultiplicity(),  # noqa
                     )
             # ---------------------------------------------------------------
             # Instantiation of Cluster object with radius and center sphere
@@ -359,7 +364,9 @@ class Cluster(Molecule):
             for i in range(molecules_number):
                 mol = new_cluster.GetMol(i)
                 new_geom[i] = Molecule(
-                    mol.GetMolList(), mol.GetMolCharge(), mol.GetMolMultiplicity() # noqa
+                    mol.GetMolList(),
+                    mol.GetMolCharge(),
+                    mol.GetMolMultiplicity(),  # noqa
                 )
             return self.__class__(
                 *new_geom.values(),
