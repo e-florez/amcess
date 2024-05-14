@@ -27,6 +27,9 @@
    Home <self>
    About <about>
    Input <input>
+   Box Bounds <boxbounds>
+   Candidate Structures <candidatestructures>
+   Electronic Structure <electronicstructure>
    Basic Example <quickstart>
    AMCESS API <modules>
    support

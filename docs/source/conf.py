@@ -94,6 +94,13 @@ html_logo = "_static/amcess_logo.png"
 html_theme_options = {
     "logo_only": True,
     "display_version": True,
+    # Toc options
+    'collapse_navigation': True,
+    'sticky_navigation': True,
+    'navigation_depth': 4,
+    'includehidden': True,
+    'titles_only': False
+
 }
 
 # Theme options are theme-specific and customize the look and feel of a theme
